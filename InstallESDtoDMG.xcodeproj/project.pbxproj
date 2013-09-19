@@ -1,0 +1,324 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CC17EB1586009B8350 /* Cocoa.framework */; };
+		66EA72CF17EB1586009B8350 /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CE17EB1586009B8350 /* Python.framework */; };
+		66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72D717EB1586009B8350 /* InfoPlist.strings */; };
+		66EA72DB17EB1586009B8350 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 66EA72DA17EB1586009B8350 /* main.m */; };
+		66EA72DF17EB1587009B8350 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72DD17EB1587009B8350 /* Credits.rtf */; };
+		66EA72E117EB1587009B8350 /* main.py in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72E017EB1587009B8350 /* main.py */; };
+		66EA72E317EB1587009B8350 /* IEDAppDelegate.py in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72E217EB1587009B8350 /* IEDAppDelegate.py */; };
+		66EA72E617EB1587009B8350 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72E417EB1587009B8350 /* MainMenu.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		66EA72C917EB1586009B8350 /* InstallESDtoDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstallESDtoDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EA72CC17EB1586009B8350 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		66EA72CE17EB1586009B8350 /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = System/Library/Frameworks/Python.framework; sourceTree = SDKROOT; };
+		66EA72D117EB1586009B8350 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		66EA72D217EB1586009B8350 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		66EA72D317EB1586009B8350 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		66EA72D617EB1586009B8350 /* InstallESDtoDMG-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "InstallESDtoDMG-Info.plist"; sourceTree = "<group>"; };
+		66EA72D817EB1586009B8350 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		66EA72DA17EB1586009B8350 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		66EA72DC17EB1587009B8350 /* InstallESDtoDMG-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "InstallESDtoDMG-Prefix.pch"; sourceTree = "<group>"; };
+		66EA72DE17EB1587009B8350 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		66EA72E017EB1587009B8350 /* main.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = main.py; sourceTree = "<group>"; };
+		66EA72E217EB1587009B8350 /* IEDAppDelegate.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = IEDAppDelegate.py; sourceTree = "<group>"; };
+		66EA72E517EB1587009B8350 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		66EA72C617EB1585009B8350 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EA72CF17EB1586009B8350 /* Python.framework in Frameworks */,
+				66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		66EA72C017EB1585009B8350 = {
+			isa = PBXGroup;
+			children = (
+				66EA72D417EB1586009B8350 /* InstallESDtoDMG */,
+				66EA72CB17EB1586009B8350 /* Frameworks */,
+				66EA72CA17EB1586009B8350 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		66EA72CA17EB1586009B8350 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66EA72C917EB1586009B8350 /* InstallESDtoDMG.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		66EA72CB17EB1586009B8350 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				66EA72CC17EB1586009B8350 /* Cocoa.framework */,
+				66EA72CE17EB1586009B8350 /* Python.framework */,
+				66EA72D017EB1586009B8350 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		66EA72D017EB1586009B8350 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				66EA72D117EB1586009B8350 /* AppKit.framework */,
+				66EA72D217EB1586009B8350 /* CoreData.framework */,
+				66EA72D317EB1586009B8350 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		66EA72D417EB1586009B8350 /* InstallESDtoDMG */ = {
+			isa = PBXGroup;
+			children = (
+				66EA72E017EB1587009B8350 /* main.py */,
+				66EA72E217EB1587009B8350 /* IEDAppDelegate.py */,
+				66EA72E417EB1587009B8350 /* MainMenu.xib */,
+				66EA72D517EB1586009B8350 /* Supporting Files */,
+			);
+			path = InstallESDtoDMG;
+			sourceTree = "<group>";
+		};
+		66EA72D517EB1586009B8350 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				66EA72D617EB1586009B8350 /* InstallESDtoDMG-Info.plist */,
+				66EA72D717EB1586009B8350 /* InfoPlist.strings */,
+				66EA72DA17EB1586009B8350 /* main.m */,
+				66EA72DC17EB1587009B8350 /* InstallESDtoDMG-Prefix.pch */,
+				66EA72DD17EB1587009B8350 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		66EA72C817EB1585009B8350 /* InstallESDtoDMG */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66EA72E917EB1587009B8350 /* Build configuration list for PBXNativeTarget "InstallESDtoDMG" */;
+			buildPhases = (
+				66EA72C517EB1585009B8350 /* Sources */,
+				66EA72C617EB1585009B8350 /* Frameworks */,
+				66EA72C717EB1585009B8350 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = InstallESDtoDMG;
+			productName = InstallESDtoDMG;
+			productReference = 66EA72C917EB1586009B8350 /* InstallESDtoDMG.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		66EA72C117EB1585009B8350 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = IED;
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Göteborgs universitet";
+			};
+			buildConfigurationList = 66EA72C417EB1585009B8350 /* Build configuration list for PBXProject "InstallESDtoDMG" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 66EA72C017EB1585009B8350;
+			productRefGroup = 66EA72CA17EB1586009B8350 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				66EA72C817EB1585009B8350 /* InstallESDtoDMG */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		66EA72C717EB1585009B8350 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EA72E117EB1587009B8350 /* main.py in Resources */,
+				66EA72E617EB1587009B8350 /* MainMenu.xib in Resources */,
+				66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */,
+				66EA72E317EB1587009B8350 /* IEDAppDelegate.py in Resources */,
+				66EA72DF17EB1587009B8350 /* Credits.rtf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		66EA72C517EB1585009B8350 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EA72DB17EB1586009B8350 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		66EA72D717EB1586009B8350 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				66EA72D817EB1586009B8350 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		66EA72DD17EB1587009B8350 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				66EA72DE17EB1587009B8350 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		66EA72E417EB1587009B8350 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				66EA72E517EB1587009B8350 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		66EA72E717EB1587009B8350 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		66EA72E817EB1587009B8350 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		66EA72EA17EB1587009B8350 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "InstallESDtoDMG/InstallESDtoDMG-Prefix.pch";
+				INFOPLIST_FILE = "InstallESDtoDMG/InstallESDtoDMG-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		66EA72EB17EB1587009B8350 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "InstallESDtoDMG/InstallESDtoDMG-Prefix.pch";
+				INFOPLIST_FILE = "InstallESDtoDMG/InstallESDtoDMG-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		66EA72C417EB1585009B8350 /* Build configuration list for PBXProject "InstallESDtoDMG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EA72E717EB1587009B8350 /* Debug */,
+				66EA72E817EB1587009B8350 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66EA72E917EB1587009B8350 /* Build configuration list for PBXNativeTarget "InstallESDtoDMG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EA72EA17EB1587009B8350 /* Debug */,
+				66EA72EB17EB1587009B8350 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 66EA72C117EB1585009B8350 /* Project object */;
+}
