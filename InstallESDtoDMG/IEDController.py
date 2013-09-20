@@ -89,9 +89,6 @@ class IEDController(NSObject):
                                                      [self.sourceView.selectedSource,
                                                       panel.URL().path()])
     
-    # This should call our PrivilegedHelper via launchd but for now let's just
-    # kick it off with do shell script.
-    #
     # This runs in a background thread.
     def buildImage_(self, args):
         # Unpack arguments.
@@ -109,19 +106,21 @@ class IEDController(NSObject):
                                                                    None,
                                                                    False)
     
+    # This should call our PrivilegedHelper via launchd but for now let's just
+    # kick it off with do shell script.
     def do_build(self, sourcePath, destinationPath):
         scriptPath = u"/Users/pelle/Dropbox/prog/InstallESDtoDMG/installesdtodmg.sh"
         NSLog(scriptPath)
         
-        return
-        
         p = subprocess.Popen([u"/usr/bin/osascript", "-"],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
-        out, err = p.communicate(u"do shell script \"'%s' '%s' '%s'\" with administrator privileges",
-                                 scriptPath,
-                                 sourcePath,
-                                 destinationPath)
+        # Generate a shell script.
+        shellScript = u"'%s' '%s' '%s'" % (scriptPath, sourcePath, destinationPath)
+        # Wrap it in AppleScript to get admin prompt.
+        appleScript = u"do shell script \"%s\" with administrator privileges" % shellScript
+        # Send it to osascript's stdin.
+        out, err = p.communicate(appleScript)
         if p.returncode:
             NSLog(u"build script exited with %d", p.returncode)
             return

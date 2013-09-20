@@ -53,3 +53,6 @@ class IEDSourceSelector(NSImageView):
         if filename:
             self.selectedSource = filename
             self.delegate.acceptSource_(filename)
+            return True
+        else:
+            return False

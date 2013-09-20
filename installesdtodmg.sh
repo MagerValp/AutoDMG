@@ -68,3 +68,8 @@ hdiutil convert -format UDZO "$sparsedmg" -o "$compresseddmg"
 
 # Scan compressed image for restore.
 asr imagescan --source "$compresseddmg"
+
+# Change ownership to that of the containing directory.
+chown $(stat -f '%u:%g' $(dirname "$compresseddmg")) "$compresseddmg"
+
+exit 0
