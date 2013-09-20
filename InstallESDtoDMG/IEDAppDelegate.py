@@ -4,12 +4,18 @@
 #  InstallESDtoDMG
 #
 #  Created by Pelle on 2013-09-19.
-#  Copyright Göteborgs universitet 2013. All rights reserved.
+#  Copyright Per Olofsson, University of Gothenburg 2013. All rights reserved.
 #
 
 from Foundation import *
 from AppKit import *
+from objc import IBAction, IBOutlet
 
 class IEDAppDelegate(NSObject):
+    
     def applicationDidFinishLaunching_(self, sender):
-        NSLog("Application did finish launching.")
+        pass
+
+    @IBAction
+    def selectSource_(self, filename):
+        NSLog(u"Source selected: %@", filename)
