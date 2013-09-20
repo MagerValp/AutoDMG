@@ -109,8 +109,7 @@ class IEDController(NSObject):
     # This should call our PrivilegedHelper via launchd but for now let's just
     # kick it off with do shell script.
     def do_build(self, sourcePath, destinationPath):
-        scriptPath = u"/Users/pelle/Dropbox/prog/InstallESDtoDMG/installesdtodmg.sh"
-        NSLog(scriptPath)
+        scriptPath = NSBundle.mainBundle().pathForResource_ofType_(u"installesdtodmg", u"sh")
         
         p = subprocess.Popen([u"/usr/bin/osascript", "-"],
                              stdin=subprocess.PIPE,

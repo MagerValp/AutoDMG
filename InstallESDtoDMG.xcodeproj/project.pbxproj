@@ -19,6 +19,7 @@
 		66EA72EF17EB25B3009B8350 /* DMG Placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */; };
 		66EA72F117EB2ECB009B8350 /* IEDController.py in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72F017EB2ECB009B8350 /* IEDController.py */; };
 		66EA72F317EB3B40009B8350 /* IEDSourceSelector.py in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72F217EB3B40009B8350 /* IEDSourceSelector.py */; };
+		66EA72F517EC764B009B8350 /* installesdtodmg.sh in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72F417EC764B009B8350 /* installesdtodmg.sh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DMG Placeholder.png"; sourceTree = "<group>"; };
 		66EA72F017EB2ECB009B8350 /* IEDController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDController.py; sourceTree = "<group>"; };
 		66EA72F217EB3B40009B8350 /* IEDSourceSelector.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDSourceSelector.py; sourceTree = "<group>"; };
+		66EA72F417EC764B009B8350 /* installesdtodmg.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = installesdtodmg.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 		66EA72D517EB1586009B8350 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				66EA72F417EC764B009B8350 /* installesdtodmg.sh */,
 				66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */,
 				66EA72EC17EB1E09009B8350 /* Installer Placeholder.png */,
 				66EA72D617EB1586009B8350 /* InstallESDtoDMG-Info.plist */,
@@ -185,6 +188,7 @@
 				66EA72E317EB1587009B8350 /* IEDAppDelegate.py in Resources */,
 				66EA72F317EB3B40009B8350 /* IEDSourceSelector.py in Resources */,
 				66EA72DF17EB1587009B8350 /* Credits.rtf in Resources */,
+				66EA72F517EC764B009B8350 /* installesdtodmg.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
