@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0506B97C17F0849C0011CCC2 /* InstallESDtoDMG.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 0506B97B17F0849C0011CCC2 /* InstallESDtoDMG.iconset */; };
 		66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CC17EB1586009B8350 /* Cocoa.framework */; };
 		66EA72CF17EB1586009B8350 /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CE17EB1586009B8350 /* Python.framework */; };
 		66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72D717EB1586009B8350 /* InfoPlist.strings */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0506B97B17F0849C0011CCC2 /* InstallESDtoDMG.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = InstallESDtoDMG.iconset; sourceTree = "<group>"; };
 		66EA72C917EB1586009B8350 /* InstallESDtoDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstallESDtoDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EA72CC17EB1586009B8350 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		66EA72CE17EB1586009B8350 /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = System/Library/Frameworks/Python.framework; sourceTree = SDKROOT; };
@@ -110,6 +112,7 @@
 		66EA72D517EB1586009B8350 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0506B97B17F0849C0011CCC2 /* InstallESDtoDMG.iconset */,
 				66EA72F417EC764B009B8350 /* installesdtodmg.sh */,
 				66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */,
 				66EA72EC17EB1E09009B8350 /* Installer Placeholder.png */,
@@ -132,6 +135,7 @@
 				66EA72C517EB1585009B8350 /* Sources */,
 				66EA72C617EB1585009B8350 /* Frameworks */,
 				66EA72C717EB1585009B8350 /* Resources */,
+				0506B97D17F085210011CCC2 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -185,6 +189,7 @@
 				66EA72ED17EB1E09009B8350 /* Installer Placeholder.png in Resources */,
 				66EA72EF17EB25B3009B8350 /* DMG Placeholder.png in Resources */,
 				66EA72F117EB2ECB009B8350 /* IEDController.py in Resources */,
+				0506B97C17F0849C0011CCC2 /* InstallESDtoDMG.iconset in Resources */,
 				66EA72E317EB1587009B8350 /* IEDAppDelegate.py in Resources */,
 				66EA72F317EB3B40009B8350 /* IEDSourceSelector.py in Resources */,
 				66EA72DF17EB1587009B8350 /* Credits.rtf in Resources */,
@@ -193,6 +198,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0506B97D17F085210011CCC2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\n#\n# Sets the version string to a monotonically increased string, based on\n# the number of git commits.\n\nset -o errexit\nset -o nounset\n\nVERSION=$(git --git-dir=\"$PROJECT_DIR/.git\" --work-tree=\"$PROJECT_DIR\" rev-list master | wc -l)\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $VERSION\" \"$TARGET_BUILD_DIR/$INFOPLIST_PATH\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		66EA72C517EB1585009B8350 /* Sources */ = {
@@ -309,7 +331,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "InstallESDtoDMG/InstallESDtoDMG-Prefix.pch";
 				INFOPLIST_FILE = "InstallESDtoDMG/InstallESDtoDMG-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -324,7 +346,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "InstallESDtoDMG/InstallESDtoDMG-Prefix.pch";
 				INFOPLIST_FILE = "InstallESDtoDMG/InstallESDtoDMG-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -350,6 +372,7 @@
 				66EA72EB17EB1587009B8350 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
