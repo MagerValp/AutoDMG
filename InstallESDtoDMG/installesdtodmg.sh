@@ -51,8 +51,7 @@ hdiutil attach -owners on -noverify "$sparsedmg"
 sparsemount="/Volumes/$sparsevolname"
 
 # Mount the install media.
-hdiutil attach -noverify "$esddmg"
-esdmount="/Volumes/OS X Install ESD"
+esdmount=$(hdiutil attach -nobrowse -mountrandom /tmp -noverify "$esddmg" | grep Apple_HFS | awk '{print $3}')
 
 # Perform the OS install.
 installer -verboseR -pkg "$esdmount/Packages/OSInstall.mpkg" -target "$sparsemount"
