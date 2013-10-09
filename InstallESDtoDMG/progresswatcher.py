@@ -18,10 +18,14 @@ from Foundation import *
 class ProgressWatcher(NSObject):
     
     outputBuffer = None
+    dnc = None
+    isTaskRunning = False
     
     def watchTask_(self, args):
+        self.dnc = NSDistributedNotificationCenter.defaultCenter()
         nc = NSNotificationCenter.defaultCenter()
         
+        self.isTaskRunning = True
         task = NSTask.alloc().init()
         
         outpipe = NSPipe.alloc().init()
@@ -42,15 +46,17 @@ class ProgressWatcher(NSObject):
                                              u"notifyProgressTermination:",
                                              NSTaskDidTerminateNotification,
                                              task)
-        NSLog(u"launching")
         task.launch()
     
+    def shouldKeepRunning(self):
+        return self.isTaskRunning
+    
     def notifyProgressTermination_(self, notification):
-        NSLog(u"terminated")
         task = notification.object()
         if task.terminationStatus() == 0:
             pass
-        #self.stopTaskProgress()
+        self.postNotification_({u"action": u"task_done", u"termination_status": task.terminationStatus()})
+        self.isTaskRunning = False
     
     def notifyProgressData_(self, notification):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
@@ -74,22 +80,26 @@ class ProgressWatcher(NSObject):
             if string.startswith(u"installer:"):
                 self.parseInstallerProgress_(string)
             else:
-                pass
+                NSLog(u"(Ignoring progress %@)", string)
         except BaseException as e:
             NSLog(u"Progress parsing failed with exception: %s" % e)
     
     def parseInstallerProgress_(self, string):
-        NSLog(u"parseInstallerProgress:%@", string[10:])
         string = string[10:]
         if string.startswith(u"%"):
             progress = float(string[1:])
-            NSLog(u"progress %f", progress)
-            self.notifyProgress_(progress)
+            self.postNotification_({u"action": u"update_progressbar", u"percent": progress})
+        elif string.startswith(u"PHASE:"):
+            message = string[6:]
+            self.postNotification_({u"action": u"update_message", u"message": message})
+        elif string.startswith(u"STATUS:"):
+            pass
+        else:
+            pass
+            #NSLog(u"(Ignoring installer progress %@)", string)
     
-    def notifyProgress_(self, progress):
-        NSLog(u"Sending progress %f", progress)
-        dnc = NSDistributedNotificationCenter.defaultCenter()
-        dnc.postNotificationName_object_userInfo_(u"se.gu.it.IEDUpdate", u"progress", {u"percent": progress})
+    def postNotification_(self, attributes):
+        self.dnc.postNotificationName_object_userInfo_(u"se.gu.it.IEDUpdate", u"progress", attributes)
     
 
 def main(argv):
@@ -106,7 +116,8 @@ def main(argv):
     pw.watchTask_([u"./test.sh"])
     
     runLoop = NSRunLoop.currentRunLoop()
-    runLoop.run()
+    while pw.shouldKeepRunning():
+        runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, NSDate.distantFuture())
     
     return 0
     

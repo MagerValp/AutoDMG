@@ -30,12 +30,14 @@ class IEDController(NSObject):
     buildButton = IBOutlet()
     
     buildProgressBar = IBOutlet()
+    buildProgressMessage = IBOutlet()
     
     progress = None
     
     def awakeFromNib(self):
         self.sourceView.setDelegate_(self)
         self.buildProgressBar.setMaxValue_(100.0)
+        self.buildProgressMessage.setStringValue_(u"")
     
     def acceptSource_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
@@ -58,33 +60,49 @@ class IEDController(NSObject):
             self.buildProgressBar.setDoubleValue_(self.progress)
     
     def updateProgressMessage_(self, message):
-        if message.object() == u"progress":
-            self.progress = message.userInfo()[u"percent"]
-            self.updateProgress()
+        self.buildProgressMessage.setStringValue_(message)
+    
+    def handleUpdateNotification_(self, notification):
+        if notification.object() == u"progress":
+            self.handleProgressNotification_(notification.userInfo())
         else:
-            NSLog("Got updateProgressMesage")
-            NSLog("    name:%@", message.name())
-            NSLog("    object:%@", message.object())
-            NSLog("    userInfo:%@", message.userInfo())
-        
+            NSLog("Got unknown updateProgressMessage:")
+            NSLog("    name:%@", notification.name())
+            NSLog("    object:%@", notification.object())
+            NSLog("    userInfo:%@", notification.userInfo())
+    
+    def handleProgressNotification_(self, args):
+        if args[u"action"] == u"update_progressbar":
+            self.progress = args[u"percent"]
+            NSLog(u"")
+            self.updateProgress()
+        elif args[u"action"] == u"update_message":
+            self.updateProgressMessage_(args[u"message"])
+        elif args[u"action"] == u"task_done":
+            self.stopTaskProgress()
+            if args[u"termination_status"] != 0:
+                NSLog(u"task exited with status %@", args[u"termination_status"])
+        else:
+            NSLog(u"Unknown progress notification action %@", args[u"action"])
     
     def startTaskProgress(self):
         self.setUIEnabled_(False)
         self.progress = None
         self.updateProgress()
         dnc = NSDistributedNotificationCenter.defaultCenter()
-        dnc.addObserver_selector_name_object_(self,
-                                              u"updateProgressMessage:",
-                                              u"se.gu.it.IEDUpdate",
-                                              None)
+        dnc.addObserver_selector_name_object_suspensionBehavior_(self,
+                                                                 u"handleUpdateNotification:",
+                                                                 u"se.gu.it.IEDUpdate",
+                                                                 None,
+                                                                 NSNotificationSuspensionBehaviorDeliverImmediately)
     
     def stopTaskProgress(self):
         dnc = NSDistributedNotificationCenter.defaultCenter()
         dnc.removeObserver_name_object_(self,
                                         u"se.gu.it.IEDUpdate",
                                         None)
-        self.progress = 100.0
-        self.updateProgress()
+        #self.progress = 100.0
+        #self.updateProgress()
         self.setUIEnabled_(True)
     
     @IBAction
@@ -110,12 +128,11 @@ class IEDController(NSObject):
     def buildImageFrom_to_(self, sourcePath, destinationPath):
         self.startTaskProgress()
         
-        if os.fork() == 0:
-            p = subprocess.Popen([NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py")],
-                                 cwd=NSBundle.mainBundle().resourcePath())
-            p.communicate()
-            if p.returncode != 0:
-                NSLog(u"progresswatcher exited with return code %d", ret)
+        p = subprocess.Popen([NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py")],
+                             cwd=NSBundle.mainBundle().resourcePath())
+        #p.communicate()
+        #if p.returncode != 0:
+        #    NSLog(u"progresswatcher exited with return code %d", ret)
 
 
 
