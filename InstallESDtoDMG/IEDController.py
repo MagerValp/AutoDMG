@@ -57,12 +57,32 @@ class IEDController(NSObject):
             self.buildProgressBar.setIndeterminate_(False)
             self.buildProgressBar.setDoubleValue_(self.progress)
     
-    def startTask(self):
+    def updateProgressMessage_(self, message):
+        if message.object() == u"progress":
+            self.progress = message.userInfo()[u"percent"]
+            self.updateProgress()
+        else:
+            NSLog("Got updateProgressMesage")
+            NSLog("    name:%@", message.name())
+            NSLog("    object:%@", message.object())
+            NSLog("    userInfo:%@", message.userInfo())
+        
+    
+    def startTaskProgress(self):
         self.setUIEnabled_(False)
         self.progress = None
         self.updateProgress()
+        dnc = NSDistributedNotificationCenter.defaultCenter()
+        dnc.addObserver_selector_name_object_(self,
+                                              u"updateProgressMessage:",
+                                              u"se.gu.it.IEDUpdate",
+                                              None)
     
-    def stopTask(self):
+    def stopTaskProgress(self):
+        dnc = NSDistributedNotificationCenter.defaultCenter()
+        dnc.removeObserver_name_object_(self,
+                                        u"se.gu.it.IEDUpdate",
+                                        None)
         self.progress = 100.0
         self.updateProgress()
         self.setUIEnabled_(True)
@@ -85,41 +105,20 @@ class IEDController(NSObject):
         
         self.destinationLabel.setStringValue_(os.path.basename(panel.URL().path()))
         
-        self.performSelectorInBackground_withObject_(u"buildImage:",
-                                                     [self.sourceView.selectedSource,
-                                                      panel.URL().path()])
+        self.buildImageFrom_to_(self.sourceView.selectedSource, panel.URL().path())
     
-    # This runs in a background thread.
-    def buildImage_(self, args):
-        # Unpack arguments.
-        sourcePath, destinationPath = args
+    def buildImageFrom_to_(self, sourcePath, destinationPath):
+        self.startTaskProgress()
         
-        # Start task.
-        self.performSelectorOnMainThread_withObject_waitUntilDone_(u"startTask",
-                                                                   None,
-                                                                   False)
-        # Perform task.
-        self.do_build(sourcePath, destinationPath)
-        
-        # Stop task.
-        self.performSelectorOnMainThread_withObject_waitUntilDone_(u"stopTask",
-                                                                   None,
-                                                                   False)
-    
-    # This should call our PrivilegedHelper via launchd but for now let's just
-    # kick it off with do shell script.
-    def do_build(self, sourcePath, destinationPath):
-        scriptPath = NSBundle.mainBundle().pathForResource_ofType_(u"installesdtodmg", u"sh")
-        
-        p = subprocess.Popen([u"/usr/bin/osascript", "-"],
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE)
-        # Generate a shell script.
-        shellScript = u"'%s' '%s' '%s'" % (scriptPath, sourcePath, destinationPath)
-        # Wrap it in AppleScript to get admin prompt.
-        appleScript = u"do shell script \"%s\" with administrator privileges" % shellScript
-        # Send it to osascript's stdin.
-        out, err = p.communicate(appleScript)
-        if p.returncode:
-            NSLog(u"build script exited with %d", p.returncode)
-            return
+        if os.fork() == 0:
+            p = subprocess.Popen([NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py")],
+                                 cwd=NSBundle.mainBundle().resourcePath())
+            p.communicate()
+            if p.returncode != 0:
+                NSLog(u"progresswatcher exited with return code %d", ret)
+
+
+
+
+
+

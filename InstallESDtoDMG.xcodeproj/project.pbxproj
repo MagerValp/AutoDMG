@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0506B97C17F0849C0011CCC2 /* InstallESDtoDMG.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 0506B97B17F0849C0011CCC2 /* InstallESDtoDMG.iconset */; };
+		051B177117F446560026E12B /* progresswatcher.py in Resources */ = {isa = PBXBuildFile; fileRef = 051B177017F446560026E12B /* progresswatcher.py */; };
+		052DBB2517F1D7FE0038FE51 /* test.sh in Resources */ = {isa = PBXBuildFile; fileRef = 052DBB2417F1D7FE0038FE51 /* test.sh */; };
 		66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CC17EB1586009B8350 /* Cocoa.framework */; };
 		66EA72CF17EB1586009B8350 /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CE17EB1586009B8350 /* Python.framework */; };
 		66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72D717EB1586009B8350 /* InfoPlist.strings */; };
@@ -25,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		0506B97B17F0849C0011CCC2 /* InstallESDtoDMG.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = InstallESDtoDMG.iconset; sourceTree = "<group>"; };
+		051B177017F446560026E12B /* progresswatcher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = progresswatcher.py; sourceTree = "<group>"; };
+		052DBB2417F1D7FE0038FE51 /* test.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
 		66EA72C917EB1586009B8350 /* InstallESDtoDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstallESDtoDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EA72CC17EB1586009B8350 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		66EA72CE17EB1586009B8350 /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = System/Library/Frameworks/Python.framework; sourceTree = SDKROOT; };
@@ -113,7 +117,9 @@
 			isa = PBXGroup;
 			children = (
 				0506B97B17F0849C0011CCC2 /* InstallESDtoDMG.iconset */,
+				051B177017F446560026E12B /* progresswatcher.py */,
 				66EA72F417EC764B009B8350 /* installesdtodmg.sh */,
+				052DBB2417F1D7FE0038FE51 /* test.sh */,
 				66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */,
 				66EA72EC17EB1E09009B8350 /* Installer Placeholder.png */,
 				66EA72D617EB1586009B8350 /* InstallESDtoDMG-Info.plist */,
@@ -183,6 +189,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				052DBB2517F1D7FE0038FE51 /* test.sh in Resources */,
 				66EA72E117EB1587009B8350 /* main.py in Resources */,
 				66EA72E617EB1587009B8350 /* MainMenu.xib in Resources */,
 				66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */,
@@ -192,6 +199,7 @@
 				0506B97C17F0849C0011CCC2 /* InstallESDtoDMG.iconset in Resources */,
 				66EA72E317EB1587009B8350 /* IEDAppDelegate.py in Resources */,
 				66EA72F317EB3B40009B8350 /* IEDSourceSelector.py in Resources */,
+				051B177117F446560026E12B /* progresswatcher.py in Resources */,
 				66EA72DF17EB1587009B8350 /* Credits.rtf in Resources */,
 				66EA72F517EC764B009B8350 /* installesdtodmg.sh in Resources */,
 			);
