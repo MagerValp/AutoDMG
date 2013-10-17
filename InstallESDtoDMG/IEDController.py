@@ -11,8 +11,8 @@ from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet
 
-import os.path
-import subprocess
+import os
+from IEDSocketListener import *
 
 
 class IEDController(NSObject):
@@ -33,11 +33,33 @@ class IEDController(NSObject):
     buildProgressMessage = IBOutlet()
     
     progress = None
+    listenerDir = u"/tmp"
+    listenerName = u"se.gu.it.IEDSocketListener"
+    listener = None
+    listenerPath = None
     
     def awakeFromNib(self):
         self.sourceView.setDelegate_(self)
         self.buildProgressBar.setMaxValue_(100.0)
         self.buildProgressMessage.setStringValue_(u"")
+        self.openListenerSocket()
+    
+    def windowWillClose_(self, notification):
+        self.closeListenerSocket()
+    
+    def openListenerSocket(self):
+        self.listener = IEDSocketListener.alloc().init()
+        self.listenerPath = self.listener.listenOnSocketInDir_withName_target_action_(self.listenerDir,
+                                                                                      self.listenerName,
+                                                                                      self,
+                                                                                      u"handleProgressNotification:")
+    
+    def closeListenerSocket(self):
+        self.listener.stopListening()
+        try:
+            os.unlink(self.listenerPath)
+        except BaseException as e:
+            NSLog(u"Couldn't remove listener socket %@: %@", self.listenerPath, unicode(e))
     
     def acceptSource_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
@@ -62,19 +84,9 @@ class IEDController(NSObject):
     def updateProgressMessage_(self, message):
         self.buildProgressMessage.setStringValue_(message)
     
-    def handleUpdateNotification_(self, notification):
-        if notification.object() == u"progress":
-            self.handleProgressNotification_(notification.userInfo())
-        else:
-            NSLog("Got unknown updateProgressMessage:")
-            NSLog("    name:%@", notification.name())
-            NSLog("    object:%@", notification.object())
-            NSLog("    userInfo:%@", notification.userInfo())
-    
     def handleProgressNotification_(self, args):
         if args[u"action"] == u"update_progressbar":
             self.progress = args[u"percent"]
-            NSLog(u"")
             self.updateProgress()
         elif args[u"action"] == u"update_message":
             self.updateProgressMessage_(args[u"message"])
@@ -89,18 +101,8 @@ class IEDController(NSObject):
         self.setUIEnabled_(False)
         self.progress = None
         self.updateProgress()
-        dnc = NSDistributedNotificationCenter.defaultCenter()
-        dnc.addObserver_selector_name_object_suspensionBehavior_(self,
-                                                                 u"handleUpdateNotification:",
-                                                                 u"se.gu.it.IEDUpdate",
-                                                                 None,
-                                                                 NSNotificationSuspensionBehaviorDeliverImmediately)
     
     def stopTaskProgress(self):
-        dnc = NSDistributedNotificationCenter.defaultCenter()
-        dnc.removeObserver_name_object_(self,
-                                        u"se.gu.it.IEDUpdate",
-                                        None)
         #self.progress = 100.0
         #self.updateProgress()
         self.setUIEnabled_(True)
@@ -127,15 +129,21 @@ class IEDController(NSObject):
     
     def buildImageFrom_to_(self, sourcePath, destinationPath):
         self.startTaskProgress()
-        
-        p = subprocess.Popen([NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py")],
-                             cwd=NSBundle.mainBundle().resourcePath())
-        #p.communicate()
-        #if p.returncode != 0:
-        #    NSLog(u"progresswatcher exited with return code %d", ret)
-
-
-
-
+        args = [
+            NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
+            u"--cd",
+            NSBundle.mainBundle().resourcePath(),
+            self.listenerPath,
+        ]
+        self.performSelectorInBackground_withObject_(self.launchScript_, args)
+    
+    def launchScript_(self, args):
+        shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
+        applescript = u"\n".join([u'set arg%d to "%s"' % (i, arg) for i, arg in enumerate(args)] + \
+                                 [u'do shell script %s with administrator privileges' % shellscript])
+        trampoline = NSAppleScript.alloc().initWithSource_(applescript)
+        evt, error = trampoline.executeAndReturnError_(None)
+        if evt is None:
+            NSLog(u"NSAppleScript failed with error: %@", error)
 
 

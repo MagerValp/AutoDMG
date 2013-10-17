@@ -10,19 +10,24 @@
 #
 
 
+import os
 import sys
 import optparse
+import socket
 from Foundation import *
 
 
 class ProgressWatcher(NSObject):
     
     outputBuffer = None
-    dnc = None
     isTaskRunning = False
+    sock = None
+    sockPath = None
     
-    def watchTask_(self, args):
-        self.dnc = NSDistributedNotificationCenter.defaultCenter()
+    def watchTask_withSocket_(self, args, sockPath):
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        self.sockPath = sockPath
+        
         nc = NSNotificationCenter.defaultCenter()
         
         self.isTaskRunning = True
@@ -98,22 +103,38 @@ class ProgressWatcher(NSObject):
             pass
             #NSLog(u"(Ignoring installer progress %@)", string)
     
-    def postNotification_(self, attributes):
-        self.dnc.postNotificationName_object_userInfo_(u"se.gu.it.IEDUpdate", u"progress", attributes)
+    def postNotification_(self, msgDict):
+        msg, error = NSPropertyListSerialization.dataWithPropertyList_format_options_error_(msgDict,
+                                                                                            NSPropertyListBinaryFormat_v1_0,
+                                                                                            0,
+                                                                                            None)
+        if not msg:
+            if error:
+                NSLog(u"plist encoding failed: %@", error)
+            return
+        try:
+            self.sock.sendto(msg, self.sockPath)
+        except socket.error, e:
+            NSLog(u"Socket at %@ failed: %@", self.sockPath, unicode(e))
     
 
 def main(argv):
     p = optparse.OptionParser()
-    p.set_usage("""Usage: %prog [options]""")
-    p.add_option("-v", "--verbose", action="store_true",
-                 help="Verbose output.")
+    p.set_usage("""Usage: %prog [options] socket""")
+    p.add_option("-v", "--verbose", action="store_true", help="Verbose output.")
+    p.add_option("-d", "--cd", help="Set current directory.")
     options, argv = p.parse_args(argv)
-    if len(argv) != 1:
+    if len(argv) != 2:
         print >>sys.stderr, p.get_usage()
         return 1
     
+    sockPath = argv[1]
+    
+    if options.cd:
+        os.chdir(options.cd)
+    
     pw = ProgressWatcher.alloc().init()
-    pw.watchTask_([u"./test.sh"])
+    pw.watchTask_withSocket_([u"./test.sh"], sockPath)
     
     runLoop = NSRunLoop.currentRunLoop()
     while pw.shouldKeepRunning():
