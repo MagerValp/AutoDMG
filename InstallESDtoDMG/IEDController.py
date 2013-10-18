@@ -81,11 +81,22 @@ class IEDController(NSObject):
             self.buildProgressBar.setIndeterminate_(False)
             self.buildProgressBar.setDoubleValue_(self.progress)
     
-    def notifySuccess_(self, message):
-        NSLog(u"Build success: %@", message)
+    def notifySuccess_(self, path):
+        self.progress = 100.0
+        self.updateProgress()
+        self.buildProgressBar.stopAnimation_(self)
+        self.setUIEnabled_(True)
+        fileURL = NSURL.fileURLWithPath_(path)
+        NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
     
     def notifyFailure_(self, message):
-        NSLog(u"Build failure: %@", message)
+        self.buildProgressBar.setIndeterminate_(False)
+        self.buildProgressBar.stopAnimation_(self)
+        alert = NSAlert.alloc().init()
+        alert.setMessageText_(u"Build failed")
+        alert.setInformativeText_(message)
+        alert.runModal()
+        self.setUIEnabled_(True)
     
     def updateProgressMessage_(self, message):
         self.buildProgressMessage.setStringValue_(message)
@@ -97,7 +108,7 @@ class IEDController(NSObject):
         elif args[u"action"] == u"update_message":
             self.updateProgressMessage_(args[u"message"])
         elif args[u"action"] == u"notify_success":
-            self.notifySuccess_(args[u"message"])
+            self.notifySuccess_(args[u"path"])
         elif args[u"action"] == u"notify_failure":
             self.notifyFailure_(args[u"message"])
         elif args[u"action"] == u"task_done":

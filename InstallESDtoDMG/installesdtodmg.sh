@@ -47,10 +47,8 @@ fi
 # Create and mount a sparse image.
 echo "IED:MSG:Initializing DMG"
 sparsedmg="$tempdir/os.sparseimage"
-sparsevolname=$(printf "Sparse%04x HD" $RANDOM)
-hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "$sparsevolname" "$sparsedmg"
-hdiutil attach -owners on -noverify "$sparsedmg"
-sparsemount="/Volumes/$sparsevolname"
+hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "Macintosh HD" "$sparsedmg"
+sparsemount=$(hdiutil attach -nobrowse -mountrandom /tmp -noverify -owners on "$sparsedmg" | grep Apple_HFS | awk '{print $3}')
 
 # Mount the install media.
 echo "IED:MSG:Mounting install media"
@@ -71,11 +69,21 @@ fi
     
 # Eject the install media.
 echo "IED:MSG:Ejecting install media"
-hdiutil eject "$esdmount"
+for tries in {1..10}; do
+    if hdiutil eject "$esdmount" 2>/dev/null; then
+        break
+    fi
+    sleep $tries
+done
 
 # Eject the sparse image.
 echo "IED:MSG:Ejecting DMG"
-hdiutil eject "$sparsemount"
+for tries in {1..10}; do
+    if hdiutil eject "$sparsemount" 2>/dev/null; then
+        break
+    fi
+    sleep $tries
+done
 
 # Convert the sparse image to a compressed image.
 echo "IED:MSG:Converting DMG to read only"
@@ -100,6 +108,6 @@ fi
 
 
 echo "IED:MSG:Done"
-echo "IED:SUCCESS:Done"
+echo "IED:SUCCESS:$compresseddmg"
 
 exit 0
