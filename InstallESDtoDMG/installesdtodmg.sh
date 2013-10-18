@@ -21,7 +21,7 @@ eject_dmg() {
                     break
                 fi
             done
-        done
+        fi
     fi
 }
 
@@ -90,7 +90,7 @@ fi
 
 # Perform the OS install.
 echo "IED:MSG:Starting OS install"
-installer -verboseR -pkg "'$esdmount/Packages/OSInstall.mpkg'" -target "'$sparsemount'"
+installer -verboseR -pkg "$esdmount/Packages/OSInstall.mpkg" -target "$sparsemount"
 declare -i result=$?
 if [[ $result -ne 0 ]]; then
     echo "IED:FAILURE:OS install failed with return code $result"
