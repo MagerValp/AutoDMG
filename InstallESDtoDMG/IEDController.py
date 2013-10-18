@@ -81,6 +81,12 @@ class IEDController(NSObject):
             self.buildProgressBar.setIndeterminate_(False)
             self.buildProgressBar.setDoubleValue_(self.progress)
     
+    def notifySuccess_(self, message):
+        NSLog(u"Build success: %@", message)
+    
+    def notifyFailure_(self, message):
+        NSLog(u"Build failure: %@", message)
+    
     def updateProgressMessage_(self, message):
         self.buildProgressMessage.setStringValue_(message)
     
@@ -90,6 +96,10 @@ class IEDController(NSObject):
             self.updateProgress()
         elif args[u"action"] == u"update_message":
             self.updateProgressMessage_(args[u"message"])
+        elif args[u"action"] == u"notify_success":
+            self.notifySuccess_(args[u"message"])
+        elif args[u"action"] == u"notify_failure":
+            self.notifyFailure_(args[u"message"])
         elif args[u"action"] == u"task_done":
             self.stopTaskProgress()
             if args[u"termination_status"] != 0:

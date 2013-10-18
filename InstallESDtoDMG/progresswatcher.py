@@ -83,14 +83,15 @@ class ProgressWatcher(NSObject):
         # Wrap progress parsing so app doesn't crash from bad input.
         try:
             if string.startswith(u"installer:"):
-                self.parseInstallerProgress_(string)
+                self.parseInstallerProgress_(string[10:])
+            elif string.startswith(u"IED:"):
+                self.parseIEDProgress_(string[4:])
             else:
                 NSLog(u"(Ignoring progress %@)", string)
         except BaseException as e:
             NSLog(u"Progress parsing failed with exception: %s" % e)
     
     def parseInstallerProgress_(self, string):
-        string = string[10:]
         if string.startswith(u"%"):
             progress = float(string[1:])
             self.postNotification_({u"action": u"update_progressbar", u"percent": progress})
@@ -102,6 +103,24 @@ class ProgressWatcher(NSObject):
         else:
             pass
             #NSLog(u"(Ignoring installer progress %@)", string)
+    
+    def parseIEDProgress_(self, string):
+        if string.startswith(u"%"):
+            progress = float(string[1:])
+            if progress < 0:
+                progress = None
+            self.postNotification_({u"action": u"update_progressbar", u"percent": progress})
+        elif string.startswith(u"MSG:"):
+            message = string[4:]
+            self.postNotification_({u"action": u"update_message", u"message": message})
+        elif string.startswith(u"SUCCESS:"):
+            message = string[8:]
+            self.postNotification_({u"action": u"notify_success", u"message": message})
+        elif string.startswith(u"FAILURE:"):
+            message = string[8:]
+            self.postNotification_({u"action": u"notify_failure", u"message": message})
+        else:
+            NSLog(u"(Unknown IED progress %@)", string)
     
     def postNotification_(self, msgDict):
         msg, error = NSPropertyListSerialization.dataWithPropertyList_format_options_error_(msgDict,
@@ -135,7 +154,7 @@ def main(argv):
     if options.cd:
         os.chdir(options.cd)
     
-    args = [u"./test.sh", sourcePath, destinationPath]
+    args = [u"./installesdtodmg.sh", sourcePath, destinationPath]
     NSLog(u'Launching task "%@"', u'" "'.join(args))
     
     pw = ProgressWatcher.alloc().init()

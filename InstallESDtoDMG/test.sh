@@ -8,6 +8,9 @@
 
 logger -t test "* test.sh starting"
 
+echo "IED:MSG:Starting test script"
+sleep 2
+
 echo 'installer: Package name is create_createduser-1.0'
 echo 'installer: Installing at base path /'
 echo 'installer:PHASE:Förbereder installation…'
@@ -42,6 +45,8 @@ echo 'installer:%100.000000'
 sleep 0.25
 echo 'installer:PHASE:Programvaran har installerats.'
 echo 'installer: The install was successful.'
+
+echo "IED:SUCCESS:Testing successful"
 
 logger -t test "* test.sh done"
 
