@@ -134,6 +134,8 @@ class IEDController(NSObject):
             u"--cd",
             NSBundle.mainBundle().resourcePath(),
             self.listenerPath,
+            sourcePath,
+            destinationPath,
         ]
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
     

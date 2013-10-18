@@ -120,25 +120,32 @@ class ProgressWatcher(NSObject):
 
 def main(argv):
     p = optparse.OptionParser()
-    p.set_usage("""Usage: %prog [options] socket""")
+    p.set_usage("""Usage: %prog [options] socket source destination""")
     p.add_option("-v", "--verbose", action="store_true", help="Verbose output.")
     p.add_option("-d", "--cd", help="Set current directory.")
     options, argv = p.parse_args(argv)
-    if len(argv) != 2:
+    if len(argv) != 4:
         print >>sys.stderr, p.get_usage()
         return 1
     
     sockPath = argv[1]
+    sourcePath = argv[2].decode("utf-8")
+    destinationPath = argv[3].decode("utf-8")
     
     if options.cd:
         os.chdir(options.cd)
     
+    args = [u"./test.sh", sourcePath, destinationPath]
+    NSLog(u'Launching task "%@"', u'" "'.join(args))
+    
     pw = ProgressWatcher.alloc().init()
-    pw.watchTask_withSocket_([u"./test.sh"], sockPath)
+    pw.watchTask_withSocket_(args, sockPath)
     
     runLoop = NSRunLoop.currentRunLoop()
     while pw.shouldKeepRunning():
         runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, NSDate.distantFuture())
+    
+    NSLog(u"Task terminated, exiting")
     
     return 0
     
