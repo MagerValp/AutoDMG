@@ -5,40 +5,12 @@
 
 declare -a tempdirs
 remove_tempdirs() {
-    for tempdir in "${tempdirs[@]}"; do
-        rm -rf "$tempdir"
-    done
-    unset tempdirs
-}
-
-eject_dmg() {
-    local mountpath="$1"
-    if [[ -d "$mountpath" ]]; then
-        if ! hdiutil eject "$mountpath"; then
-            for tries in {1..10}; do
-                sleep $tries
-                if hdiutil eject "$mountpath" -force 2>/dev/null; then
-                    break
-                fi
-            done
-        done
-    fi
-}
-
-declare -a dmgmounts
-unmount_dmgs() {
-    for mountpath in "${dmgmounts[@]}"; do
-        eject_dmg "$mountpath"
-    done
-    unset dmgmounts
-}
-
-perform_cleanup() {
-    remove_tempdirs
-    unmount_dmgs
+    #for tempdir in "${tempdirs[@]}"; do
+    #    rm -rf "$tempdir"
+    #done
     return 0
 }
-trap perform_cleanup EXIT
+trap remove_tempdirs EXIT
 
 
 # Arguments.
@@ -56,7 +28,7 @@ installapp="$1"
 sharedsupport="$installapp/Contents/SharedSupport"
 esddmg="$sharedsupport/InstallESD.dmg"
 if [[ ! -e "$esddmg" ]]; then
-    echo "IED:FAILURE:'$esddmg' not found"
+    echo "IED:FAILURE:'$esddmg' not found" 1>&2
     exit 1
 fi
 compresseddmg="$2"
@@ -75,14 +47,15 @@ fi
 # Create and mount a sparse image.
 echo "IED:MSG:Initializing DMG"
 sparsedmg="$tempdir/os.sparseimage"
-hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "Macintosh HD" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
-sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
-dmgmounts+=("$sparsemount")
+sparsevolname=$(printf "Sparse%04x HD" $RANDOM)
+hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "$sparsevolname" "$sparsedmg"
+hdiutil attach -owners on -noverify "$sparsedmg"
+sparsemount="/Volumes/$sparsevolname"
+echo "Sparse image mounted on '$sparsemount'"
 
 # Mount the install media.
 echo "IED:MSG:Mounting install media"
-esdmount=$(hdiutil attach -nobrowse -mountrandom /tmp -noverify "$esddmg" | grep Apple_HFS | cut -f3)
-dmgmounts+=("$esdmount")
+esdmount=$(hdiutil attach -nobrowse -mountrandom /tmp -noverify "$esddmg" | grep Apple_HFS | awk '{print $3}')
 if [[ ! -d "$esdmount/Packages" ]]; then
     echo "IED:FAILURE:Failed to mount install media"
     exit 101
@@ -90,16 +63,21 @@ fi
 
 # Perform the OS install.
 echo "IED:MSG:Starting OS install"
-installer -verboseR -pkg "'$esdmount/Packages/OSInstall.mpkg'" -target "'$sparsemount'"
+echo installer -verboseR -pkg "'$esdmount/Packages/OSInstall.mpkg'" -target "'$sparsemount'"
+exit 0
 declare -i result=$?
 if [[ $result -ne 0 ]]; then
     echo "IED:FAILURE:OS install failed with return code $result"
     exit 102
 fi
+    
+# Eject the install media.
+echo "IED:MSG:Ejecting install media"
+hdiutil eject "$esdmount"
 
-# Eject the dmgs.
-echo "IED:MSG:Ejecting images"
-unmount_dmgs
+# Eject the sparse image.
+echo "IED:MSG:Ejecting DMG"
+hdiutil eject "$sparsemount"
 
 # Convert the sparse image to a compressed image.
 echo "IED:MSG:Converting DMG to read only"
@@ -124,6 +102,6 @@ fi
 
 
 echo "IED:MSG:Done"
-echo "IED:SUCCESS:$compresseddmg"
+echo "IED:SUCCESS:Done"
 
 exit 0
