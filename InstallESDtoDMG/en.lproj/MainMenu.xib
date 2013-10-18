@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4510" systemVersion="13A584" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4510" systemVersion="13A598" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment version="1050" defaultVersion="1080" identifier="macosx"/>
+        <deployment defaultVersion="1070" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4510"/>
     </dependencies>
     <objects>
@@ -315,7 +315,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="fEN-tX-YPR">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="D1P-j4-NX5">
                                 <items>
                                     <menuItem title="Base OS" id="OvI-m9-W6s"/>
@@ -354,7 +354,7 @@
                         <rect key="frame" x="183" y="237" width="33" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" enabled="NO" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="center" title="→" id="MhJ-MO-DHO">
-                            <font key="font" metaFont="systemBold" size="24"/>
+                            <font key="font" size="24" name="LucidaGrande-Bold"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
@@ -363,19 +363,32 @@
                         <rect key="frame" x="512" y="237" width="33" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" enabled="NO" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="center" title="→" id="40j-HF-xG1">
-                            <font key="font" metaFont="systemBold" size="24"/>
+                            <font key="font" size="24" name="LucidaGrande-Bold"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Gsf-Jq-Sfw">
+                        <rect key="frame" x="17" y="39" width="686" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" lineBreakMode="truncatingTail" enabled="NO" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="center" title="Progress" usesSingleLineMode="YES" id="GDl-gv-yZ3">
+                            <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
                 </subviews>
             </view>
+            <connections>
+                <outlet property="delegate" destination="Fjw-V3-78e" id="mXp-Li-H8g"/>
+            </connections>
         </window>
         <customObject id="373" userLabel="IEDAppDelegate" customClass="IEDAppDelegate"/>
         <customObject id="Fjw-V3-78e" customClass="IEDController">
             <connections>
                 <outlet property="buildButton" destination="kyD-F4-CWd" id="DZi-vr-PPS"/>
                 <outlet property="buildProgressBar" destination="sXf-Af-Y1D" id="Oe9-TO-NHM"/>
+                <outlet property="buildProgressMessage" destination="Gsf-Jq-Sfw" id="gnG-5Q-wUw"/>
                 <outlet property="destinationLabel" destination="Grs-Jp-nKR" id="Mjo-7L-fcO"/>
                 <outlet property="destinationView" destination="2BT-Vr-7TR" id="ZRg-yP-uZp"/>
                 <outlet property="profileDropdown" destination="g50-LE-wEz" id="GAF-ZN-m7f"/>

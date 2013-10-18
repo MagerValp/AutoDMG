@@ -11,8 +11,8 @@ from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet
 
-import os.path
-import subprocess
+import os
+from IEDSocketListener import *
 
 
 class IEDController(NSObject):
@@ -30,12 +30,36 @@ class IEDController(NSObject):
     buildButton = IBOutlet()
     
     buildProgressBar = IBOutlet()
+    buildProgressMessage = IBOutlet()
     
     progress = None
+    listenerDir = u"/tmp"
+    listenerName = u"se.gu.it.IEDSocketListener"
+    listener = None
+    listenerPath = None
     
     def awakeFromNib(self):
         self.sourceView.setDelegate_(self)
         self.buildProgressBar.setMaxValue_(100.0)
+        self.buildProgressMessage.setStringValue_(u"")
+        self.openListenerSocket()
+    
+    def windowWillClose_(self, notification):
+        self.closeListenerSocket()
+    
+    def openListenerSocket(self):
+        self.listener = IEDSocketListener.alloc().init()
+        self.listenerPath = self.listener.listenOnSocketInDir_withName_target_action_(self.listenerDir,
+                                                                                      self.listenerName,
+                                                                                      self,
+                                                                                      u"handleProgressNotification:")
+    
+    def closeListenerSocket(self):
+        self.listener.stopListening()
+        try:
+            os.unlink(self.listenerPath)
+        except BaseException as e:
+            NSLog(u"Couldn't remove listener socket %@: %@", self.listenerPath, unicode(e))
     
     def acceptSource_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
@@ -57,14 +81,40 @@ class IEDController(NSObject):
             self.buildProgressBar.setIndeterminate_(False)
             self.buildProgressBar.setDoubleValue_(self.progress)
     
-    def startTask(self):
+    def notifySuccess_(self, message):
+        NSLog(u"Build success: %@", message)
+    
+    def notifyFailure_(self, message):
+        NSLog(u"Build failure: %@", message)
+    
+    def updateProgressMessage_(self, message):
+        self.buildProgressMessage.setStringValue_(message)
+    
+    def handleProgressNotification_(self, args):
+        if args[u"action"] == u"update_progressbar":
+            self.progress = args[u"percent"]
+            self.updateProgress()
+        elif args[u"action"] == u"update_message":
+            self.updateProgressMessage_(args[u"message"])
+        elif args[u"action"] == u"notify_success":
+            self.notifySuccess_(args[u"message"])
+        elif args[u"action"] == u"notify_failure":
+            self.notifyFailure_(args[u"message"])
+        elif args[u"action"] == u"task_done":
+            self.stopTaskProgress()
+            if args[u"termination_status"] != 0:
+                NSLog(u"task exited with status %@", args[u"termination_status"])
+        else:
+            NSLog(u"Unknown progress notification action %@", args[u"action"])
+    
+    def startTaskProgress(self):
         self.setUIEnabled_(False)
         self.progress = None
         self.updateProgress()
     
-    def stopTask(self):
-        self.progress = 100.0
-        self.updateProgress()
+    def stopTaskProgress(self):
+        #self.progress = 100.0
+        #self.updateProgress()
         self.setUIEnabled_(True)
     
     @IBAction
@@ -85,41 +135,27 @@ class IEDController(NSObject):
         
         self.destinationLabel.setStringValue_(os.path.basename(panel.URL().path()))
         
-        self.performSelectorInBackground_withObject_(u"buildImage:",
-                                                     [self.sourceView.selectedSource,
-                                                      panel.URL().path()])
+        self.buildImageFrom_to_(self.sourceView.selectedSource, panel.URL().path())
     
-    # This runs in a background thread.
-    def buildImage_(self, args):
-        # Unpack arguments.
-        sourcePath, destinationPath = args
-        
-        # Start task.
-        self.performSelectorOnMainThread_withObject_waitUntilDone_(u"startTask",
-                                                                   None,
-                                                                   False)
-        # Perform task.
-        self.do_build(sourcePath, destinationPath)
-        
-        # Stop task.
-        self.performSelectorOnMainThread_withObject_waitUntilDone_(u"stopTask",
-                                                                   None,
-                                                                   False)
+    def buildImageFrom_to_(self, sourcePath, destinationPath):
+        self.startTaskProgress()
+        args = [
+            NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
+            u"--cd",
+            NSBundle.mainBundle().resourcePath(),
+            self.listenerPath,
+            sourcePath,
+            destinationPath,
+        ]
+        self.performSelectorInBackground_withObject_(self.launchScript_, args)
     
-    # This should call our PrivilegedHelper via launchd but for now let's just
-    # kick it off with do shell script.
-    def do_build(self, sourcePath, destinationPath):
-        scriptPath = NSBundle.mainBundle().pathForResource_ofType_(u"installesdtodmg", u"sh")
-        
-        p = subprocess.Popen([u"/usr/bin/osascript", "-"],
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE)
-        # Generate a shell script.
-        shellScript = u"'%s' '%s' '%s'" % (scriptPath, sourcePath, destinationPath)
-        # Wrap it in AppleScript to get admin prompt.
-        appleScript = u"do shell script \"%s\" with administrator privileges" % shellScript
-        # Send it to osascript's stdin.
-        out, err = p.communicate(appleScript)
-        if p.returncode:
-            NSLog(u"build script exited with %d", p.returncode)
-            return
+    def launchScript_(self, args):
+        shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
+        applescript = u"\n".join([u'set arg%d to "%s"' % (i, arg) for i, arg in enumerate(args)] + \
+                                 [u'do shell script %s with administrator privileges' % shellscript])
+        trampoline = NSAppleScript.alloc().initWithSource_(applescript)
+        evt, error = trampoline.executeAndReturnError_(None)
+        if evt is None:
+            NSLog(u"NSAppleScript failed with error: %@", error)
+
+
