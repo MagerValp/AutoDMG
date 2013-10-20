@@ -9,10 +9,12 @@
 
 from Foundation import *
 from AppKit import *
-from objc import IBAction, IBOutlet
+from objc import IBAction, IBOutlet, nil
 
 import os
+import platform
 from IEDSocketListener import *
+from IEDDMGHelper import *
 
 
 class IEDController(NSObject):
@@ -43,9 +45,12 @@ class IEDController(NSObject):
         self.buildProgressBar.setMaxValue_(100.0)
         self.buildProgressMessage.setStringValue_(u"")
         self.openListenerSocket()
+        self.dmgHelper = IEDDMGHelper.alloc().init()
+        self.installerMountPoint = None
     
     def windowWillClose_(self, notification):
         self.closeListenerSocket()
+        self.dmgHelper.detachAllWithTarget_selector_(nil, nil)
     
     def openListenerSocket(self):
         self.listener = IEDSocketListener.alloc().init()
@@ -61,13 +66,99 @@ class IEDController(NSObject):
         except BaseException as e:
             NSLog(u"Couldn't remove listener socket %@: %@", self.listenerPath, unicode(e))
     
+    def failSourceWithMessage_informativeText_(self, message, text):
+        self.setUIEnabled_(False)
+        alert = NSAlert.alloc().init()
+        alert.setMessageText_(message)
+        alert.setInformativeText_(text)
+        alert.runModal()
+        self.sourceView.setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
+        self.sourceLabel.setStringValue_(u"")
+        self.installerMountPoint = None
+        self.dmgHelper.detachAllWithTarget_selector_(self, self.displayFailedUnmounts_)
+    
+    def displayFailedUnmounts_(self, failedUnmounts):
+        #NSLog(u"displayFailedUnmounts_")
+        if failedUnmounts:
+            alert = NSAlert.alloc().init()
+            alert.setMessageText_(u"Failed to eject dmgs")
+            text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
+            alert.setInformativeText_(text)
+            alert.runModal()
+    
+    # A long chain of methods to accept a new dropped installer.
+    
     def acceptSource_(self, path):
-        icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
+        #NSLog(u"acceptSource_")
+        self.installerAppPath = path
+        self.setUIEnabled_(False)
+        if self.installerMountPoint:
+            self.sourceView.setAlphaValue_(0.5)
+            self.sourceLabel.setStringValue_(u"Ejecting…")
+        self.installerMountPoint = None
+        self.dmgHelper.detachAllWithTarget_selector_(self, self.continueAcceptAfterEject_)
+    
+    def continueAcceptAfterEject_(self, failedUnmounts):
+        self.displayFailedUnmounts_(failedUnmounts)
+        #NSLog(u"continueAcceptAfterEject_")
+        self.sourceLabel.setStringValue_(u"Examining…")
+        icon = NSWorkspace.sharedWorkspace().iconForFile_(self.installerAppPath)
         icon.setSize_(NSMakeSize(256.0, 256.0))
         self.sourceView.setImage_(icon)
-        self.sourceLabel.setStringValue_(os.path.basename(path))
-        #name, version, build = self.checkInstaller_(path)
-        self.setUIEnabled_(True)
+        self.sourceView.setAlphaValue_(1.0)
+        installESDPath = os.path.join(self.installerAppPath, u"Contents/SharedSupport/InstallESD.dmg")
+        self.dmgHelper.attach_withTarget_selector_(installESDPath, self, self.handleSourceMountResult_)
+    
+    def handleSourceMountResult_(self, result):
+        #NSLog(u"handleSourceMount_")
+        if result[u"success"] == False:
+            self.failSourceWithMessage_informativeText_(u"Failed to mount %s" % result[u"dmg-path"],
+                                                        result[u"error-message"])
+            return
+        # Don't set this again since 10.9 mounts BaseSystem.dmg after InstallESD.dmg.
+        # FIXME: check Packages/OSInstall.mpkg
+        if self.installerMountPoint is None:
+            self.installerMountPoint = result[u"mount-point"]
+        mountPoint = result[u"mount-point"]
+        versionPlistPath = u"System/Library/CoreServices/SystemVersion.plist"
+        if os.path.exists(os.path.join(mountPoint, versionPlistPath)):
+            # InstallESD.dmg for 10.7/10.8, BaseSystem.dmg for 10.9.
+            plistData = NSData.dataWithContentsOfFile_(os.path.join(mountPoint, versionPlistPath))
+            plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(plistData,
+                                                                                                          NSPropertyListImmutable,
+                                                                                                          None,
+                                                                                                          None)
+            name = plist[u"ProductName"]
+            version = plist[u"ProductUserVisibleVersion"]
+            build = plist[u"ProductBuildVersion"]
+            installerVersion = tuple(int(x) for x in version.split(u"."))
+            runningVersion = tuple(int(x) for x in platform.mac_ver()[0].split(u"."))
+            if installerVersion[:2] == runningVersion[:2]:
+                self.installerName = name
+                self.installerVersion = version
+                self.installerBuild = build
+                self.sourceLabel.setStringValue_(u"%s %s %s" % (name, version, build))
+                self.setUIEnabled_(True)
+                if result[u"dmg-path"].endswith(u"BaseSystem.dmg"):
+                    self.dmgHelper.detach_withTarget_selector_(result[u"dmg-path"],
+                                                               self,
+                                                               self.handleDetachResult_)
+            else:
+                self.failSourceWithMessage_informativeText_(u"Version mismatch",
+                                                            u"The major version of the installer and the current OS must match.")
+        elif os.path.exists(os.path.join(mountPoint, u"BaseSystem.dmg")):
+            # Go down into BaseSystem.dmg to find the version for 10.9 installers.
+            self.dmgHelper.attach_withTarget_selector_(os.path.join(mountPoint, u"BaseSystem.dmg"), self, self.handleSourceMountResult_)
+        else:
+            self.failSourceWithMessage_informativeText_(u"Invalid installer",
+                                                        u"Couldn't find system version in InstallESD.")
+    
+    def handleDetachResult_(self, result):
+        if result[u"success"] == False:
+            alert = NSAlert.alloc().init()
+            alert.setMessageText_(u"Failed to detach %s" % result[u"dmg-path"])
+            alert.setInformativeText_(result[u"error-message"])
+            alert.runModal()
     
     def setUIEnabled_(self, enabled):
         self.buildButton.setEnabled_(enabled)
@@ -133,6 +224,7 @@ class IEDController(NSObject):
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"dmg"])
+        panel.setNameFieldStringValue_(u"%s_%s_%s" % (u"baseos", self.installerVersion, self.installerBuild))
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
@@ -144,18 +236,16 @@ class IEDController(NSObject):
                 NSApp.presentError_(error)
                 return
         
-        self.destinationLabel.setStringValue_(os.path.basename(panel.URL().path()))
+        destinationPath = panel.URL().path()
+        self.destinationLabel.setStringValue_(os.path.basename(destinationPath))
         
-        self.buildImageFrom_to_(self.sourceView.selectedSource, panel.URL().path())
-    
-    def buildImageFrom_to_(self, sourcePath, destinationPath):
         self.startTaskProgress()
         args = [
             NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
             u"--cd",
             NSBundle.mainBundle().resourcePath(),
             self.listenerPath,
-            sourcePath,
+            self.installerMountPoint,
             destinationPath,
         ]
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
