@@ -13,6 +13,9 @@ Download
 Version History
 ---------------
 
+* 0.4
+    * Moved DMG handling into app.
+    * Added OS version check.
 * 0.3
 	* Working progress bar.
 	* Tested on 10.8.5 and 10.9 GM.
