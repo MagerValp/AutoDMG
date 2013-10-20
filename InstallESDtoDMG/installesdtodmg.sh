@@ -52,13 +52,7 @@ if [[ -z "$1" || -z "$2" ]]; then
     echo "IED:FAILURE:Usage: $(basename "$0") OS_X_Installer.app output.dmg"
     exit 1
 fi
-installapp="$1"
-sharedsupport="$installapp/Contents/SharedSupport"
-esddmg="$sharedsupport/InstallESD.dmg"
-if [[ ! -e "$esddmg" ]]; then
-    echo "IED:FAILURE:'$esddmg' not found"
-    exit 1
-fi
+esdmount="$1"
 compresseddmg="$2"
 
 
@@ -79,15 +73,6 @@ hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "Macintosh HD" -uid 0 -
 sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
 dmgmounts+=("$sparsemount")
 
-# Mount the install media.
-echo "IED:MSG:Mounting install media"
-esdmount=$(hdiutil attach -nobrowse -mountrandom /tmp -noverify "$esddmg" | grep Apple_HFS | cut -f3)
-dmgmounts+=("$esdmount")
-if [[ ! -d "$esdmount/Packages" ]]; then
-    echo "IED:FAILURE:Failed to mount install media"
-    exit 101
-fi
-
 # Perform the OS install.
 echo "IED:MSG:Starting OS install"
 installer -verboseR -pkg "$esdmount/Packages/OSInstall.mpkg" -target "$sparsemount"
@@ -98,7 +83,7 @@ if [[ $result -ne 0 ]]; then
 fi
 
 # Eject the dmgs.
-echo "IED:MSG:Ejecting images"
+echo "IED:MSG:Ejecting image"
 unmount_dmgs
 
 # Convert the sparse image to a compressed image.

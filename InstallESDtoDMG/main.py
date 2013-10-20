@@ -19,6 +19,7 @@ import IEDAppDelegate
 import IEDController
 import IEDSourceSelector
 import IEDSocketListener
+import IEDDMGHelper
 
 # pass control to AppKit
 AppHelper.runEventLoop()
