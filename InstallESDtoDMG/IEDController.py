@@ -12,9 +12,16 @@ from AppKit import *
 from objc import IBAction, IBOutlet, nil
 
 import os
+import grp
 import platform
+import subprocess
 from IEDSocketListener import *
 from IEDDMGHelper import *
+
+
+IEDTaskNone = 0
+IEDTaskInstall = 1
+IEDTaskImageScan = 2
 
 
 class IEDController(NSObject):
@@ -47,6 +54,8 @@ class IEDController(NSObject):
         self.openListenerSocket()
         self.dmgHelper = IEDDMGHelper.alloc().init()
         self.installerMountPoint = None
+        self.currentTask = IEDTaskNone
+        self.packagesToInstall = NSMutableArray.alloc().init()
     
     def windowWillClose_(self, notification):
         self.closeListenerSocket()
@@ -172,14 +181,6 @@ class IEDController(NSObject):
             self.buildProgressBar.setIndeterminate_(False)
             self.buildProgressBar.setDoubleValue_(self.progress)
     
-    def notifySuccess_(self, path):
-        self.progress = 100.0
-        self.updateProgress()
-        self.buildProgressBar.stopAnimation_(self)
-        self.setUIEnabled_(True)
-        fileURL = NSURL.fileURLWithPath_(path)
-        NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
-    
     def notifyFailure_(self, message):
         self.buildProgressBar.setIndeterminate_(False)
         self.buildProgressBar.stopAnimation_(self)
@@ -192,20 +193,36 @@ class IEDController(NSObject):
     def updateProgressMessage_(self, message):
         self.buildProgressMessage.setStringValue_(message)
     
+    def updatePackageProgressName_num_(self, name, num):
+        self.packageNum = num
+        self.packageName = name
+        NSLog(u"Installing package %d/%d: %@", num + 1, len(self.packagesToInstall), name)
+    
     def handleProgressNotification_(self, args):
         if args[u"action"] == u"update_progressbar":
             self.progress = args[u"percent"]
             self.updateProgress()
         elif args[u"action"] == u"update_message":
             self.updateProgressMessage_(args[u"message"])
-        elif args[u"action"] == u"notify_success":
-            self.notifySuccess_(args[u"path"])
+        elif args[u"action"] == u"select_package":
+            self.updatePackageProgressName_num_(args[u"name"], args[u"num"])
+        elif args[u"action"] == u"update_package_progress":
+            if self.packageNum > 0:
+                previousPackagesSize = sum(self.actionWeight[0:self.packageNum])
+            else:
+                previousPackagesSize = 0.0
+            self.progress = 100.0 * (args[u"percent"] * self.packageSize[self.packageNum] / 100.0 + previousPackagesSize) / self.totalPackagesSize
+            self.updateProgress()
         elif args[u"action"] == u"notify_failure":
             self.notifyFailure_(args[u"message"])
         elif args[u"action"] == u"task_done":
             self.stopTaskProgress()
             if args[u"termination_status"] != 0:
                 NSLog(u"task exited with status %@", args[u"termination_status"])
+                if self.currentTask != IEDTaskInstall:
+                    self.notifyFailure_(u"Task exited with status %@", args[u"termination_status"])
+            else:
+                self.startNextTask()
         else:
             NSLog(u"Unknown progress notification action %@", args[u"action"])
     
@@ -236,27 +253,66 @@ class IEDController(NSObject):
                 NSApp.presentError_(error)
                 return
         
-        destinationPath = panel.URL().path()
-        self.destinationLabel.setStringValue_(os.path.basename(destinationPath))
+        self.destinationLabel.setStringValue_(os.path.basename(panel.URL().path()))
+        self.startTaskInstall_(panel.URL().path())
+    
+    def startNextTask(self):
+        if self.currentTask == IEDTaskInstall:
+            self.startTaskImageScan()
+        elif self.currentTask == IEDTaskImageScan:
+            self.currentTask == IEDTaskNone
+            self.progress = 100.0
+            self.updateProgress()
+            self.buildProgressBar.stopAnimation_(self)
+            self.setUIEnabled_(True)
+            fileURL = NSURL.fileURLWithPath_(self.destinationPath)
+            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
+        else:
+            NSLog(u"No next task for task %d", self.currentTask)
+    
+    def startTaskInstall_(self, destinationPath):
+        self.destinationPath = destinationPath
+        self.currentTask = IEDTaskInstall
+        
+        self.packagesToInstall = list()
+        self.packageSize = list()
+        self.packagesToInstall.append(os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"))
+        self.packageSize.append(float(4 * 1024 * 1024 * 1024))
+        self.totalPackagesSize = sum(self.packageSize)
         
         self.startTaskProgress()
         args = [
             NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
-            u"--cd",
-            NSBundle.mainBundle().resourcePath(),
-            self.listenerPath,
-            self.installerMountPoint,
-            destinationPath,
-        ]
+            u"--cd", NSBundle.mainBundle().resourcePath(),
+            u"--socket", self.listenerPath,
+            u"installesdtodmg",
+            u"--user", NSUserName(),
+            u"--group", grp.getgrgid(os.getgid()).gr_name,
+            u"--output", self.destinationPath,
+        ] + self.packagesToInstall
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
     
     def launchScript_(self, args):
         shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
-        applescript = u"\n".join([u'set arg%d to "%s"' % (i, arg) for i, arg in enumerate(args)] + \
+        def escape(s):
+            return s.replace(u"\\", u"\\\\").replace(u'"', u'\\"')
+        applescript = u"\n".join([u'set arg%d to "%s"' % (i, escape(arg)) for i, arg in enumerate(args)] + \
                                  [u'do shell script %s with administrator privileges' % shellscript])
         trampoline = NSAppleScript.alloc().initWithSource_(applescript)
         evt, error = trampoline.executeAndReturnError_(None)
         if evt is None:
             NSLog(u"NSAppleScript failed with error: %@", error)
+    
+    def startTaskImageScan(self):
+        self.currentTask = IEDTaskImageScan
+        self.startTaskProgress()
+        self.updateProgressMessage_(u"Scanning disk image for restore")
+        args = [
+            NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
+            u"--socket", self.listenerPath,
+            u"imagescan",
+            self.destinationPath,
+        ]
+        subprocess.Popen(args)
 
 

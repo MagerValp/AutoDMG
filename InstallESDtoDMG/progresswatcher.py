@@ -12,19 +12,14 @@
 
 import os
 import sys
-import optparse
+import argparse
 import socket
 from Foundation import *
 
 
 class ProgressWatcher(NSObject):
     
-    outputBuffer = None
-    isTaskRunning = False
-    sock = None
-    sockPath = None
-    
-    def watchTask_withSocket_(self, args, sockPath):
+    def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         self.sockPath = sockPath
         
@@ -36,13 +31,18 @@ class ProgressWatcher(NSObject):
         outpipe = NSPipe.alloc().init()
         stdoutHandle = outpipe.fileHandleForReading()
         task.setStandardOutput_(outpipe)
-        self.outputBuffer = u""
         
         task.setLaunchPath_(args[0])
         task.setArguments_(args[1:])
         
+        if mode == u"asr":
+            progressHandler = u"notifyAsrProgressData:"
+            self.asrProgressActive = False
+        elif mode == u"ied":
+            progressHandler = u"notifyIEDProgressData:"
+            self.outputBuffer = u""
         nc.addObserver_selector_name_object_(self,
-                                             u"notifyProgressData:",
+                                             progressHandler,
                                              NSFileHandleReadCompletionNotification,
                                              stdoutHandle)
         stdoutHandle.readInBackgroundAndNotify()
@@ -63,7 +63,37 @@ class ProgressWatcher(NSObject):
         self.postNotification_({u"action": u"task_done", u"termination_status": task.terminationStatus()})
         self.isTaskRunning = False
     
-    def notifyProgressData_(self, notification):
+    def notifyAsrProgressData_(self, notification):
+        data = notification.userInfo()[NSFileHandleNotificationDataItem]
+        if data.length():
+            string = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
+            if string == u"Block checksum: ":
+                self.asrPercent = 0.0
+                self.asrProgressActive = True
+            elif self.asrProgressActive:
+                while string and self.asrProgressActive:
+                    if string.startswith(u"."):
+                        while string.startswith(u"."):
+                            string = string[1:]
+                            self.asrPercent += 2.0
+                        continue
+                    elif string[0].isdigit():
+                        num = u""
+                        while string and string[0].isdigit():
+                            num += string[0]
+                            string = string[1:]
+                        self.asrPercent = float(num)
+                        continue
+                    elif string[0] == u"\x0a":
+                        self.asrProgressActive = False
+                        string = string[1:]
+                    else:
+                        NSLog(u"unrecognized progress data: %@", string)
+                        string = u""
+                self.postNotification_({u"action": u"update_progressbar", u"percent": self.asrPercent})
+            notification.object().readInBackgroundAndNotify()
+    
+    def notifyIEDProgressData_(self, notification):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
         if data.length():
             string = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
@@ -94,7 +124,7 @@ class ProgressWatcher(NSObject):
     def parseInstallerProgress_(self, string):
         if string.startswith(u"%"):
             progress = float(string[1:])
-            self.postNotification_({u"action": u"update_progressbar", u"percent": progress})
+            self.postNotification_({u"action": u"update_package_progress", u"percent": progress})
         elif string.startswith(u"PHASE:"):
             message = string[6:]
             self.postNotification_({u"action": u"update_message", u"message": message})
@@ -109,13 +139,14 @@ class ProgressWatcher(NSObject):
             progress = float(string[1:])
             if progress < 0:
                 progress = None
-            self.postNotification_({u"action": u"update_progressbar", u"percent": progress})
+            self.postNotification_({u"action": u"update_progress", u"percent": progress})
         elif string.startswith(u"MSG:"):
             message = string[4:]
             self.postNotification_({u"action": u"update_message", u"message": message})
-        elif string.startswith(u"SUCCESS:"):
-            message = string[8:]
-            self.postNotification_({u"action": u"notify_success", u"path": message})
+        elif string.startswith(u"PACKAGE:"):
+            numstr, _, name = string[8:].partition(u":")
+            num = int(numstr)
+            self.postNotification_({u"action": u"select_package", u"name": name, u"num": num})
         elif string.startswith(u"FAILURE:"):
             message = string[8:]
             self.postNotification_({u"action": u"notify_failure", u"message": message})
@@ -131,40 +162,58 @@ class ProgressWatcher(NSObject):
             if error:
                 NSLog(u"plist encoding failed: %@", error)
             return
-        try:
-            self.sock.sendto(msg, self.sockPath)
-        except socket.error, e:
-            NSLog(u"Socket at %@ failed: %@", self.sockPath, unicode(e))
+        if self.sockPath:
+            try:
+                self.sock.sendto(msg, self.sockPath)
+            except socket.error, e:
+                NSLog(u"Socket at %@ failed: %@", self.sockPath, unicode(e))
+        else:
+            NSLog(u"postNotification:%@", msgDict)
     
 
-def main(argv):
-    p = optparse.OptionParser()
-    p.set_usage("""Usage: %prog [options] socket source destination""")
-    p.add_option("-v", "--verbose", action="store_true", help="Verbose output.")
-    p.add_option("-d", "--cd", help="Set current directory.")
-    options, argv = p.parse_args(argv)
-    if len(argv) != 4:
-        print >>sys.stderr, p.get_usage()
-        return 1
-    
-    sockPath = argv[1]
-    sourcePath = argv[2].decode("utf-8")
-    destinationPath = argv[3].decode("utf-8")
-    
-    if options.cd:
-        os.chdir(options.cd)
-    
-    args = [u"./installesdtodmg.sh", sourcePath, destinationPath]
+def run(args, sockPath, mode):
     NSLog(u'Launching task "%@"', u'" "'.join(args))
-    
     pw = ProgressWatcher.alloc().init()
-    pw.watchTask_withSocket_(args, sockPath)
-    
+    pw.watchTask_socket_mode_(args, sockPath, mode)
     runLoop = NSRunLoop.currentRunLoop()
     while pw.shouldKeepRunning():
         runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, NSDate.distantFuture())
-    
     NSLog(u"Task terminated, exiting")
+
+
+def installesdtodmg(args):
+    if args.cd:
+        os.chdir(args.cd)
+    pwargs = [u"./installesdtodmg.sh", args.user, args.group, args.output] + args.packages
+    run(pwargs, args.socket, u"ied")
+
+
+def imagescan(args):
+    if args.cd:
+        os.chdir(args.cd)
+    pwargs = [u"/usr/sbin/asr", u"imagescan", u"--source", args.image]
+    run(pwargs, args.socket, u"asr")
+
+
+def main(argv):
+    p = argparse.ArgumentParser()
+    p.add_argument(u"-d", u"--cd", help=u"Set current directory")
+    p.add_argument(u"-s", u"--socket", help=u"Communications socket")
+    sp = p.add_subparsers(title=u"subcommands", dest=u"subcommand")
+    
+    iedparser = sp.add_parser(u"installesdtodmg", help=u"Perform installation to DMG")
+    iedparser.add_argument(u"-u", u"--user", help=u"Change owner of DMG", required=True)
+    iedparser.add_argument(u"-g", u"--group", help=u"Change group of DMG", required=True)
+    iedparser.add_argument(u"-o", u"--output", help=u"Set output path", required=True)
+    iedparser.add_argument(u"packages", help=u"Additional packages", nargs=u"+")
+    iedparser.set_defaults(func=installesdtodmg)
+    
+    asrparser = sp.add_parser(u"imagescan", help=u"Perform asr imagescan of dmg")
+    asrparser.add_argument(u"image", help=u"DMG to scan")
+    asrparser.set_defaults(func=imagescan)
+    
+    args = p.parse_args()
+    args.func(args)
     
     return 0
     
