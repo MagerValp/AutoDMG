@@ -13,6 +13,9 @@ Download
 Version History
 ---------------
 
+* 0.5
+    * Split asr imagescan into a separate task.
+    * Added support for installing extra packages, but no GUI yet.
 * 0.4
     * Moved DMG handling into app.
     * Added OS version check.
