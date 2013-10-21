@@ -48,13 +48,14 @@ if [[ $(id -u) -ne 0 ]]; then
     exit 1
 fi
 
-if [[ -z "$1" || -z "$2" ]]; then
-    echo "IED:FAILURE:Usage: $(basename "$0") OS_X_Installer.app output.dmg"
+if [[ $# -lt 4 ]]; then
+    echo "IED:FAILURE:Usage: $(basename "$0") user group output.dmg OSInstall.mpkg [package...]"
     exit 1
 fi
-esdmount="$1"
-compresseddmg="$2"
-
+user="$1"
+group="$2"
+compresseddmg="$3"
+shift 3
 
 # Get a work directory and check free space.
 tempdir=$(mktemp -d -t installesdtodmg)
@@ -67,37 +68,40 @@ fi
 
 
 # Create and mount a sparse image.
-echo "IED:MSG:Initializing DMG"
+echo "IED:MSG:Initializing disk image"
 sparsedmg="$tempdir/os.sparseimage"
 hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "Macintosh HD" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
 sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
 dmgmounts+=("$sparsemount")
 
 # Perform the OS install.
-echo "IED:MSG:Starting OS install"
-installer -verboseR -pkg "$esdmount/Packages/OSInstall.mpkg" -target "$sparsemount"
-declare -i result=$?
-if [[ $result -ne 0 ]]; then
-    echo "IED:FAILURE:OS install failed with return code $result"
-    exit 102
-fi
+declare -i pkgnum=0
+for package; do
+    echo "selecting package $pkgnum $package"
+    echo "IED:PACKAGE:$pkgnum:$package"
+    let pkgnum++
+    if [[ $pkgnum -eq 1 ]]; then
+        echo "IED:MSG:Starting OS install"
+    else
+        echo "IED:MSG:Installing $(basename "$package")"
+    fi
+    installer -verboseR -pkg "$esdmount/Packages/OSInstall.mpkg" -target "$sparsemount"
+    declare -i result=$?
+    if [[ $result -ne 0 ]]; then
+        echo "IED:FAILURE:OS install failed with return code $result"
+        exit 102
+    fi
+done
 
 # Eject the dmgs.
 echo "IED:MSG:Ejecting image"
 unmount_dmgs
 
 # Convert the sparse image to a compressed image.
-echo "IED:MSG:Converting DMG to read only"
+echo "IED:MSG:Converting disk image to read only"
 if ! hdiutil convert -format UDZO "$sparsedmg" -o "$compresseddmg"; then
-    echo "IED:FAILURE:DMG conversion failed"
+    echo "IED:FAILURE:Disk image conversion failed"
     exit 103
-fi
-
-# Scan compressed image for restore.
-echo "IED:MSG:Scanning DMG for restore"
-if ! asr imagescan --source "$compresseddmg"; then
-    echo "IED:FAILURE:DMG scanning failed"
-    exit 104
 fi
 
 # Change ownership to that of the containing directory.
@@ -106,9 +110,5 @@ if ! chown $(stat -f '%u:%g' $(dirname "$compresseddmg")) "$compresseddmg"; then
     echo "IED:FAILURE:Ownership change failed"
     exit 105
 fi
-
-
-echo "IED:MSG:Done"
-echo "IED:SUCCESS:$compresseddmg"
 
 exit 0
