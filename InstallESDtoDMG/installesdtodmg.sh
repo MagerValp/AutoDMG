@@ -1,6 +1,9 @@
 #!/bin/bash
 
 
+declare -r TESTING="no"
+
+
 # Cleanup.
 
 declare -a tempdirs
@@ -85,11 +88,27 @@ for package; do
     else
         echo "IED:MSG:Installing $(basename "$package")"
     fi
-    installer -verboseR -pkg "$esdmount/Packages/OSInstall.mpkg" -target "$sparsemount"
-    declare -i result=$?
-    if [[ $result -ne 0 ]]; then
-        echo "IED:FAILURE:OS install failed with return code $result"
-        exit 102
+    if [[ $TESTING == "yes" ]]; then
+        sleep 1
+        echo "installer:PHASE:Faking it   "
+        echo "installer:%25.0"
+        sleep 1
+        echo "installer:PHASE:Faking it.  "
+        echo "installer:%50.0"
+        sleep 1
+        echo "installer:PHASE:Faking it.. "
+        echo "installer:%75.0"
+        sleep 1
+        echo "installer:PHASE:Faking it..."
+        echo "installer:%100.0"
+        sleep 1
+    else
+        installer -verboseR -pkg "$package" -target "$sparsemount"
+        declare -i result=$?
+        if [[ $result -ne 0 ]]; then
+            echo "IED:FAILURE:OS install failed with return code $result"
+            exit 102
+        fi
     fi
 done
 
