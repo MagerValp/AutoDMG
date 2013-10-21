@@ -6,7 +6,7 @@
 #  InstallESDtoDMG
 #
 #  Created by Per Olofsson on 2013-09-26.
-#  Copyright (c) 2013 University of Gothenburg. All rights reserved.
+#  Copyright (c) 2013 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
 
