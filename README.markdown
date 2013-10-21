@@ -7,12 +7,14 @@ InstallESDtoDMG takes an OS X installer and builds a system image, suitable for 
 Download
 --------
 
-[InstallESDtoDMG-0.5.dmg](https://www.dropbox.com/s/x71dyzyogqiu5dc/InstallESDtoDMG-0.5.dmg)
+[InstallESDtoDMG-0.5.1.dmg](https://www.dropbox.com/s/j8ik0h3n1ck6jl6/InstallESDtoDMG-0.5.1.dmg)
 
 
 Version History
 ---------------
 
+* 0.5.1
+    * Fixed extra package installation (thanks Greg Neagle).
 * 0.5
     * Split asr imagescan into a separate task.
     * Added support for installing extra packages, but no GUI yet.
