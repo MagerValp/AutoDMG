@@ -125,7 +125,7 @@ fi
 
 # Change ownership to that of the containing directory.
 echo "IED:MSG:Changing owner"
-if ! chown $(stat -f '%u:%g' $(dirname "$compresseddmg")) "$compresseddmg"; then
+if ! chown "${user}:$group" "$compresseddmg"; then
     echo "IED:FAILURE:Ownership change failed"
     exit 105
 fi
