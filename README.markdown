@@ -7,7 +7,7 @@ InstallESDtoDMG takes an OS X installer and builds a system image, suitable for 
 Download
 --------
 
-[InstallESDtoDMG-0.4.dmg](https://www.dropbox.com/s/m0xzjcjwkoivypy/InstallESDtoDMG-0.4.dmg)
+[InstallESDtoDMG-0.5.dmg](https://www.dropbox.com/s/x71dyzyogqiu5dc/InstallESDtoDMG-0.5.dmg)
 
 
 Version History
