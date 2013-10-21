@@ -55,7 +55,8 @@ class IEDController(NSObject):
         self.dmgHelper = IEDDMGHelper.alloc().init()
         self.installerMountPoint = None
         self.currentTask = IEDTaskNone
-        self.packagesToInstall = NSMutableArray.alloc().init()
+        self.packagesToInstall = list()
+        self.extraPackagesToInstall = list()
     
     def windowWillClose_(self, notification):
         self.closeListenerSocket()
@@ -211,7 +212,7 @@ class IEDController(NSObject):
                 previousPackagesSize = sum(self.actionWeight[0:self.packageNum])
             else:
                 previousPackagesSize = 0.0
-            self.progress = 100.0 * (args[u"percent"] * self.packageSize[self.packageNum] / 100.0 + previousPackagesSize) / self.totalPackagesSize
+            self.progress = 100.0 * (args[u"percent"] * self.packagesToInstall[self.packageNum][u"size"] / 100.0 + previousPackagesSize) / self.totalPackagesSize
             self.updateProgress()
         elif args[u"action"] == u"notify_failure":
             self.notifyFailure_(args[u"message"])
@@ -274,11 +275,12 @@ class IEDController(NSObject):
         self.destinationPath = destinationPath
         self.currentTask = IEDTaskInstall
         
-        self.packagesToInstall = list()
-        self.packageSize = list()
-        self.packagesToInstall.append(os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"))
-        self.packageSize.append(float(4 * 1024 * 1024 * 1024))
-        self.totalPackagesSize = sum(self.packageSize)
+        self.packagesToInstall = [{
+            u"path": os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"),
+            u"size": float(4 * 1024 * 1024 * 1024),
+        }]
+        self.packagesToInstall.extend(self.extraPackagesToInstall)
+        self.totalPackagesSize = sum(pkg[u"size"] for pkg in self.packagesToInstall)
         
         self.startTaskProgress()
         args = [
@@ -289,7 +291,7 @@ class IEDController(NSObject):
             u"--user", NSUserName(),
             u"--group", grp.getgrgid(os.getgid()).gr_name,
             u"--output", self.destinationPath,
-        ] + self.packagesToInstall
+        ] + [pkg[u"path"] for pkg in self.packagesToInstall]
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
     
     def launchScript_(self, args):
