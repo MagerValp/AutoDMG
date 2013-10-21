@@ -26,18 +26,21 @@ IEDTaskImageScan = 2
 
 class IEDController(NSObject):
     
-    window = IBOutlet()
+    mainWindow = IBOutlet()
     
     sourceView = IBOutlet()
     sourceLabel = IBOutlet()
     
-    profileDropdown = IBOutlet()
+    applyCheckbox = IBOutlet()
+    updateTable = IBOutlet()
+    updateDownloadButton = IBOutlet()
     
-    destinationView = IBOutlet()
-    destinationLabel = IBOutlet()
+    additionalPackagesTable = IBOutlet()
     
     buildButton = IBOutlet()
     
+    progressWindow = IBOutlet()
+    buildProgressFilename = IBOutlet()
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
     
@@ -171,8 +174,8 @@ class IEDController(NSObject):
             alert.runModal()
     
     def setUIEnabled_(self, enabled):
+        self.mainWindow.standardWindowButton_(NSWindowCloseButton).setEnabled_(enabled)
         self.buildButton.setEnabled_(enabled)
-        self.profileDropdown.setEnabled_(enabled)
     
     def updateProgress(self):
         if self.progress is None:
@@ -254,7 +257,7 @@ class IEDController(NSObject):
                 NSApp.presentError_(error)
                 return
         
-        self.destinationLabel.setStringValue_(os.path.basename(panel.URL().path()))
+        self.buildProgressFilename.setStringValue_(os.path.basename(panel.URL().path()))
         self.startTaskInstall_(panel.URL().path())
     
     def startNextTask(self):
@@ -266,6 +269,7 @@ class IEDController(NSObject):
             self.updateProgress()
             self.buildProgressBar.stopAnimation_(self)
             self.setUIEnabled_(True)
+            self.progressWindow.orderOut_(self)
             fileURL = NSURL.fileURLWithPath_(self.destinationPath)
             NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
         else:
@@ -283,6 +287,7 @@ class IEDController(NSObject):
         self.totalPackagesSize = sum(pkg[u"size"] for pkg in self.packagesToInstall)
         
         self.startTaskProgress()
+        self.progressWindow.makeKeyAndOrderFront_(self)
         args = [
             NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
             u"--cd", NSBundle.mainBundle().resourcePath(),
