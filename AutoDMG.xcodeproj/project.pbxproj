@@ -139,7 +139,7 @@
 				66EA72D517EB1586009B8350 /* Supporting Files */,
 			);
 			name = AutoDMG;
-			path = InstallESDtoDMG;
+			path = AutoDMG;
 			sourceTree = "<group>";
 		};
 		66EA72D517EB1586009B8350 /* Supporting Files */ = {
@@ -182,7 +182,7 @@
 			dependencies = (
 			);
 			name = AutoDMG;
-			productName = InstallESDtoDMG;
+			productName = AutoDMG;
 			productReference = 66EA72C917EB1586009B8350 /* AutoDMG.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -382,8 +382,8 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "InstallESDtoDMG/AutoDMG-Prefix.pch";
-				INFOPLIST_FILE = "InstallESDtoDMG/AutoDMG-Info.plist";
+				GCC_PREFIX_HEADER = "AutoDMG/AutoDMG-Prefix.pch";
+				INFOPLIST_FILE = "AutoDMG/AutoDMG-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AutoDMG;
 				PROVISIONING_PROFILE = "";
@@ -397,8 +397,8 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "InstallESDtoDMG/AutoDMG-Prefix.pch";
-				INFOPLIST_FILE = "InstallESDtoDMG/AutoDMG-Info.plist";
+				GCC_PREFIX_HEADER = "AutoDMG/AutoDMG-Prefix.pch";
+				INFOPLIST_FILE = "AutoDMG/AutoDMG-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = AutoDMG;
 				PROVISIONING_PROFILE = "";
