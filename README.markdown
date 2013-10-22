@@ -7,7 +7,7 @@ AutoDMG takes an OS X installer and builds a system image, suitable for deployme
 Download
 --------
 
-[AutoDMG-0.6.dmg](http://galaga.hg5.gu.se/AutoDMG-0.6.dmg)
+[AutoDMG-0.6.dmg](https://github.com/MagerValp/AutoDMG/releases/tag/v0.6)
 
 
 Version History
