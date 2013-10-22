@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0506B97C17F0849C0011CCC2 /* AutoDMG.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */; };
 		051B177117F446560026E12B /* progresswatcher.py in Resources */ = {isa = PBXBuildFile; fileRef = 051B177017F446560026E12B /* progresswatcher.py */; };
-		052DBB2517F1D7FE0038FE51 /* test.sh in Resources */ = {isa = PBXBuildFile; fileRef = 052DBB2417F1D7FE0038FE51 /* test.sh */; };
 		05429D761816715300CD61E6 /* Package blue arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D721816715300CD61E6 /* Package blue arrow.png */; };
 		05429D771816715300CD61E6 /* Package blue arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D731816715300CD61E6 /* Package blue arrow@2x.png */; };
 		05429D781816715300CD61E6 /* Package.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D741816715300CD61E6 /* Package.png */; };
@@ -39,7 +38,6 @@
 /* Begin PBXFileReference section */
 		0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AutoDMG.iconset; sourceTree = "<group>"; };
 		051B177017F446560026E12B /* progresswatcher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = progresswatcher.py; sourceTree = "<group>"; };
-		052DBB2417F1D7FE0038FE51 /* test.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
 		05429D721816715300CD61E6 /* Package blue arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package blue arrow.png"; sourceTree = "<group>"; };
 		05429D731816715300CD61E6 /* Package blue arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package blue arrow@2x.png"; sourceTree = "<group>"; };
 		05429D741816715300CD61E6 /* Package.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Package.png; sourceTree = "<group>"; };
@@ -85,6 +83,48 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		66D24F21181711B40042F227 /* Graphics */ = {
+			isa = PBXGroup;
+			children = (
+				05429D721816715300CD61E6 /* Package blue arrow.png */,
+				05429D731816715300CD61E6 /* Package blue arrow@2x.png */,
+				05429D741816715300CD61E6 /* Package.png */,
+				05429D751816715300CD61E6 /* Package@2x.png */,
+				66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */,
+				66EA72EC17EB1E09009B8350 /* Installer Placeholder.png */,
+			);
+			name = Graphics;
+			sourceTree = "<group>";
+		};
+		66D24F22181711D00042F227 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				051B177017F446560026E12B /* progresswatcher.py */,
+				66EA72F417EC764B009B8350 /* installesdtodmg.sh */,
+			);
+			name = Scripts;
+			sourceTree = "<group>";
+		};
+		66D24F23181712320042F227 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */,
+				66EA72D617EB1586009B8350 /* AutoDMG-Info.plist */,
+				66EA72D717EB1586009B8350 /* InfoPlist.strings */,
+				66EA72DD17EB1587009B8350 /* Credits.rtf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		66D24F24181712D20042F227 /* ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				66EA72DA17EB1586009B8350 /* main.m */,
+				66EA72DC17EB1587009B8350 /* AutoDMG-Prefix.pch */,
+			);
+			name = ObjC;
+			sourceTree = "<group>";
+		};
 		66EA72C017EB1585009B8350 = {
 			isa = PBXGroup;
 			children = (
@@ -125,42 +165,30 @@
 		66EA72D417EB1586009B8350 /* AutoDMG */ = {
 			isa = PBXGroup;
 			children = (
-				669DBBF618069EEC001F909B /* IEDSocketListener.py */,
-				669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */,
-				05429D7A1816BE9900CD61E6 /* IEDUpdateTableDataSource.py */,
-				05429D7C1816BED500CD61E6 /* IEDPackageTableDataSource.py */,
 				66EA72E017EB1587009B8350 /* main.py */,
 				66EA72E217EB1587009B8350 /* IEDAppDelegate.py */,
 				66EA72F017EB2ECB009B8350 /* IEDController.py */,
-				6612F05F18164BC500655C8B /* IEDUpdateCache.py */,
-				66EA72F217EB3B40009B8350 /* IEDSourceSelector.py */,
-				66EA72E417EB1587009B8350 /* MainMenu.xib */,
+				669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */,
+				05429D7C1816BED500CD61E6 /* IEDPackageTableDataSource.py */,
 				665E928418159C1A00A8F683 /* IEDProfileController.py */,
+				669DBBF618069EEC001F909B /* IEDSocketListener.py */,
+				66EA72F217EB3B40009B8350 /* IEDSourceSelector.py */,
+				6612F05F18164BC500655C8B /* IEDUpdateCache.py */,
+				05429D7A1816BE9900CD61E6 /* IEDUpdateTableDataSource.py */,
+				66EA72E417EB1587009B8350 /* MainMenu.xib */,
 				66EA72D517EB1586009B8350 /* Supporting Files */,
 			);
-			name = AutoDMG;
 			path = AutoDMG;
 			sourceTree = "<group>";
 		};
 		66EA72D517EB1586009B8350 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				05429D721816715300CD61E6 /* Package blue arrow.png */,
-				05429D731816715300CD61E6 /* Package blue arrow@2x.png */,
-				05429D741816715300CD61E6 /* Package.png */,
-				05429D751816715300CD61E6 /* Package@2x.png */,
-				0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */,
-				051B177017F446560026E12B /* progresswatcher.py */,
-				66EA72F417EC764B009B8350 /* installesdtodmg.sh */,
-				052DBB2417F1D7FE0038FE51 /* test.sh */,
-				66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */,
-				66EA72EC17EB1E09009B8350 /* Installer Placeholder.png */,
-				66EA72D617EB1586009B8350 /* AutoDMG-Info.plist */,
-				66EA72D717EB1586009B8350 /* InfoPlist.strings */,
-				66EA72DA17EB1586009B8350 /* main.m */,
-				66EA72DC17EB1587009B8350 /* AutoDMG-Prefix.pch */,
-				66EA72DD17EB1587009B8350 /* Credits.rtf */,
 				665E92861815B07A00A8F683 /* UpdateProfiles.plist */,
+				66D24F21181711B40042F227 /* Graphics */,
+				66D24F22181711D00042F227 /* Scripts */,
+				66D24F23181712320042F227 /* Resources */,
+				66D24F24181712D20042F227 /* ObjC */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -225,7 +253,6 @@
 			files = (
 				05429D761816715300CD61E6 /* Package blue arrow.png in Resources */,
 				05429D771816715300CD61E6 /* Package blue arrow@2x.png in Resources */,
-				052DBB2517F1D7FE0038FE51 /* test.sh in Resources */,
 				669ADA3D18126E1D002CE331 /* IEDDMGHelper.py in Resources */,
 				66EA72E117EB1587009B8350 /* main.py in Resources */,
 				6612F06018164BC500655C8B /* IEDUpdateCache.py in Resources */,
