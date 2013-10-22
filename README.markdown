@@ -8,7 +8,7 @@ AutoDMG takes an OS X installer and builds a system image, suitable for deployme
 Download
 --------
 
-[AutoDMG 0.6](https://github.com/MagerValp/AutoDMG/releases/tag/v0.6) (beta release, not ready for production)
+[AutoDMG 0.6](https://github.com/MagerValp/AutoDMG/releases/tag/v0.6) (Pre-release, works, but not ready for production)
 
 
 Version History
