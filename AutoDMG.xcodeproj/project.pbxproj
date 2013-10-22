@@ -14,6 +14,8 @@
 		05429D771816715300CD61E6 /* Package blue arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D731816715300CD61E6 /* Package blue arrow@2x.png */; };
 		05429D781816715300CD61E6 /* Package.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D741816715300CD61E6 /* Package.png */; };
 		05429D791816715300CD61E6 /* Package@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D751816715300CD61E6 /* Package@2x.png */; };
+		05429D7B1816BE9900CD61E6 /* IEDUpdateTableDataSource.py in Resources */ = {isa = PBXBuildFile; fileRef = 05429D7A1816BE9900CD61E6 /* IEDUpdateTableDataSource.py */; };
+		05429D7D1816BED500CD61E6 /* IEDPackageTableDataSource.py in Resources */ = {isa = PBXBuildFile; fileRef = 05429D7C1816BED500CD61E6 /* IEDPackageTableDataSource.py */; };
 		6612F06018164BC500655C8B /* IEDUpdateCache.py in Resources */ = {isa = PBXBuildFile; fileRef = 6612F05F18164BC500655C8B /* IEDUpdateCache.py */; };
 		665E928518159C1A00A8F683 /* IEDProfileController.py in Resources */ = {isa = PBXBuildFile; fileRef = 665E928418159C1A00A8F683 /* IEDProfileController.py */; };
 		665E92871815B07A00A8F683 /* UpdateProfiles.plist in Resources */ = {isa = PBXBuildFile; fileRef = 665E92861815B07A00A8F683 /* UpdateProfiles.plist */; };
@@ -42,6 +44,8 @@
 		05429D731816715300CD61E6 /* Package blue arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package blue arrow@2x.png"; sourceTree = "<group>"; };
 		05429D741816715300CD61E6 /* Package.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Package.png; sourceTree = "<group>"; };
 		05429D751816715300CD61E6 /* Package@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package@2x.png"; sourceTree = "<group>"; };
+		05429D7A1816BE9900CD61E6 /* IEDUpdateTableDataSource.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUpdateTableDataSource.py; sourceTree = "<group>"; };
+		05429D7C1816BED500CD61E6 /* IEDPackageTableDataSource.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDPackageTableDataSource.py; sourceTree = "<group>"; };
 		6612F05F18164BC500655C8B /* IEDUpdateCache.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUpdateCache.py; sourceTree = "<group>"; };
 		665E928418159C1A00A8F683 /* IEDProfileController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDProfileController.py; sourceTree = "<group>"; };
 		665E92861815B07A00A8F683 /* UpdateProfiles.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = UpdateProfiles.plist; sourceTree = "<group>"; };
@@ -123,6 +127,8 @@
 			children = (
 				669DBBF618069EEC001F909B /* IEDSocketListener.py */,
 				669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */,
+				05429D7A1816BE9900CD61E6 /* IEDUpdateTableDataSource.py */,
+				05429D7C1816BED500CD61E6 /* IEDPackageTableDataSource.py */,
 				66EA72E017EB1587009B8350 /* main.py */,
 				66EA72E217EB1587009B8350 /* IEDAppDelegate.py */,
 				66EA72F017EB2ECB009B8350 /* IEDController.py */,
@@ -229,9 +235,11 @@
 				05429D791816715300CD61E6 /* Package@2x.png in Resources */,
 				66EA72ED17EB1E09009B8350 /* Installer Placeholder.png in Resources */,
 				05429D781816715300CD61E6 /* Package.png in Resources */,
+				05429D7D1816BED500CD61E6 /* IEDPackageTableDataSource.py in Resources */,
 				66EA72EF17EB25B3009B8350 /* DMG Placeholder.png in Resources */,
 				669DBBF718069EEC001F909B /* IEDSocketListener.py in Resources */,
 				66EA72F117EB2ECB009B8350 /* IEDController.py in Resources */,
+				05429D7B1816BE9900CD61E6 /* IEDUpdateTableDataSource.py in Resources */,
 				0506B97C17F0849C0011CCC2 /* AutoDMG.iconset in Resources */,
 				66EA72E317EB1587009B8350 /* IEDAppDelegate.py in Resources */,
 				665E92871815B07A00A8F683 /* UpdateProfiles.plist in Resources */,
