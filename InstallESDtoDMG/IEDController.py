@@ -301,8 +301,16 @@ class IEDController(NSObject):
             self.buildProgressBar.stopAnimation_(self)
             self.setUIEnabled_(True)
             self.progressWindow.orderOut_(self)
-            fileURL = NSURL.fileURLWithPath_(self.destinationPath)
-            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
+            self.mainWindow.makeKeyAndOrderFront_(self)
+            alert = NSAlert.alloc().init()
+            alert.setMessageText_(u"Build successful")
+            alert.setInformativeText_(u"Built %s" % os.path.basename(self.destinationPath))
+            alert.addButtonWithTitle_(u"OK")
+            alert.addButtonWithTitle_(u"Reveal")
+            button = alert.runModal()
+            if button == NSAlertSecondButtonReturn:
+                fileURL = NSURL.fileURLWithPath_(self.destinationPath)
+                NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
         else:
             NSLog(u"No next task for task %d", self.currentTask)
     
@@ -322,6 +330,7 @@ class IEDController(NSObject):
         
         self.startTaskProgress()
         self.progressWindow.makeKeyAndOrderFront_(self)
+        self.mainWindow.orderOut_(self)
         
         self.packagesToInstall = [{
             u"path": os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"),
