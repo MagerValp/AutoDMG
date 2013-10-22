@@ -35,10 +35,10 @@ class IEDController(NSObject):
     sourceView = IBOutlet()
     sourceLabel = IBOutlet()
     
-    applyCheckbox = IBOutlet()
+    applyUpdatesCheckbox = IBOutlet()
     updateTable = IBOutlet()
     updateTableLabel = IBOutlet()
-    updateDownloadButton = IBOutlet()
+    downloadButton = IBOutlet()
     
     additionalPackagesTable = IBOutlet()
     
@@ -117,6 +117,17 @@ class IEDController(NSObject):
             alert.setInformativeText_(text)
             alert.runModal()
     
+    # Manage updates.
+    
+    @IBAction
+    def downloadButtonClicked_(self, sender):
+        alert = NSAlert.alloc().init()
+        alert.setMessageText_(u"Not implemented")
+        alert.setInformativeText_(u"You can drop updates named as their sha1 checksum " \
+                                  u"in ~/Library/Application Support/AutoDMG/Updates though " \
+                                  u"if you want to test it.")
+        alert.runModal()
+    
     # A long chain of methods to accept a new dropped installer.
     
     def acceptSource_(self, path):
@@ -178,6 +189,8 @@ class IEDController(NSObject):
                 self.updateTable.reloadData()
                 if self.updateTableDataSource.downloadCount == 0:
                     self.updateTableLabel.setStringValue_(u"All updates downloaded")
+                    self.updateTableLabel.setTextColor_(NSColor.disabledControlTextColor())
+                    self.downloadButton.setEnabled_(False)
                 else:
                     niceSize = float(self.updateTableDataSource.downloadSize)
                     unitIndex = 0
@@ -185,8 +198,11 @@ class IEDController(NSObject):
                         niceSize /= 1000.0
                         unitIndex += 1
                     sizeStr = u"%.1f %s" % (niceSize, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
-                    downloadLabel = u"%d updates to download (%s)" % (self.updateTableDataSource.downloadCount, sizeStr)
+                    plurals = u"s" if self.updateTableDataSource.downloadCount >= 2 else u""
+                    downloadLabel = u"%d update%s to download (%s)" % (self.updateTableDataSource.downloadCount, plurals, sizeStr)
                     self.updateTableLabel.setStringValue_(downloadLabel)
+                    self.updateTableLabel.setTextColor_(NSColor.controlTextColor())
+                    self.downloadButton.setEnabled_(True)
             else:
                 self.failSourceWithMessage_informativeText_(u"Version mismatch",
                                                             u"The major version of the installer and the current OS must match.")
@@ -243,7 +259,7 @@ class IEDController(NSObject):
             self.updatePackageProgressName_num_(args[u"name"], args[u"num"])
         elif args[u"action"] == u"update_package_progress":
             if self.packageNum > 0:
-                previousPackagesSize = sum(self.actionWeight[0:self.packageNum])
+                previousPackagesSize = sum(pkg[u"size"] for pkg in self.packagesToInstall[0:self.packageNum])
             else:
                 previousPackagesSize = 0.0
             self.progress = 100.0 * (args[u"percent"] * self.packagesToInstall[self.packageNum][u"size"] / 100.0 + previousPackagesSize) / self.totalPackagesSize
@@ -333,15 +349,24 @@ class IEDController(NSObject):
         self.mainWindow.orderOut_(self)
         
         self.packagesToInstall = [{
+            u"name": u"System",
             u"path": os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"),
             u"size": float(4 * 1024 * 1024 * 1024),
         }]
         for path in self.packageTableDataSource.packagePaths():
             self.buildProgressMessage.setStringValue_(u"Examining %s" % os.path.basename(path))
             self.packagesToInstall.append({
+                u"name": os.path.basename(path),
                 u"path": path,
                 u"size": self.getPackageSize_(path),
             })
+        if self.applyUpdatesCheckbox.state() == NSOnState:
+            for update in self.updateTableDataSource.updates:
+                self.packagesToInstall.append({
+                    u"name": update[u"name"],
+                    u"path": self.updateCache.getUpdatePath_(update[u"sha1"]),
+                    u"size": update[u"size"],
+                })
         self.totalPackagesSize = sum(pkg[u"size"] for pkg in self.packagesToInstall)
         
         args = [

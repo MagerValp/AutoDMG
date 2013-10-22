@@ -275,16 +275,16 @@
         <customObject id="Fjw-V3-78e" customClass="IEDController">
             <connections>
                 <outlet property="additionalPackagesTable" destination="6Sp-nj-RjN" id="TLS-Y4-Z8u"/>
-                <outlet property="applyCheckbox" destination="McB-JN-3Nl" id="cYR-S3-SR3"/>
+                <outlet property="applyUpdatesCheckbox" destination="McB-JN-3Nl" id="ZTJ-V7-2EO"/>
                 <outlet property="buildButton" destination="SWc-Vc-hQ7" id="5Km-y0-cvU"/>
                 <outlet property="buildProgressBar" destination="kSx-qn-4R4" id="Rr9-Gz-YWF"/>
                 <outlet property="buildProgressFilename" destination="CnB-E1-jre" id="gYV-h9-W2W"/>
                 <outlet property="buildProgressMessage" destination="aFM-jG-IAT" id="Wbv-Ke-9p6"/>
+                <outlet property="downloadButton" destination="OHd-Ex-bAG" id="M3b-0v-4VJ"/>
                 <outlet property="mainWindow" destination="GmA-Xb-izQ" id="JNO-Fx-207"/>
                 <outlet property="progressWindow" destination="Xho-YZ-fRH" id="K7Y-NY-u45"/>
                 <outlet property="sourceLabel" destination="0RU-gN-IOh" id="EzK-O3-MsB"/>
                 <outlet property="sourceView" destination="Cmr-I4-xoi" id="R4J-gU-Bjc"/>
-                <outlet property="updateDownloadButton" destination="OHd-Ex-bAG" id="1Jb-Vc-Zof"/>
                 <outlet property="updateTable" destination="n3O-FC-EWE" id="RbL-xJ-gCg"/>
                 <outlet property="updateTableLabel" destination="4rx-Ot-vuB" id="9B1-u0-J9B"/>
             </connections>
@@ -371,7 +371,7 @@
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Installer Placeholder" id="RE6-zK-dbt"/>
                                 </imageView>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0RU-gN-IOh">
-                                    <rect key="frame" x="117" y="51" width="239" height="17"/>
+                                    <rect key="frame" x="108" y="51" width="248" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Mac OS X 10.x 12A123" id="4bI-t5-Kdi">
                                         <font key="font" metaFont="system"/>
@@ -394,7 +394,7 @@
                                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="McB-JN-3Nl">
                                     <rect key="frame" x="16" y="153" width="339" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <buttonCell key="cell" type="check" title="Apply updates (unimplemented)" bezelStyle="regularSquare" imagePosition="left" enabled="NO" inset="2" id="Peq-5t-XRB">
+                                    <buttonCell key="cell" type="check" title="Apply updates" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Peq-5t-XRB">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -452,7 +452,7 @@
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4rx-Ot-vuB">
                                     <rect key="frame" x="15" y="16" width="247" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" enabled="NO" sendsActionOnEndEditing="YES" title="All updates downloaded" id="mCZ-k4-COV">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" enabled="NO" sendsActionOnEndEditing="YES" id="mCZ-k4-COV">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -465,6 +465,9 @@
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
+                                    <connections>
+                                        <action selector="downloadButtonClicked:" target="Fjw-V3-78e" id="aij-v6-clH"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </view>
