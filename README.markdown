@@ -7,7 +7,7 @@ AutoDMG takes an OS X installer and builds a system image, suitable for deployme
 Download
 --------
 
-[AutoDMG-0.6.dmg](https://no.download.link/yet)
+[AutoDMG-0.6.dmg](http://galaga.hg5.gu.se/AutoDMG-0.6.dmg)
 
 
 Version History
@@ -15,7 +15,7 @@ Version History
 
 * 0.6
     * Renamed to AutoDMG.
-    * New GUI.
+    * New GUI and support for additional package installations.
 * 0.5.1
     * Fixed extra package installation (thanks Greg Neagle).
 * 0.5
