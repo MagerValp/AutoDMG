@@ -3,7 +3,7 @@
 #  IEDController.py
 #  InstallESDtoDMG
 #
-#  Created by Pelle on 2013-09-19.
+#  Created by Per Olofsson on 2013-09-19.
 #  Copyright Per Olofsson, University of Gothenburg 2013. All rights reserved.
 #
 
@@ -17,6 +17,10 @@ import platform
 import subprocess
 from IEDSocketListener import *
 from IEDDMGHelper import *
+from IEDProfileController import *
+from IEDUpdateCache import *
+from IEDUpdateTableDataSource import *
+from IEDPackageTableDataSource import *
 
 
 IEDTaskNone = 0
@@ -26,18 +30,22 @@ IEDTaskImageScan = 2
 
 class IEDController(NSObject):
     
-    window = IBOutlet()
+    mainWindow = IBOutlet()
     
     sourceView = IBOutlet()
     sourceLabel = IBOutlet()
     
-    profileDropdown = IBOutlet()
+    applyCheckbox = IBOutlet()
+    updateTable = IBOutlet()
+    updateTableLabel = IBOutlet()
+    updateDownloadButton = IBOutlet()
     
-    destinationView = IBOutlet()
-    destinationLabel = IBOutlet()
+    additionalPackagesTable = IBOutlet()
     
     buildButton = IBOutlet()
     
+    progressWindow = IBOutlet()
+    buildProgressFilename = IBOutlet()
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
     
@@ -53,10 +61,23 @@ class IEDController(NSObject):
         self.buildProgressMessage.setStringValue_(u"")
         self.openListenerSocket()
         self.dmgHelper = IEDDMGHelper.alloc().init()
+        
+        # Updates.
+        self.profileController = IEDProfileController.alloc().init()
+        self.updateCache = IEDUpdateCache.alloc().init()
+        utc = IEDUpdateTableDataSource.alloc()
+        self.updateTableDataSource = utc.initWithProfileController_updateCache_(self.profileController,
+                                                                                self.updateCache)
+        self.updateTable.setDataSource_(self.updateTableDataSource)
+        
+        # Additional packages.
+        self.packageTableDataSource = IEDPackageTableDataSource.alloc().init()
+        self.additionalPackagesTable.setDataSource_(self.packageTableDataSource)
+        self.additionalPackagesTable.registerForDraggedTypes_([NSFilenamesPboardType, NSStringPboardType])
+        
         self.installerMountPoint = None
         self.currentTask = IEDTaskNone
         self.packagesToInstall = list()
-        self.extraPackagesToInstall = list()
     
     def windowWillClose_(self, notification):
         self.closeListenerSocket()
@@ -153,6 +174,19 @@ class IEDController(NSObject):
                     self.dmgHelper.detach_withTarget_selector_(result[u"dmg-path"],
                                                                self,
                                                                self.handleDetachResult_)
+                self.updateTableDataSource.loadProfileForVersion_build_(version, build)
+                self.updateTable.reloadData()
+                if self.updateTableDataSource.downloadCount == 0:
+                    self.updateTableLabel.setStringValue_(u"All updates downloaded")
+                else:
+                    niceSize = float(self.updateTableDataSource.downloadSize)
+                    unitIndex = 0
+                    while len(str(int(niceSize))) > 3:
+                        niceSize /= 1000.0
+                        unitIndex += 1
+                    sizeStr = u"%.1f %s" % (niceSize, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+                    downloadLabel = u"%d updates to download (%s)" % (self.updateTableDataSource.downloadCount, sizeStr)
+                    self.updateTableLabel.setStringValue_(downloadLabel)
             else:
                 self.failSourceWithMessage_informativeText_(u"Version mismatch",
                                                             u"The major version of the installer and the current OS must match.")
@@ -171,8 +205,8 @@ class IEDController(NSObject):
             alert.runModal()
     
     def setUIEnabled_(self, enabled):
+        self.mainWindow.standardWindowButton_(NSWindowCloseButton).setEnabled_(enabled)
         self.buildButton.setEnabled_(enabled)
-        self.profileDropdown.setEnabled_(enabled)
     
     def updateProgress(self):
         if self.progress is None:
@@ -254,7 +288,7 @@ class IEDController(NSObject):
                 NSApp.presentError_(error)
                 return
         
-        self.destinationLabel.setStringValue_(os.path.basename(panel.URL().path()))
+        self.buildProgressFilename.setStringValue_(os.path.basename(panel.URL().path()))
         self.startTaskInstall_(panel.URL().path())
     
     def startNextTask(self):
@@ -266,23 +300,41 @@ class IEDController(NSObject):
             self.updateProgress()
             self.buildProgressBar.stopAnimation_(self)
             self.setUIEnabled_(True)
+            self.progressWindow.orderOut_(self)
             fileURL = NSURL.fileURLWithPath_(self.destinationPath)
             NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
         else:
             NSLog(u"No next task for task %d", self.currentTask)
     
+    def getPackageSize_(self, path):
+        p = subprocess.Popen([u"/usr/bin/du", u"-sk", path],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            NSLog(u"du failed with exit code %d", p.returncode)
+        else:
+            return int(out.split()[0]) * 1024
+    
     def startTaskInstall_(self, destinationPath):
         self.destinationPath = destinationPath
         self.currentTask = IEDTaskInstall
+        
+        self.startTaskProgress()
+        self.progressWindow.makeKeyAndOrderFront_(self)
         
         self.packagesToInstall = [{
             u"path": os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"),
             u"size": float(4 * 1024 * 1024 * 1024),
         }]
-        self.packagesToInstall.extend(self.extraPackagesToInstall)
+        for path in self.packageTableDataSource.packagePaths():
+            self.buildProgressMessage.setStringValue_(u"Examining %s" % os.path.basename(path))
+            self.packagesToInstall.append({
+                u"path": path,
+                u"size": self.getPackageSize_(path),
+            })
         self.totalPackagesSize = sum(pkg[u"size"] for pkg in self.packagesToInstall)
         
-        self.startTaskProgress()
         args = [
             NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
             u"--cd", NSBundle.mainBundle().resourcePath(),
@@ -292,6 +344,7 @@ class IEDController(NSObject):
             u"--group", grp.getgrgid(os.getgid()).gr_name,
             u"--output", self.destinationPath,
         ] + [pkg[u"path"] for pkg in self.packagesToInstall]
+        NSLog(u"%@", args)
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
     
     def launchScript_(self, args):

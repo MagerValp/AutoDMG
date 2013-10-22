@@ -1,18 +1,21 @@
-InstallESDtoDMG
-===============
+AutoDMG
+=======
 
-InstallESDtoDMG takes an OS X installer and builds a system image, suitable for deployment with DeployStudio or Absolute Manage.
+AutoDMG takes an OS X installer and builds a system image, suitable for deployment with DeployStudio or Absolute Manage.
 
 
 Download
 --------
 
-[InstallESDtoDMG-0.5.1.dmg](https://www.dropbox.com/s/j8ik0h3n1ck6jl6/InstallESDtoDMG-0.5.1.dmg)
+[AutoDMG-0.6.dmg](https://no.download.link/yet)
 
 
 Version History
 ---------------
 
+* 0.6
+    * Renamed to AutoDMG.
+    * New GUI.
 * 0.5.1
     * Fixed extra package installation (thanks Greg Neagle).
 * 0.5

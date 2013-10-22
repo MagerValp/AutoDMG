@@ -3,7 +3,7 @@
 #  main.py
 #  InstallESDtoDMG
 #
-#  Created by Pelle on 2013-09-19.
+#  Created by Per Olofsson on 2013-09-19.
 #  Copyright Per Olofsson, University of Gothenburg 2013. All rights reserved.
 #
 
@@ -20,6 +20,8 @@ import IEDController
 import IEDSourceSelector
 import IEDSocketListener
 import IEDDMGHelper
+import IEDProfileController
+import IEDUpdateCache
 
 # pass control to AppKit
 AppHelper.runEventLoop()

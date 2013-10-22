@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>profiles</key>
+	<dict>
+		<key>10.8.5-12F37</key>
+		<array>
+			<string>supplemental1085</string>
+			<string>itunes</string>
+			<string>airportutil</string>
+		</array>
+		<key>10.8.5-12F45</key>
+		<array>
+			<string>itunes</string>
+			<string>airportutil</string>
+		</array>
+		<key>10.9-13A598</key>
+		<array>
+			<string>itunes</string>
+			<string>airportutil</string>
+		</array>
+		<key>10.9-13A603</key>
+		<array>
+			<string>itunes</string>
+			<string>airportutil</string>
+		</array>
+	</dict>
+	<key>updates</key>
+	<dict>
+		<key>supplemental1085</key>
+		<dict>
+			<key>checksum</key>
+			<string>sha1:18636c06f0db5b326752628fb7a2dfa3ce077ae1</string>
+			<key>name</key>
+			<string>OS X Mountain Lion 10.8.5 Supplemental Update</string>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1686/en_US/OSXUpd10.8.5Supp.dmg</string>
+		</dict>
+		<key>itunes</key>
+		<dict>
+			<key>checksum</key>
+			<string>sha1:66b75a92d234affaed19484810d8dc53ed4608dd</string>
+			<key>name</key>
+			<string>iTunes 11.1.1</string>
+			<key>url</key>
+			<string>https://secure-appldnld.apple.com/iTunes11/091-9970.20131002.r3miz/iTunes11.1.1.dmg</string>
+		</dict>
+		<key>airportutil</key>
+		<dict>
+			<key>checksum</key>
+			<string>sha1:7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
+			<key>name</key>
+			<string>AirPort Utility 6.3.1 for Mac</string>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
