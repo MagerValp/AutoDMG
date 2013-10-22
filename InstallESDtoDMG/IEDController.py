@@ -26,10 +26,10 @@ IEDTaskInstall = 1
 IEDTaskImageScan = 2
 
 
-class IEDUpdateTableController(NSObject):
+class IEDUpdateTableDataSource(NSObject):
     
     def initWithProfileController_updateCache_(self, pc, cache):
-        self = super(IEDUpdateTableController, self).init()
+        self = super(IEDUpdateTableDataSource, self).init()
         if self is None:
             return None
         
@@ -72,6 +72,76 @@ class IEDUpdateTableController(NSObject):
             return self.updates[row][u"name"]
 
 
+class IEDPackageTableDataSource(NSObject):
+    
+    def init(self):
+        self = super(IEDPackageTableDataSource, self).init()
+        if self is None:
+            return None
+        
+        self.packages = list()
+        self.pkgImage = NSImage.imageNamed_(u"Package")
+        
+        return self
+    
+    def packagePaths(self):
+        return [pkg[u"path"] for pkg in self.packages]
+    
+    def numberOfRowsInTableView_(self, tableView):
+        return len(self.packages)
+    
+    def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
+        return self.packages[row][column.identifier()]
+    
+    def tableView_setObjectValue_forTableColumn_row_(self, tableView, obj, column, row):
+        self.packages.insert(row, obj)
+    
+    def tableView_validateDrop_proposedRow_proposedDropOperation_(self, tableView, info, row, operation):
+        if info.draggingSource() == tableView:
+            return NSDragOperationMove
+        pboard = info.draggingPasteboard()
+        paths = pboard.propertyListForType_(NSFilenamesPboardType)
+        if not paths:
+            return NSDragOperationNone
+        for path in paths:
+            name, ext = os.path.splitext(path)
+            if ext.lower() not in (u".pkg", u".mpkg"):
+                return NSDragOperationNone
+        return NSDragOperationCopy
+    
+    def tableView_acceptDrop_row_dropOperation_(self, tableView, info, row, operation):
+        pboard = info.draggingPasteboard()
+        # If the source is the tableView, we're reordering packages within the
+        # table and the pboard contains the source row indices.
+        if info.draggingSource() == tableView:
+            indices = [int(i) for i in pboard.propertyListForType_(NSStringPboardType).split(u",")]
+            for i in indices:
+                self.packages[row], self.packages[i] = self.packages[i], self.packages[row]
+        else:
+            # Otherwise it's a list of paths to add to the table.
+            paths = pboard.propertyListForType_(NSFilenamesPboardType)
+            for path in paths:
+                package = {
+                    u"image": NSWorkspace.sharedWorkspace().iconForFile_(path),
+                    u"path": path,
+                    u"name": os.path.basename(path),
+                }
+                self.packages.insert(row, package)
+        tableView.reloadData()
+        return True
+    
+    def tableView_writeRowsWithIndexes_toPasteboard_(self, tableView, rowIndexes, pboard):
+        # When reordering packages put a list of indices as a string onto the pboard.
+        indices = list()
+        index = rowIndexes.firstIndex()
+        while index != NSNotFound:
+            indices.append(index)
+            index = rowIndexes.indexGreaterThanIndex_(index)
+        pboard.declareTypes_owner_([NSStringPboardType], self)
+        pboard.setPropertyList_forType_(u",".join(unicode(i) for i in indices), NSStringPboardType)
+        return True
+
+
 class IEDController(NSObject):
     
     mainWindow = IBOutlet()
@@ -105,16 +175,23 @@ class IEDController(NSObject):
         self.buildProgressMessage.setStringValue_(u"")
         self.openListenerSocket()
         self.dmgHelper = IEDDMGHelper.alloc().init()
+        
+        # Updates.
         self.profileController = IEDProfileController.alloc().init()
         self.updateCache = IEDUpdateCache.alloc().init()
-        utc = IEDUpdateTableController.alloc()
-        self.updateTableController = utc.initWithProfileController_updateCache_(self.profileController,
+        utc = IEDUpdateTableDataSource.alloc()
+        self.updateTableDataSource = utc.initWithProfileController_updateCache_(self.profileController,
                                                                                 self.updateCache)
-        self.updateTable.setDataSource_(self.updateTableController)
+        self.updateTable.setDataSource_(self.updateTableDataSource)
+        
+        # Additional packages.
+        self.packageTableDataSource = IEDPackageTableDataSource.alloc().init()
+        self.additionalPackagesTable.setDataSource_(self.packageTableDataSource)
+        self.additionalPackagesTable.registerForDraggedTypes_([NSFilenamesPboardType, NSStringPboardType])
+        
         self.installerMountPoint = None
         self.currentTask = IEDTaskNone
         self.packagesToInstall = list()
-        self.extraPackagesToInstall = list()
     
     def windowWillClose_(self, notification):
         self.closeListenerSocket()
@@ -211,18 +288,18 @@ class IEDController(NSObject):
                     self.dmgHelper.detach_withTarget_selector_(result[u"dmg-path"],
                                                                self,
                                                                self.handleDetachResult_)
-                self.updateTableController.loadProfileForVersion_build_(version, build)
+                self.updateTableDataSource.loadProfileForVersion_build_(version, build)
                 self.updateTable.reloadData()
-                if self.updateTableController.downloadCount == 0:
+                if self.updateTableDataSource.downloadCount == 0:
                     self.updateTableLabel.setStringValue_(u"All updates downloaded")
                 else:
-                    niceSize = float(self.updateTableController.downloadSize)
+                    niceSize = float(self.updateTableDataSource.downloadSize)
                     unitIndex = 0
                     while len(str(int(niceSize))) > 3:
                         niceSize /= 1000.0
                         unitIndex += 1
                     sizeStr = u"%.1f %s" % (niceSize, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
-                    downloadLabel = u"%d updates to download (%s)" % (self.updateTableController.downloadCount, sizeStr)
+                    downloadLabel = u"%d updates to download (%s)" % (self.updateTableDataSource.downloadCount, sizeStr)
                     self.updateTableLabel.setStringValue_(downloadLabel)
             else:
                 self.failSourceWithMessage_informativeText_(u"Version mismatch",
@@ -343,19 +420,35 @@ class IEDController(NSObject):
         else:
             NSLog(u"No next task for task %d", self.currentTask)
     
+    def getPackageSize_(self, path):
+        p = subprocess.Popen([u"/usr/bin/du", u"-sk", path],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            NSLog(u"du failed with exit code %d", p.returncode)
+        else:
+            return int(out.split()[0]) * 1024
+    
     def startTaskInstall_(self, destinationPath):
         self.destinationPath = destinationPath
         self.currentTask = IEDTaskInstall
+        
+        self.startTaskProgress()
+        self.progressWindow.makeKeyAndOrderFront_(self)
         
         self.packagesToInstall = [{
             u"path": os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"),
             u"size": float(4 * 1024 * 1024 * 1024),
         }]
-        self.packagesToInstall.extend(self.extraPackagesToInstall)
+        for path in self.packageTableDataSource.packagePaths():
+            self.buildProgressMessage.setStringValue_(u"Examining %s" % os.path.basename(path))
+            self.packagesToInstall.append({
+                u"path": path,
+                u"size": self.getPackageSize_(path),
+            })
         self.totalPackagesSize = sum(pkg[u"size"] for pkg in self.packagesToInstall)
         
-        self.startTaskProgress()
-        self.progressWindow.makeKeyAndOrderFront_(self)
         args = [
             NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
             u"--cd", NSBundle.mainBundle().resourcePath(),
@@ -365,6 +458,7 @@ class IEDController(NSObject):
             u"--group", grp.getgrgid(os.getgid()).gr_name,
             u"--output", self.destinationPath,
         ] + [pkg[u"path"] for pkg in self.packagesToInstall]
+        NSLog(u"%@", args)
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
     
     def launchScript_(self, args):
