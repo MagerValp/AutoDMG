@@ -17,11 +17,59 @@ import platform
 import subprocess
 from IEDSocketListener import *
 from IEDDMGHelper import *
+from IEDProfileController import *
+from IEDUpdateCache import *
 
 
 IEDTaskNone = 0
 IEDTaskInstall = 1
 IEDTaskImageScan = 2
+
+
+class IEDUpdateTableController(NSObject):
+    
+    def initWithProfileController_updateCache_(self, pc, cache):
+        self = super(IEDUpdateTableController, self).init()
+        if self is None:
+            return None
+        
+        self.profileController = pc
+        self.updateCache = cache
+        self.updates = list()
+        self.downloadSize = 0
+        self.downloadCount = 0
+        
+        self.cachedImage = NSImage.imageNamed_(u"Package")
+        self.uncachedImage = NSImage.imageNamed_(u"Package blue arrow")
+        
+        return self
+    
+    def loadProfileForVersion_build_(self, version, build):
+        profile = self.profileController.profileForVersion_Build_(version, build)
+        if profile:
+            self.updates = profile
+        else:
+            self.updates = list()
+        self.countDownloads()
+    
+    def countDownloads(self):
+        for update in self.updates:
+            if not self.updateCache.isCached_(update[u"sha1"]):
+                self.downloadCount += 1
+                self.downloadSize += update[u"size"]
+    
+    def numberOfRowsInTableView_(self, tableView):
+        return len(self.updates)
+    
+    def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
+        if column.identifier() == u"image":
+            update = self.updates[row]
+            if self.updateCache.isCached_(update[u"sha1"]):
+                return self.cachedImage
+            else:
+                return self.uncachedImage
+        elif column.identifier() == u"name":
+            return self.updates[row][u"name"]
 
 
 class IEDController(NSObject):
@@ -33,6 +81,7 @@ class IEDController(NSObject):
     
     applyCheckbox = IBOutlet()
     updateTable = IBOutlet()
+    updateTableLabel = IBOutlet()
     updateDownloadButton = IBOutlet()
     
     additionalPackagesTable = IBOutlet()
@@ -56,6 +105,12 @@ class IEDController(NSObject):
         self.buildProgressMessage.setStringValue_(u"")
         self.openListenerSocket()
         self.dmgHelper = IEDDMGHelper.alloc().init()
+        self.profileController = IEDProfileController.alloc().init()
+        self.updateCache = IEDUpdateCache.alloc().init()
+        utc = IEDUpdateTableController.alloc()
+        self.updateTableController = utc.initWithProfileController_updateCache_(self.profileController,
+                                                                                self.updateCache)
+        self.updateTable.setDataSource_(self.updateTableController)
         self.installerMountPoint = None
         self.currentTask = IEDTaskNone
         self.packagesToInstall = list()
@@ -156,6 +211,19 @@ class IEDController(NSObject):
                     self.dmgHelper.detach_withTarget_selector_(result[u"dmg-path"],
                                                                self,
                                                                self.handleDetachResult_)
+                self.updateTableController.loadProfileForVersion_build_(version, build)
+                self.updateTable.reloadData()
+                if self.updateTableController.downloadCount == 0:
+                    self.updateTableLabel.setStringValue_(u"All updates downloaded")
+                else:
+                    niceSize = float(self.updateTableController.downloadSize)
+                    unitIndex = 0
+                    while len(str(int(niceSize))) > 3:
+                        niceSize /= 1000.0
+                        unitIndex += 1
+                    sizeStr = u"%.1f %s" % (niceSize, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+                    downloadLabel = u"%d updates to download (%s)" % (self.updateTableController.downloadCount, sizeStr)
+                    self.updateTableLabel.setStringValue_(downloadLabel)
             else:
                 self.failSourceWithMessage_informativeText_(u"Version mismatch",
                                                             u"The major version of the installer and the current OS must match.")

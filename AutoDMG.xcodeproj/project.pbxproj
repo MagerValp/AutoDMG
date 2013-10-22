@@ -10,6 +10,13 @@
 		0506B97C17F0849C0011CCC2 /* AutoDMG.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */; };
 		051B177117F446560026E12B /* progresswatcher.py in Resources */ = {isa = PBXBuildFile; fileRef = 051B177017F446560026E12B /* progresswatcher.py */; };
 		052DBB2517F1D7FE0038FE51 /* test.sh in Resources */ = {isa = PBXBuildFile; fileRef = 052DBB2417F1D7FE0038FE51 /* test.sh */; };
+		05429D761816715300CD61E6 /* Package blue arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D721816715300CD61E6 /* Package blue arrow.png */; };
+		05429D771816715300CD61E6 /* Package blue arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D731816715300CD61E6 /* Package blue arrow@2x.png */; };
+		05429D781816715300CD61E6 /* Package.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D741816715300CD61E6 /* Package.png */; };
+		05429D791816715300CD61E6 /* Package@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D751816715300CD61E6 /* Package@2x.png */; };
+		6612F06018164BC500655C8B /* IEDUpdateCache.py in Resources */ = {isa = PBXBuildFile; fileRef = 6612F05F18164BC500655C8B /* IEDUpdateCache.py */; };
+		665E928518159C1A00A8F683 /* IEDProfileController.py in Resources */ = {isa = PBXBuildFile; fileRef = 665E928418159C1A00A8F683 /* IEDProfileController.py */; };
+		665E92871815B07A00A8F683 /* UpdateProfiles.plist in Resources */ = {isa = PBXBuildFile; fileRef = 665E92861815B07A00A8F683 /* UpdateProfiles.plist */; };
 		669ADA3D18126E1D002CE331 /* IEDDMGHelper.py in Resources */ = {isa = PBXBuildFile; fileRef = 669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */; };
 		669DBBF718069EEC001F909B /* IEDSocketListener.py in Resources */ = {isa = PBXBuildFile; fileRef = 669DBBF618069EEC001F909B /* IEDSocketListener.py */; };
 		66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CC17EB1586009B8350 /* Cocoa.framework */; };
@@ -31,6 +38,13 @@
 		0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AutoDMG.iconset; sourceTree = "<group>"; };
 		051B177017F446560026E12B /* progresswatcher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = progresswatcher.py; sourceTree = "<group>"; };
 		052DBB2417F1D7FE0038FE51 /* test.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
+		05429D721816715300CD61E6 /* Package blue arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package blue arrow.png"; sourceTree = "<group>"; };
+		05429D731816715300CD61E6 /* Package blue arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package blue arrow@2x.png"; sourceTree = "<group>"; };
+		05429D741816715300CD61E6 /* Package.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Package.png; sourceTree = "<group>"; };
+		05429D751816715300CD61E6 /* Package@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package@2x.png"; sourceTree = "<group>"; };
+		6612F05F18164BC500655C8B /* IEDUpdateCache.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUpdateCache.py; sourceTree = "<group>"; };
+		665E928418159C1A00A8F683 /* IEDProfileController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDProfileController.py; sourceTree = "<group>"; };
+		665E92861815B07A00A8F683 /* UpdateProfiles.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = UpdateProfiles.plist; sourceTree = "<group>"; };
 		669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDDMGHelper.py; sourceTree = "<group>"; };
 		669DBBF618069EEC001F909B /* IEDSocketListener.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDSocketListener.py; sourceTree = "<group>"; };
 		66EA72C917EB1586009B8350 /* AutoDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,8 +126,10 @@
 				66EA72E017EB1587009B8350 /* main.py */,
 				66EA72E217EB1587009B8350 /* IEDAppDelegate.py */,
 				66EA72F017EB2ECB009B8350 /* IEDController.py */,
+				6612F05F18164BC500655C8B /* IEDUpdateCache.py */,
 				66EA72F217EB3B40009B8350 /* IEDSourceSelector.py */,
 				66EA72E417EB1587009B8350 /* MainMenu.xib */,
+				665E928418159C1A00A8F683 /* IEDProfileController.py */,
 				66EA72D517EB1586009B8350 /* Supporting Files */,
 			);
 			name = AutoDMG;
@@ -123,6 +139,10 @@
 		66EA72D517EB1586009B8350 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				05429D721816715300CD61E6 /* Package blue arrow.png */,
+				05429D731816715300CD61E6 /* Package blue arrow@2x.png */,
+				05429D741816715300CD61E6 /* Package.png */,
+				05429D751816715300CD61E6 /* Package@2x.png */,
 				0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */,
 				051B177017F446560026E12B /* progresswatcher.py */,
 				66EA72F417EC764B009B8350 /* installesdtodmg.sh */,
@@ -134,6 +154,7 @@
 				66EA72DA17EB1586009B8350 /* main.m */,
 				66EA72DC17EB1587009B8350 /* AutoDMG-Prefix.pch */,
 				66EA72DD17EB1587009B8350 /* Credits.rtf */,
+				665E92861815B07A00A8F683 /* UpdateProfiles.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -196,17 +217,24 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05429D761816715300CD61E6 /* Package blue arrow.png in Resources */,
+				05429D771816715300CD61E6 /* Package blue arrow@2x.png in Resources */,
 				052DBB2517F1D7FE0038FE51 /* test.sh in Resources */,
 				669ADA3D18126E1D002CE331 /* IEDDMGHelper.py in Resources */,
 				66EA72E117EB1587009B8350 /* main.py in Resources */,
+				6612F06018164BC500655C8B /* IEDUpdateCache.py in Resources */,
 				66EA72E617EB1587009B8350 /* MainMenu.xib in Resources */,
 				66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */,
+				665E928518159C1A00A8F683 /* IEDProfileController.py in Resources */,
+				05429D791816715300CD61E6 /* Package@2x.png in Resources */,
 				66EA72ED17EB1E09009B8350 /* Installer Placeholder.png in Resources */,
+				05429D781816715300CD61E6 /* Package.png in Resources */,
 				66EA72EF17EB25B3009B8350 /* DMG Placeholder.png in Resources */,
 				669DBBF718069EEC001F909B /* IEDSocketListener.py in Resources */,
 				66EA72F117EB2ECB009B8350 /* IEDController.py in Resources */,
 				0506B97C17F0849C0011CCC2 /* AutoDMG.iconset in Resources */,
 				66EA72E317EB1587009B8350 /* IEDAppDelegate.py in Resources */,
+				665E92871815B07A00A8F683 /* UpdateProfiles.plist in Resources */,
 				66EA72F317EB3B40009B8350 /* IEDSourceSelector.py in Resources */,
 				051B177117F446560026E12B /* progresswatcher.py in Resources */,
 				66EA72DF17EB1587009B8350 /* Credits.rtf in Resources */,
