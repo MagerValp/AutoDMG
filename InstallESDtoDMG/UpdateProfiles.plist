@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>timestamp</key>
+    <date>2013-10-21T12:00:00Z</date>
 	<key>profiles</key>
 	<dict>
 		<key>10.8.5-12F37</key>
@@ -30,8 +32,8 @@
 	<dict>
 		<key>supplemental1085</key>
 		<dict>
-			<key>checksum</key>
-			<string>sha1:18636c06f0db5b326752628fb7a2dfa3ce077ae1</string>
+			<key>sha1</key>
+			<string>18636c06f0db5b326752628fb7a2dfa3ce077ae1</string>
 			<key>name</key>
 			<string>OS X Mountain Lion 10.8.5 Supplemental Update</string>
 			<key>url</key>
@@ -39,8 +41,8 @@
 		</dict>
 		<key>itunes</key>
 		<dict>
-			<key>checksum</key>
-			<string>sha1:66b75a92d234affaed19484810d8dc53ed4608dd</string>
+			<key>sha1</key>
+			<string>66b75a92d234affaed19484810d8dc53ed4608dd</string>
 			<key>name</key>
 			<string>iTunes 11.1.1</string>
 			<key>url</key>
@@ -48,8 +50,8 @@
 		</dict>
 		<key>airportutil</key>
 		<dict>
-			<key>checksum</key>
-			<string>sha1:7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
+			<key>sha1</key>
+			<string>7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
 			<key>name</key>
 			<string>AirPort Utility 6.3.1 for Mac</string>
 			<key>url</key>
