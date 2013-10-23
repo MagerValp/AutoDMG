@@ -140,27 +140,29 @@ class IEDController(NSObject):
             self.downloadProgressBar.setIndeterminate_(False)
             self.downloadProgressBar.setDoubleValue_(0.0)
             self.downloadCounter += 1
-            update = message[u"update"]
-            self.downloadLabel.setStringValue_(u"%d/%d: %s" % (self.downloadCounter,
-                                                               self.downloadNumUpdates,
-                                                               update[u"name"]))
+            self.downloadLabel.setStringValue_(u"Downloading %s" % (message[u"update"][u"name"]))
         elif message[u"action"] == u"alldone":
             self.downloadWindow.orderOut_(self)
             self.updateDownloadState_(True)
         elif message[u"action"] == u"failed":
-            alert = NSAlert.alertWithError_(message[u"error"])
+            alert = NSAlert.alloc().init()
+            alert.setMessageText_(u"Download failed")
+            alert.setInformativeText_(message[u"error-message"])
             alert.runModal()
+            self.downloadWindow.orderOut_(self)
+            self.updateDownloadState_(True)
         elif message[u"action"] == u"response":
             pass
         elif message[u"action"] == u"data":
             percent = 100.0 * message[u"bytes-received"] / message[u"update"][u"size"]
             self.downloadProgressBar.setDoubleValue_(percent)
         elif message[u"action"] == u"checksumming":
-            self.downloadProgressBar.setIndeterminate_(True)
+            self.downloadLabel.setStringValue_(u"Checksumming %s" % (message[u"update"][u"name"]))
+        elif message[u"action"] == u"checksum-progress":
+            percent = 100.0 * message[u"bytes-read"] / message[u"update"][u"size"]
+            self.downloadProgressBar.setDoubleValue_(percent)
         elif message[u"action"] == u"checksum-ok":
             self.updateDownloadState_(False)
-        elif message[u"action"] == u"checksum-failed":
-            pass
         else:
             NSLog(u"notifyDownload: Unrecognized message action: %@", message)
     
