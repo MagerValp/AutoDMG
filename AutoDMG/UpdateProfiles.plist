@@ -2,35 +2,35 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>timestamp</key>
-    <date>2013-10-21T12:00:00Z</date>
-	<key>profiles</key>
+	<key>PublicationDate</key>
+	<date>2013-10-21T12:00:00Z</date>
+	<key>Profiles</key>
 	<dict>
 		<key>10.8.5-12F37</key>
 		<array>
-			<string>supplemental1085</string>
-			<string>itunes</string>
-			<string>airportutil</string>
+			<string>Supplemental-10.8.5</string>
+			<string>iTunes</string>
+			<string>AirPortUtility</string>
 		</array>
 		<key>10.8.5-12F45</key>
 		<array>
-			<string>itunes</string>
-			<string>airportutil</string>
+			<string>iTunes</string>
+			<string>AirPortUtility</string>
 		</array>
 		<key>10.9-13A598</key>
 		<array>
-			<string>itunes</string>
-			<string>airportutil</string>
+			<string>iTunes</string>
+			<string>AirPortUtility</string>
 		</array>
 		<key>10.9-13A603</key>
 		<array>
-			<string>itunes</string>
-			<string>airportutil</string>
+			<string>iTunes</string>
+			<string>AirPortUtility</string>
 		</array>
 	</dict>
-	<key>updates</key>
+	<key>Updates</key>
 	<dict>
-		<key>supplemental1085</key>
+		<key>Supplemental-10.8.5</key>
 		<dict>
 			<key>sha1</key>
 			<string>18636c06f0db5b326752628fb7a2dfa3ce077ae1</string>
@@ -38,8 +38,10 @@
 			<string>OS X Mountain Lion 10.8.5 Supplemental Update</string>
 			<key>url</key>
 			<string>http://support.apple.com/downloads/DL1686/en_US/OSXUpd10.8.5Supp.dmg</string>
+			<key>size</key>
+			<integer>19648899</integer>
 		</dict>
-		<key>itunes</key>
+		<key>iTunes</key>
 		<dict>
 			<key>sha1</key>
 			<string>66b75a92d234affaed19484810d8dc53ed4608dd</string>
@@ -47,8 +49,10 @@
 			<string>iTunes 11.1.1</string>
 			<key>url</key>
 			<string>https://secure-appldnld.apple.com/iTunes11/091-9970.20131002.r3miz/iTunes11.1.1.dmg</string>
+			<key>size</key>
+			<integer>225609082</integer>
 		</dict>
-		<key>airportutil</key>
+		<key>AirPortUtility</key>
 		<dict>
 			<key>sha1</key>
 			<string>7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
@@ -56,6 +60,8 @@
 			<string>AirPort Utility 6.3.1 for Mac</string>
 			<key>url</key>
 			<string>http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg</string>
+			<key>size</key>
+			<integer>22480138</integer>
 		</dict>
 	</dict>
 </dict>
