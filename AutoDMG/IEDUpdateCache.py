@@ -18,25 +18,6 @@ class IEDUpdateCache(NSObject):
         if self is None:
             return None
         
-        self.updates = {
-            u"18636c06f0db5b326752628fb7a2dfa3ce077ae1": {
-                u"name": u"OS X Mountain Lion 10.8.5 Supplemental Update",
-                u"size": 19648899,
-            },
-            u"66b75a92d234affaed19484810d8dc53ed4608dd": {
-                u"name": u"iTunes 11.1.1",
-                u"size": 225609082,
-            },
-            u"ce78f9a916b91ec408c933bd0bde5973ca8a2dc4": {
-                u"name": u"Java for OS X 2013-005",
-                u"size": 67090041,
-            },
-            u"7cb449454ef5c2cf478a2a5394f652a9705c9481": {
-                u"name": u"AirPort Utility 6.3.1 for Mac",
-                u"size": 22480138,
-            },
-        }
-        
         fm = NSFileManager.defaultManager()
         url, error = fm.URLForDirectory_inDomain_appropriateForURL_create_error_(NSApplicationSupportDirectory,
                                                                                  NSUserDomainMask,
@@ -52,10 +33,66 @@ class IEDUpdateCache(NSObject):
         return self
     
     def isCached_(self, sha1):
-        return sha1 in self.updates and os.path.exists(self.getUpdatePath_(sha1))
+        return os.path.exists(self.getUpdatePath_(sha1))
     
     def getUpdatePath_(self, sha1):
-        if sha1 in self.updates:
-            return os.path.join(self.updateDir, sha1)
+        return os.path.join(self.updateDir, sha1)
+    
+    def downloadUpdates_withTarget_selector_(self, updates, target, selector):
+        self.target = target
+        self.selector = selector
+        self.updates = updates
+        self.downloadNextUpdate()
+    
+    def downloadNextUpdate(self):
+        if self.updates:
+            self.update = self.updates.pop(0)
+            self.bytesReceived = 0
+            self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                              {u"action": u"start",
+                                                                               u"update": self.update},
+                                                                              False)
+            url = NSURL.URLWithString_(self.update[u"url"])
+            request = NSURLRequest.requestWithURL_(url)
+            NSURLConnection.connectionWithRequest_delegate_(request, self)
         else:
-            return None
+            self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                              {u"action": u"alldone"},
+                                                                              False)
+    
+    def connection_didFailWithError_(self, connection, error):
+        NSLog(u"%@ failed: %@", self.update[u"name"], error)
+        self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                          {u"action": u"failed",
+                                                                           u"update": self.update,
+                                                                           u"error": error},
+                                                                          False)
+    
+    def connection_didReceiveResponse_(self, connection, response):
+        NSLog(u"%@ status code %d", self.update[u"name"], response.statusCode())
+        self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                          {u"action": u"response",
+                                                                           u"update": self.update,
+                                                                           u"response": response},
+                                                                          False)
+    
+    def connection_didReceiveData_(self, connection, data):
+        self.bytesReceived += data.length()
+        self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                          {u"action": u"data",
+                                                                           u"update": self.update,
+                                                                           u"bytes-received": self.bytesReceived},
+                                                                          False)
+    
+    def connectionDidFinishLoading_(self, connection):
+        NSLog(u"%@ finished downloading", self.update[u"name"])
+        self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                          {u"action": u"checksumming",
+                                                                           u"update": self.update},
+                                                                          False)
+        self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                          {u"action": u"checksum-ok",
+                                                                           u"update": self.update},
+                                                                          False)
+        self.downloadNextUpdate()
+

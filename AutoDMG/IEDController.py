@@ -49,6 +49,10 @@ class IEDController(NSObject):
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
     
+    downloadWindow = IBOutlet()
+    downloadLabel = IBOutlet()
+    downloadProgressBar = IBOutlet()
+    
     progress = None
     listenerDir = u"/tmp"
     listenerName = u"se.gu.it.IEDSocketListener"
@@ -121,12 +125,64 @@ class IEDController(NSObject):
     
     @IBAction
     def downloadButtonClicked_(self, sender):
-        alert = NSAlert.alloc().init()
-        alert.setMessageText_(u"Not implemented")
-        alert.setInformativeText_(u"You can drop updates named as their sha1 checksum " \
-                                  u"in ~/Library/Application Support/AutoDMG/Updates though " \
-                                  u"if you want to test it.")
-        alert.runModal()
+        self.downloadButton.setEnabled_(False)
+        self.downloadLabel.setStringValue_(u"")
+        self.downloadProgressBar.setIndeterminate_(True)
+        self.downloadWindow.makeKeyAndOrderFront_(self)
+        self.downloadCounter = 0
+        self.downloadNumUpdates = len(self.updateTableDataSource.downloads)
+        self.updateCache.downloadUpdates_withTarget_selector_(self.updateTableDataSource.downloads,
+                                                              self,
+                                                              self.notifyDownload_)
+    
+    def notifyDownload_(self, message):
+        if message[u"action"] == u"start":
+            self.downloadProgressBar.setIndeterminate_(False)
+            self.downloadProgressBar.setDoubleValue_(0.0)
+            self.downloadCounter += 1
+            update = message[u"update"]
+            self.downloadLabel.setStringValue_(u"%d/%d: %s" % (self.downloadCounter,
+                                                               self.downloadNumUpdates,
+                                                               update[u"name"]))
+        elif message[u"action"] == u"alldone":
+            self.downloadWindow.orderOut_(self)
+            self.updateDownloadState_(True)
+        elif message[u"action"] == u"failed":
+            alert = NSAlert.alertWithError_(message[u"error"])
+            alert.runModal()
+        elif message[u"action"] == u"response":
+            pass
+        elif message[u"action"] == u"data":
+            percent = 100.0 * message[u"bytes-received"] / message[u"update"][u"size"]
+            self.downloadProgressBar.setDoubleValue_(percent)
+        elif message[u"action"] == u"checksumming":
+            self.downloadProgressBar.setIndeterminate_(True)
+        elif message[u"action"] == u"checksum-ok":
+            self.updateDownloadState_(False)
+        elif message[u"action"] == u"checksum-failed":
+            pass
+        else:
+            NSLog(u"notifyDownload: Unrecognized message action: %@", message)
+    
+    def updateDownloadState_(self, enableButton):
+        self.updateTableDataSource.countDownloads()
+        self.updateTable.reloadData()
+        if len(self.updateTableDataSource.downloads) == 0:
+            self.updateTableLabel.setStringValue_(u"All updates downloaded")
+            self.updateTableLabel.setTextColor_(NSColor.disabledControlTextColor())
+            self.downloadButton.setEnabled_(False)
+        else:
+            niceSize = float(self.updateTableDataSource.downloadTotalSize)
+            unitIndex = 0
+            while len(str(int(niceSize))) > 3:
+                niceSize /= 1000.0
+                unitIndex += 1
+            sizeStr = u"%.1f %s" % (niceSize, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+            plurals = u"s" if len(self.updateTableDataSource.downloads) >= 2 else u""
+            downloadLabel = u"%d update%s to download (%s)" % (len(self.updateTableDataSource.downloads), plurals, sizeStr)
+            self.updateTableLabel.setStringValue_(downloadLabel)
+            self.updateTableLabel.setTextColor_(NSColor.controlTextColor())
+            self.downloadButton.setEnabled_(enableButton)
     
     # A long chain of methods to accept a new dropped installer.
     
@@ -186,23 +242,7 @@ class IEDController(NSObject):
                                                                self,
                                                                self.handleDetachResult_)
                 self.updateTableDataSource.loadProfileForVersion_build_(version, build)
-                self.updateTable.reloadData()
-                if self.updateTableDataSource.downloadCount == 0:
-                    self.updateTableLabel.setStringValue_(u"All updates downloaded")
-                    self.updateTableLabel.setTextColor_(NSColor.disabledControlTextColor())
-                    self.downloadButton.setEnabled_(False)
-                else:
-                    niceSize = float(self.updateTableDataSource.downloadSize)
-                    unitIndex = 0
-                    while len(str(int(niceSize))) > 3:
-                        niceSize /= 1000.0
-                        unitIndex += 1
-                    sizeStr = u"%.1f %s" % (niceSize, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
-                    plurals = u"s" if self.updateTableDataSource.downloadCount >= 2 else u""
-                    downloadLabel = u"%d update%s to download (%s)" % (self.updateTableDataSource.downloadCount, plurals, sizeStr)
-                    self.updateTableLabel.setStringValue_(downloadLabel)
-                    self.updateTableLabel.setTextColor_(NSColor.controlTextColor())
-                    self.downloadButton.setEnabled_(True)
+                self.updateDownloadState_(True)
             else:
                 self.failSourceWithMessage_informativeText_(u"Version mismatch",
                                                             u"The major version of the installer and the current OS must match.")
