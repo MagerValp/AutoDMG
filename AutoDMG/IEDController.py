@@ -15,6 +15,7 @@ import os
 import grp
 import platform
 import subprocess
+import glob
 from IEDSocketListener import *
 from IEDDMGHelper import *
 from IEDProfileController import *
@@ -82,8 +83,10 @@ class IEDController(NSObject):
         self.installerMountPoint = None
         self.currentTask = IEDTaskNone
         self.packagesToInstall = list()
+        self.mountedPackageDMGs = dict()
     
     def windowWillClose_(self, notification):
+        # FIXME: Not called when quitting application.
         self.closeListenerSocket()
         self.dmgHelper.detachAllWithTarget_selector_(nil, nil)
     
@@ -256,7 +259,12 @@ class IEDController(NSObject):
                                                         u"Couldn't find system version in InstallESD.")
     
     def handleDetachResult_(self, result):
-        if result[u"success"] == False:
+        if result[u"success"] == True:
+            try:
+                del self.mountedPackageDMGs[result[u"dmg-path"]]
+            except KeyError:
+                pass
+        else:
             alert = NSAlert.alloc().init()
             alert.setMessageText_(u"Failed to detach %s" % result[u"dmg-path"])
             alert.setInformativeText_(result[u"error-message"])
@@ -281,6 +289,7 @@ class IEDController(NSObject):
         alert.setMessageText_(u"Build failed")
         alert.setInformativeText_(message)
         alert.runModal()
+        self.detachInstallerDMGs()
         self.setUIEnabled_(True)
     
     def updateProgressMessage_(self, message):
@@ -351,6 +360,7 @@ class IEDController(NSObject):
     
     def startNextTask(self):
         if self.currentTask == IEDTaskInstall:
+            self.detachInstallerDMGs()
             self.startTaskImageScan()
         elif self.currentTask == IEDTaskImageScan:
             self.currentTask == IEDTaskNone
@@ -382,6 +392,19 @@ class IEDController(NSObject):
         else:
             return int(out.split()[0]) * 1024
     
+    def failStartWithMessage_informativeText_(self, message, text):
+        alert = NSAlert.alloc().init()
+        alert.setMessageText_(message)
+        alert.setInformativeText_(text)
+        alert.runModal()
+        self.detachInstallerDMGs()
+        self.stopTaskProgress()
+    
+    def detachInstallerDMGs(self):
+        for dmgPath, mountPoint in self.mountedPackageDMGs.iteritems():
+            self.dmgHelper.detach_withTarget_selector_(dmgPath, self, self.handleDetachResult_)
+    
+    # Launch installation.
     def startTaskInstall_(self, destinationPath):
         self.destinationPath = destinationPath
         self.currentTask = IEDTaskInstall
@@ -390,11 +413,68 @@ class IEDController(NSObject):
         self.progressWindow.makeKeyAndOrderFront_(self)
         self.mainWindow.orderOut_(self)
         
+        # Mount any disk images containing update packages.
+        if self.applyUpdatesCheckbox.state() == NSOnState:
+            self.numberOfInstallerDMGsToMount = 0
+            for update in self.updateTableDataSource.updates:
+                if update[u"url"].endswith(u".dmg"):
+                    dmgPath = self.updateCache.getUpdatePath_(update[u"sha1"])
+                    self.numberOfInstallerDMGsToMount += 1
+                    self.dmgHelper.attach_withTarget_selector_(dmgPath, self, self.mountInstallerDMG_)
+        if self.numberOfInstallerDMGsToMount == 0:
+            self.continueTaskInstall()
+    
+    # This will be called once for each disk image.
+    def mountInstallerDMG_(self, result):
+        if result[u"success"] == False:
+            self.failStartWithMessage_informativeText_(u"Failed to mount %s" % result[u"dmg-path"],
+                                                       result[u"error-message"])
+            return
+        # Save result in a dictionary of dmg paths and their mount points.
+        self.mountedPackageDMGs[result[u"dmg-path"]] = result[u"mount-point"]
+        # If this was the last image we were waiting for, continue preparing
+        # for install.
+        if len(self.mountedPackageDMGs) == self.numberOfInstallerDMGsToMount:
+            self.continueTaskInstall()
+    
+    def continueTaskInstall(self):
+        # Generate a list of packages to install, starting with the OS.
         self.packagesToInstall = [{
             u"name": u"System",
             u"path": os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"),
-            u"size": float(4 * 1024 * 1024 * 1024),
+            u"size": float(4 * 1024 * 1024 * 1024), # Assume 4 GB.
         }]
+        
+        # Software Updates.
+        if self.applyUpdatesCheckbox.state() == NSOnState:
+            for update in self.updateTableDataSource.updates:
+                if update[u"url"].endswith(u".dmg"):
+                    dmgPath = self.updateCache.getUpdatePath_(update[u"sha1"])
+                    mountPoint = self.mountedPackageDMGs[dmgPath]
+                    packagePaths = glob.glob(os.path.join(mountPoint, "*.mpkg"))
+                    packagePaths += glob.glob(os.path.join(mountPoint, "*.pkg"))
+                    if len(packagePaths) == 0:
+                        self.failStartWithMessage_informativeText_(u"No installer found",
+                                                                   u"No package found in %s.dmg" % update[u"name"])
+                        return
+                    elif len(packagePaths) > 1:
+                        NSLog(u"Warning, multiple packages found for %s, using %s" % (update[u"name"], packagePaths[0]))
+                    self.packagesToInstall.append({
+                        u"name": update[u"name"],
+                        u"path": packagePaths[0],
+                        u"size": update[u"size"],
+                    })
+                else:
+                    self.failStartWithMessage_informativeText_(u"pkg install unimplemented",
+                                                               u"Only dmgs containing pkgs for now")
+                    return
+                    #self.packagesToInstall.append({
+                    #    u"name": update[u"name"],
+                    #    u"path": self.updateCache.getUpdatePath_(update[u"sha1"]), # Fails, needs .pkg extension.
+                    #    u"size": update[u"size"],
+                    #})
+        
+        # Additional packages.
         for path in self.packageTableDataSource.packagePaths():
             self.buildProgressMessage.setStringValue_(u"Examining %s" % os.path.basename(path))
             self.packagesToInstall.append({
@@ -402,13 +482,8 @@ class IEDController(NSObject):
                 u"path": path,
                 u"size": self.getPackageSize_(path),
             })
-        if self.applyUpdatesCheckbox.state() == NSOnState:
-            for update in self.updateTableDataSource.updates:
-                self.packagesToInstall.append({
-                    u"name": update[u"name"],
-                    u"path": self.updateCache.getUpdatePath_(update[u"sha1"]),
-                    u"size": update[u"size"],
-                })
+        
+        # Calculate total package size for progress bar.
         self.totalPackagesSize = sum(pkg[u"size"] for pkg in self.packagesToInstall)
         
         args = [
@@ -423,6 +498,8 @@ class IEDController(NSObject):
         NSLog(u"%@", args)
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
     
+    # Generate an AppleScript snippet to launch a shell command with
+    # administrator privileges.
     def launchScript_(self, args):
         shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
         def escape(s):
@@ -434,6 +511,7 @@ class IEDController(NSObject):
         if evt is None:
             NSLog(u"NSAppleScript failed with error: %@", error)
     
+    # Launch asr imagescan.
     def startTaskImageScan(self):
         self.currentTask = IEDTaskImageScan
         self.startTaskProgress()
