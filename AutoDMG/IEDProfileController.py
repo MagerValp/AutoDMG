@@ -7,68 +7,52 @@
 #  Copyright (c) 2013 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from AppKit import *
 from Foundation import *
+from objc import IBOutlet
+
+import os.path
 
 
 class IEDProfileController(NSObject):
-    """Class to keep track of update profiles, containing the latest updates
-       needed to build a fully updated OS X image."""
+    """Singleton class to keep track of update profiles, containing lists of
+       the latest updates needed to build a fully updated OS X image."""
+    
+    _instance = None
+    
+    profileUpdateWindow = IBOutlet()
+    progressBar = IBOutlet()
     
     def init(self):
+        # Return singleton instance if it's already initialized.
+        if IEDProfileController._instance:
+            return IEDProfileController._instance
+        
+        # Otherwise we initialize a new instance.
         self = super(IEDProfileController, self).init()
         if self is None:
             return None
+        IEDProfileController._instance = self
         
-        supp1085 = {
-            u"name": u"OS X Mountain Lion 10.8.5 Supplemental Update",
-            u"url": u"http://support.apple.com/downloads/DL1686/en_US/OSXUpd10.8.5Supp.dmg",
-            u"sha1": u"18636c06f0db5b326752628fb7a2dfa3ce077ae1",
-            u"size": 19648899,
-        }
-        itunes = {
-            u"name": u"iTunes 11.1.1",
-            u"url": u"https://secure-appldnld.apple.com/iTunes11/091-9970.20131002.r3miz/iTunes11.1.1.dmg",
-            u"sha1": u"66b75a92d234affaed19484810d8dc53ed4608dd",
-            u"size": 225609082,
-        }
-        java = {
-            u"name": u"Java for OS X 2013-005",
-            u"url": u"http://support.apple.com/downloads/DL1572/en_US/JavaForOSX2013-05.dmg",
-            u"sha1": u"ce78f9a916b91ec408c933bd0bde5973ca8a2dc4",
-            u"size": 67090041,
-        }
-        airportutil = {
-            u"name": u"AirPort Utility 6.3.1 for Mac",
-            u"url": u"http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg",
-            u"sha1": u"7cb449454ef5c2cf478a2a5394f652a9705c9481",
-            u"size": 22480138,
-        }
-        self.profiles = {
-            u"10.8.5-12F37": [
-                supp1085,
-                itunes,
-                airportutil,
-            ],
-            u"10.8.5-12F45": [
-                itunes,
-                airportutil,
-            ],
-            u"10.9-13A598": [
-                itunes,
-                airportutil,
-            ],
-            u"10.9-13A603": [
-                itunes,
-                airportutil,
-            ],
-        }
+        # Save the path to UpdateProfiles.plist in the user's application
+        # support directory.
+        fm = NSFileManager.defaultManager()
+        url, error = fm.URLForDirectory_inDomain_appropriateForURL_create_error_(NSApplicationSupportDirectory,
+                                                                                 NSUserDomainMask,
+                                                                                 None,
+                                                                                 True,
+                                                                                 None)
+        self.userUpdateProfilePath = os.path.join(url.path(), u"AutoDMG", u"UpdateProfiles.plist")
+        
+        # Load UpdateProfiles from the application bundle.
+        bundleUpdateProfilesPath = NSBundle.mainBundle().pathForResource_ofType_(u"UpdateProfiles", u"plist")
+        bundleUpdateProfiles = NSDictionary.dictionaryWithContentsOfFile_(bundleUpdateProfilesPath)
+        
+        latestProfiles = self.updateUsersProfilesIfNewer_(bundleUpdateProfiles)
+        # Load the profiles.
+        self.loadProfilesFromPlist_(latestProfiles)
         
         return self
-    
-    def updateFromURL_withTarget_selector_(self, url, target, selector):
-        """Download the latest profiles."""
-        
-        NSLog(u"updateFromURL:withTarget:selector: unimplemented")
     
     def profileForVersion_Build_(self, version, build):
         """Return the update profile for a certain OS X version and build."""
@@ -77,4 +61,89 @@ class IEDProfileController(NSObject):
             return self.profiles[u"%s-%s" % (version, build)]
         except KeyError:
             return None
+    
+    def updateUsersProfilesIfNewer_(self, plist):
+        """Update the user's update profiles if plist is newer. Returns
+           whichever was the newest."""
+        
+        # Load UpdateProfiles from the user's application support directory.
+        userUpdateProfilesPath = NSBundle.mainBundle().pathForResource_ofType_(u"UpdateProfiles", u"plist")
+        userUpdateProfiles = NSDictionary.dictionaryWithContentsOfFile_(userUpdateProfilesPath)
+        
+        # If the bundle's plist is newer, update the user's.
+        if plist[u"PublicationDate"].laterDate_(userUpdateProfiles[u"PublicationDate"]):
+            self.saveUsersProfiles_(plist)
+            userUpdateProfiles = plist
+        
+        return plist
+    
+    def saveUsersProfiles_(self, plist):
+        """Save UpdateProfiles.plist to application support."""
+        
+        if not plist.writeToFile_atomically_(self.userUpdateProfilePath, False):
+            NSLog(u"Failed to write %@", self.userUpdateProfilePath)
+    
+    def loadProfilesFromPlist_(self, plist):
+        """Load UpdateProfiles from a plist dictionary."""
+        
+        self.profiles = dict()
+        for name, updates in plist[u"Profiles"].iteritems():
+            profile = list()
+            for update in updates:
+                profile.append(plist[u"Updates"][update])
+            self.profiles[name] = profile
+    
+    def updateFromURL_withTarget_selector_(self, url, target, selector):
+        """Download the latest update profiles asynchronously and notify
+           target with the result."""
+        
+        self.profileUpdateWindow.makeKeyAndOrderFront_(self)
+        self.progressBar.startAnimation_(self)
+        self.performSelectorInBackground_withObject_(self.updateInBackground_, [url, target, selector])
+    
+    # Continue in background thread.
+    def updateInBackground_(self, args):
+        url, target, selector = args
+        request = NSURLRequest.requestWithURL_(url)
+        data, response, error = NSURLConnection.sendSynchronousRequest_returningResponse_error_(request, None, None)
+        self.profileUpdateWindow.orderOut_(self)
+        if response.statusCode() != 200:
+            self.failUpdate_(u"Update server responded with code %d.", response.statusCode(), target, selector)
+            return
+        plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(data,
+                                                                                                      NSPropertyListImmutable,
+                                                                                                      None,
+                                                                                                      None)
+        if not plist:
+            self.failUpdate_(u"Couldn't decode update data.", target, selector)
+            return
+        latestProfiles = self.updateUsersProfilesIfNewer_(plist)
+        self.loadProfilesFromPlist_(latestProfiles)
+        dateFormatter = NSDateFormatter.alloc().init()
+        timeZone = NSTimeZone.timeZoneWithName_(u"UTC")
+        dateFormatter.setTimeZone_(timeZone)
+        dateFormatter.setDateFormat_(u"yyyy-MM-dd HH:mm:ss")
+        dateString = dateFormatter.stringFromDate_(plist[u"PublicationDate"])
+        message = u"Using update profiles from %s UTC" % dateString
+        self.succeedUpdate_WithTarget_selector_(message, target, selector)
+    
+    def failUpdate_withTarget_selector_(self, error, target, selector):
+        """Notify target of a failed update."""
+        
+        NSLog(u"Profile update failed: %@", error)
+        if target:
+            target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
+                                                                         {u"success": False,
+                                                                          u"error-message": error},
+                                                                         False)
+    
+    def succeedUpdate_WithTarget_selector_(self, message, target, selector):
+        """Notify target of a successful update."""
+        
+        NSLog(u"Profile update succeeded: %@", message)
+        if target:
+            target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
+                                                                         {u"success": True,
+                                                                          u"message": message},
+                                                                         False)
 
