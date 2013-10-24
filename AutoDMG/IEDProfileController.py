@@ -42,7 +42,7 @@ class IEDProfileController(NSObject):
                                                                                  None,
                                                                                  True,
                                                                                  None)
-        self.userUpdateProfilePath = os.path.join(url.path(), u"AutoDMG", u"UpdateProfiles.plist")
+        self.userUpdateProfilesPath = os.path.join(url.path(), u"AutoDMG", u"UpdateProfiles.plist")
         
         # Load UpdateProfiles from the application bundle.
         bundleUpdateProfilesPath = NSBundle.mainBundle().pathForResource_ofType_(u"UpdateProfiles", u"plist")
@@ -67,21 +67,20 @@ class IEDProfileController(NSObject):
            whichever was the newest."""
         
         # Load UpdateProfiles from the user's application support directory.
-        userUpdateProfilesPath = NSBundle.mainBundle().pathForResource_ofType_(u"UpdateProfiles", u"plist")
-        userUpdateProfiles = NSDictionary.dictionaryWithContentsOfFile_(userUpdateProfilesPath)
+        userUpdateProfiles = NSDictionary.dictionaryWithContentsOfFile_(self.userUpdateProfilesPath)
         
         # If the bundle's plist is newer, update the user's.
-        if plist[u"PublicationDate"].laterDate_(userUpdateProfiles[u"PublicationDate"]):
+        if userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0:
             self.saveUsersProfiles_(plist)
             userUpdateProfiles = plist
         
-        return plist
+        return userUpdateProfiles
     
     def saveUsersProfiles_(self, plist):
         """Save UpdateProfiles.plist to application support."""
         
-        if not plist.writeToFile_atomically_(self.userUpdateProfilePath, False):
-            NSLog(u"Failed to write %@", self.userUpdateProfilePath)
+        if not plist.writeToFile_atomically_(self.userUpdateProfilesPath, False):
+            NSLog(u"Failed to write %@", self.userUpdateProfilesPath)
     
     def loadProfilesFromPlist_(self, plist):
         """Load UpdateProfiles from a plist dictionary."""
@@ -117,13 +116,14 @@ class IEDProfileController(NSObject):
         if not plist:
             self.failUpdate_(u"Couldn't decode update data.", target, selector)
             return
+        NSLog(u"Downloaded update profiles with PublicationDate = %@", plist[u"PublicationDate"])
         latestProfiles = self.updateUsersProfilesIfNewer_(plist)
         self.loadProfilesFromPlist_(latestProfiles)
         dateFormatter = NSDateFormatter.alloc().init()
         timeZone = NSTimeZone.timeZoneWithName_(u"UTC")
         dateFormatter.setTimeZone_(timeZone)
         dateFormatter.setDateFormat_(u"yyyy-MM-dd HH:mm:ss")
-        dateString = dateFormatter.stringFromDate_(plist[u"PublicationDate"])
+        dateString = dateFormatter.stringFromDate_(latestProfiles[u"PublicationDate"])
         message = u"Using update profiles from %s UTC" % dateString
         self.succeedUpdate_WithTarget_selector_(message, target, selector)
     
@@ -140,7 +140,6 @@ class IEDProfileController(NSObject):
     def succeedUpdate_WithTarget_selector_(self, message, target, selector):
         """Notify target of a successful update."""
         
-        NSLog(u"Profile update succeeded: %@", message)
         if target:
             target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
                                                                          {u"success": True,
