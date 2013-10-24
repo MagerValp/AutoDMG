@@ -281,6 +281,9 @@
                 <outlet property="buildProgressFilename" destination="CnB-E1-jre" id="gYV-h9-W2W"/>
                 <outlet property="buildProgressMessage" destination="aFM-jG-IAT" id="Wbv-Ke-9p6"/>
                 <outlet property="downloadButton" destination="OHd-Ex-bAG" id="M3b-0v-4VJ"/>
+                <outlet property="downloadLabel" destination="Da4-H5-lc3" id="INa-bu-IKx"/>
+                <outlet property="downloadProgressBar" destination="hDD-JB-5b9" id="zZf-ac-fWb"/>
+                <outlet property="downloadWindow" destination="yRz-g8-9TZ" id="cAW-AD-mN8"/>
                 <outlet property="mainWindow" destination="GmA-Xb-izQ" id="JNO-Fx-207"/>
                 <outlet property="progressWindow" destination="Xho-YZ-fRH" id="K7Y-NY-u45"/>
                 <outlet property="sourceLabel" destination="0RU-gN-IOh" id="EzK-O3-MsB"/>
@@ -554,7 +557,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Additional packages:" id="1dz-ud-6qY">
                                         <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
@@ -593,7 +596,7 @@
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bUh-0v-ffs">
                         <rect key="frame" x="28" y="69" width="327" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Downloading the latest update profiles…" id="HPJ-RP-ZWu">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Downloading the latest update profiles…" id="HPJ-RP-ZWu">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -616,6 +619,39 @@
                 <outlet property="progressBar" destination="xpZ-fX-n6I" id="qyu-LL-UBd"/>
             </connections>
         </customObject>
+        <window title="Download Updates" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" wantsToBeColor="NO" visibleAtLaunch="NO" animationBehavior="default" id="yRz-g8-9TZ">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="383" height="112"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <view key="contentView" id="O13-kg-1iT">
+                <rect key="frame" x="0.0" y="0.0" width="383" height="112"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <progressIndicator maxValue="100" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="hDD-JB-5b9">
+                        <rect key="frame" x="31" y="25" width="321" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    </progressIndicator>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Da4-H5-lc3">
+                        <rect key="frame" x="28" y="69" width="327" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="1/3: Update Name (123.4 MB)" id="ClA-XA-wmi">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="hDD-JB-5b9" firstAttribute="top" secondItem="Da4-H5-lc3" secondAttribute="bottom" constant="25" id="43T-64-z1l"/>
+                    <constraint firstAttribute="bottom" secondItem="hDD-JB-5b9" secondAttribute="bottom" constant="26" id="Lux-GO-m2I"/>
+                    <constraint firstItem="Da4-H5-lc3" firstAttribute="leading" secondItem="O13-kg-1iT" secondAttribute="leading" constant="30" id="RLQ-87-4Va"/>
+                    <constraint firstAttribute="trailing" secondItem="Da4-H5-lc3" secondAttribute="trailing" constant="30" id="Uza-s4-q8O"/>
+                    <constraint firstAttribute="trailing" secondItem="hDD-JB-5b9" secondAttribute="trailing" constant="31" id="n8q-7U-rkS"/>
+                    <constraint firstItem="hDD-JB-5b9" firstAttribute="leading" secondItem="O13-kg-1iT" secondAttribute="leading" constant="31" id="qm6-fk-QwG"/>
+                </constraints>
+            </view>
+        </window>
     </objects>
     <resources>
         <image name="DMG Placeholder" width="128" height="128"/>

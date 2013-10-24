@@ -23,10 +23,12 @@
 		</array>
 		<key>10.9-13A598</key>
 		<array>
+		    <string>CameraRAW</string>
 			<string>iTunes</string>
 		</array>
 		<key>10.9-13A603</key>
 		<array>
+		    <string>CameraRAW</string>
 			<string>iTunes</string>
 		</array>
 	</dict>
@@ -86,6 +88,17 @@
 			<integer>231491021</integer>
 			<key>url</key>
 			<string>https://secure-appldnld.apple.com/iTunes11/091-9744.20131022.N34FF/iTunes11.1.2.dmg</string>
+		</dict>
+		<key>CameraRAW</key>
+		<dict>
+			<key>name</key>
+			<string>Digital Camera RAW Compatibility Update 4.09</string>
+			<key>sha1</key>
+			<string>707472ba21dbd7000007c16bf42442b055ff55b5</string>
+			<key>size</key>
+			<integer>6913322</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1681/en_US/RAWCameraUpdate4.09.dmg</string>
 		</dict>
 	</dict>
 </dict>
