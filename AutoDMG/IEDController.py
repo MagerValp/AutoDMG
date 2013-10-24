@@ -64,6 +64,7 @@ class IEDController(NSObject):
         self.sourceView.setDelegate_(self)
         self.buildProgressBar.setMaxValue_(100.0)
         self.buildProgressMessage.setStringValue_(u"")
+        self.sourceLabel.setStringValue_(u"")
         self.openListenerSocket()
         self.dmgHelper = IEDDMGHelper.alloc().init()
         
