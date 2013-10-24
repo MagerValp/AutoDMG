@@ -91,6 +91,7 @@ class IEDProfileController(NSObject):
             for update in updates:
                 profile.append(plist[u"Updates"][update])
             self.profiles[name] = profile
+        self.publicationDate = plist[u"PublicationDate"]
     
     def updateFromURL_withTarget_selector_(self, url, target, selector):
         """Download the latest update profiles asynchronously and notify

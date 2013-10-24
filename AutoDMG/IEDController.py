@@ -343,7 +343,15 @@ class IEDController(NSObject):
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"dmg"])
-        panel.setNameFieldStringValue_(u"%s_%s_%s.hfs" % (u"baseos", self.installerVersion, self.installerBuild))
+        imageName = u"osx"
+        formatter = NSDateFormatter.alloc().initWithDateFormat_allowNaturalLanguage_(u"%y%m%d", False)
+        if self.applyUpdatesCheckbox.state() == NSOnState:
+            dateStr = formatter.stringFromDate_(self.profileController.publicationDate)
+            imageName = u"osx_updated_%s" % dateStr
+        if self.packageTableDataSource.packagePaths():
+            dateStr = formatter.stringFromDate_(NSDate.date())
+            imageName = u"osx_custom_%s" % dateStr
+        panel.setNameFieldStringValue_(u"%s-%s-%s.hfs" % (imageName, self.installerVersion, self.installerBuild))
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
