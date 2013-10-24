@@ -78,6 +78,7 @@ sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparse
 dmgmounts+=("$sparsemount")
 
 # Perform the OS install.
+export COMMAND_LINE_INSTALL=1
 declare -i pkgnum=0
 for package; do
     echo "selecting package $pkgnum $package"
