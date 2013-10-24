@@ -473,14 +473,22 @@ class IEDController(NSObject):
                         u"size": update[u"size"],
                     })
                 else:
-                    self.failStartWithMessage_informativeText_(u"pkg install unimplemented",
-                                                               u"Only dmgs containing pkgs for now")
-                    return
-                    #self.packagesToInstall.append({
-                    #    u"name": update[u"name"],
-                    #    u"path": self.updateCache.getUpdatePath_(update[u"sha1"]), # Fails, needs .pkg extension.
-                    #    u"size": update[u"size"],
-                    #})
+                    # FIXME: Quick hack, either cache needs improving or we
+                    # create a proper temp dir.
+                    linkPath = u"/tmp/%s-%s.pkg" % (os.getlogin(), update[u"sha1"])
+                    try:
+                        if os.path.exists(linkPath):
+                            os.unlink(linkPath)
+                        os.symlink(self.updateCache.getUpdatePath_(update[u"sha1"]), linkPath)
+                    except OSError as e:
+                        self.failStartWithMessage_informativeText_(u"Couldn't create link for %s.pkg" % update[u"sha1"],
+                                                                   unicode(e))
+                        return
+                    self.packagesToInstall.append({
+                        u"name": update[u"name"],
+                        u"path": linkPath,
+                        u"size": update[u"size"],
+                    })
         
         # Additional packages.
         for path in self.packageTableDataSource.packagePaths():
