@@ -70,7 +70,7 @@ class IEDProfileController(NSObject):
         userUpdateProfiles = NSDictionary.dictionaryWithContentsOfFile_(self.userUpdateProfilesPath)
         
         # If the bundle's plist is newer, update the user's.
-        if userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0:
+        if (not userUpdateProfiles) or (userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0):
             self.saveUsersProfiles_(plist)
             userUpdateProfiles = plist
         
