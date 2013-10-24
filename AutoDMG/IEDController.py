@@ -345,7 +345,7 @@ class IEDController(NSObject):
         panel.setAllowedFileTypes_([u"dmg"])
         imageName = u"osx"
         formatter = NSDateFormatter.alloc().initWithDateFormat_allowNaturalLanguage_(u"%y%m%d", False)
-        if self.applyUpdatesCheckbox.state() == NSOnState:
+        if (self.applyUpdatesCheckbox.state() == NSOnState) and (self.updateTableDataSource.updates):
             dateStr = formatter.stringFromDate_(self.profileController.publicationDate)
             imageName = u"osx_updated_%s" % dateStr
         if self.packageTableDataSource.packagePaths():
