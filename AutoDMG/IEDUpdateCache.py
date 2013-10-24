@@ -9,6 +9,7 @@
 
 from Foundation import *
 import os
+import hashlib
 
 class IEDUpdateCache(NSObject):
     """Managed updates cached on disk in the Application Support directory."""
@@ -17,25 +18,6 @@ class IEDUpdateCache(NSObject):
         self = super(IEDUpdateCache, self).init()
         if self is None:
             return None
-        
-        self.updates = {
-            u"18636c06f0db5b326752628fb7a2dfa3ce077ae1": {
-                u"name": u"OS X Mountain Lion 10.8.5 Supplemental Update",
-                u"size": 19648899,
-            },
-            u"66b75a92d234affaed19484810d8dc53ed4608dd": {
-                u"name": u"iTunes 11.1.1",
-                u"size": 225609082,
-            },
-            u"ce78f9a916b91ec408c933bd0bde5973ca8a2dc4": {
-                u"name": u"Java for OS X 2013-005",
-                u"size": 67090041,
-            },
-            u"7cb449454ef5c2cf478a2a5394f652a9705c9481": {
-                u"name": u"AirPort Utility 6.3.1 for Mac",
-                u"size": 22480138,
-            },
-        }
         
         fm = NSFileManager.defaultManager()
         url, error = fm.URLForDirectory_inDomain_appropriateForURL_create_error_(NSApplicationSupportDirectory,
@@ -52,10 +34,114 @@ class IEDUpdateCache(NSObject):
         return self
     
     def isCached_(self, sha1):
-        return sha1 in self.updates and os.path.exists(self.getUpdatePath_(sha1))
+        return os.path.exists(self.getUpdatePath_(sha1))
     
     def getUpdatePath_(self, sha1):
-        if sha1 in self.updates:
-            return os.path.join(self.updateDir, sha1)
+        return os.path.join(self.updateDir, sha1)
+    
+    def getUpdateTmpPath_(self, sha1):
+        return os.path.join(self.updateDir, sha1 + u".part")
+    
+    def notifyTarget_(self, message):
+        self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
+                                                                          message,
+                                                                          False)
+    
+    def failWithErrorMessage_(self, error):
+        self.notifyTarget_({u"action": u"failed",
+                            u"update": self.update,
+                            u"error-message": error})
+    
+    def downloadUpdates_withTarget_selector_(self, updates, target, selector):
+        self.target = target
+        self.selector = selector
+        self.updates = updates
+        self.downloadNextUpdate()
+    
+    def downloadNextUpdate(self):
+        if self.updates:
+            self.update = self.updates.pop(0)
+            self.bytesReceived = 0
+            self.notifyTarget_({u"action": u"start",
+                                u"update": self.update})
+            path = self.getUpdateTmpPath_(self.update[u"sha1"])
+            if not NSFileManager.defaultManager().createFileAtPath_contents_attributes_(path, None, None):
+                error = u"Couldn't create temporary file at %s" % path
+                self.failWithErrorMessage_(error)
+                return
+            self.fileHandle = NSFileHandle.fileHandleForWritingAtPath_(path)
+            if not self.fileHandle:
+                error = u"Couldn't open %s for writing" % path
+                self.failWithErrorMessage_(error)
+                return
+            url = NSURL.URLWithString_(self.update[u"url"])
+            request = NSURLRequest.requestWithURL_(url)
+            NSURLConnection.connectionWithRequest_delegate_(request, self)
         else:
-            return None
+            self.notifyTarget_({u"action": u"alldone"})
+    
+    def connection_didFailWithError_(self, connection, error):
+        NSLog(u"%@ failed: %@", self.update[u"name"], error)
+        self.fileHandle.closeFile()
+        self.failWithErrorMessage_(error.localizedDescription())
+    
+    def connection_didReceiveResponse_(self, connection, response):
+        NSLog(u"%@ status code %d", self.update[u"name"], response.statusCode())
+        self.notifyTarget_({u"action": u"response",
+                            u"update": self.update,
+                            u"response": response})
+    
+    def connection_didReceiveData_(self, connection, data):
+        try:
+            self.fileHandle.writeData_(data)
+        except BaseException as e:
+            NSLog(u"Write error: %@", unicode(e))
+            connection.cancel()
+            error = u"Writing to %s failed: %s" % (self.getUpdateTmpPath_(self.update[u"sha1"]), unicode(e))
+            self.fileHandle.closeFile()
+            self.failWithErrorMessage_(error)
+            return
+        self.bytesReceived += data.length()
+        self.notifyTarget_({u"action": u"data",
+                            u"update": self.update,
+                            u"bytes-received": self.bytesReceived})
+    
+    def connectionDidFinishLoading_(self, connection):
+        NSLog(u"%@ finished downloading to %@", self.update[u"name"], self.getUpdateTmpPath_(self.update[u"sha1"]))
+        self.fileHandle.closeFile()
+        self.performSelectorInBackground_withObject_(self.calculateChecksum_, None)
+    
+    def calculateChecksum_(self, args):
+        self.notifyTarget_({u"action": u"checksumming",
+                            u"update": self.update})
+        sha1 = self.update[u"sha1"]
+        src = self.getUpdateTmpPath_(sha1)
+        dst = self.getUpdatePath_(sha1)
+        
+        m = hashlib.sha1()
+        bytesRead = 0
+        with open(src) as f:
+            while True:
+                data = f.read(1024 * 1024)
+                if not data:
+                    break
+                m.update(data)
+                bytesRead += len(data)
+                self.notifyTarget_({u"action": u"checksum-progress",
+                                    u"bytes-read": bytesRead,
+                                    u"update": self.update})
+        if m.hexdigest() != sha1:
+            self.failWithErrorMessage_(u"Expected sha1 checksum %s but got %s" % (sha1.lower(), m.hexdigest().lower()))
+            return
+        try:
+            os.rename(src, dst)
+        except OSError as e:
+            self.failWithErrorMessage_(u"Failed when moving download to %s: %s" % (dst, unicode(e)))
+            return
+        self.notifyTarget_({u"action": u"checksum-ok",
+                            u"update": self.update})
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(self.checksumOK_, None, False)
+    
+    def checksumOK_(self, args):
+        self.downloadNextUpdate()
+

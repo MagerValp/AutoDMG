@@ -20,8 +20,8 @@ class IEDUpdateTableDataSource(NSObject):
         self.profileController = pc
         self.updateCache = cache
         self.updates = list()
-        self.downloadSize = 0
-        self.downloadCount = 0
+        self.downloadTotalSize = 0
+        self.downloads = list()
         
         self.cachedImage = NSImage.imageNamed_(u"Package")
         self.uncachedImage = NSImage.imageNamed_(u"Package blue arrow")
@@ -37,10 +37,11 @@ class IEDUpdateTableDataSource(NSObject):
         self.countDownloads()
     
     def countDownloads(self):
+        self.downloads = list()
         for update in self.updates:
             if not self.updateCache.isCached_(update[u"sha1"]):
-                self.downloadCount += 1
-                self.downloadSize += update[u"size"]
+                self.downloadTotalSize += update[u"size"]
+                self.downloads.append(update)
     
     def numberOfRowsInTableView_(self, tableView):
         return len(self.updates)
