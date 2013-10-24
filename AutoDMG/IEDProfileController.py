@@ -107,15 +107,19 @@ class IEDProfileController(NSObject):
         request = NSURLRequest.requestWithURL_(url)
         data, response, error = NSURLConnection.sendSynchronousRequest_returningResponse_error_(request, None, None)
         self.profileUpdateWindow.orderOut_(self)
+        if not data:
+            message = u"Failed to download %s: %s" % (url.absoluteString(), error.localizedDescription())
+            self.failUpdate_withTarget_selector_(message, target, selector)
+            return
         if response.statusCode() != 200:
-            self.failUpdate_(u"Update server responded with code %d.", response.statusCode(), target, selector)
+            self.failUpdate_withTarget_selector_(u"Update server responded with code %d.", response.statusCode(), target, selector)
             return
         plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(data,
                                                                                                       NSPropertyListImmutable,
                                                                                                       None,
                                                                                                       None)
         if not plist:
-            self.failUpdate_(u"Couldn't decode update data.", target, selector)
+            self.failUpdate_withTarget_selector_(u"Couldn't decode update data.", target, selector)
             return
         NSLog(u"Downloaded update profiles with PublicationDate = %@", plist[u"PublicationDate"])
         latestProfiles = self.updateUsersProfilesIfNewer_(plist)
