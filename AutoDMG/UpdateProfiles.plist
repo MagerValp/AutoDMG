@@ -3,65 +3,89 @@
 <plist version="1.0">
 <dict>
 	<key>PublicationDate</key>
-	<date>2013-10-21T12:00:00Z</date>
+	<date>2013-10-24T08:54:45Z</date>
 	<key>Profiles</key>
 	<dict>
 		<key>10.8.5-12F37</key>
 		<array>
 			<string>Supplemental-10.8.5</string>
+			<string>SafariML</string>
+			<string>ARD-3.7</string>
 			<string>iTunes</string>
 			<string>AirPortUtility</string>
 		</array>
 		<key>10.8.5-12F45</key>
 		<array>
+			<string>SafariML</string>
+			<string>ARD-3.7</string>
 			<string>iTunes</string>
 			<string>AirPortUtility</string>
 		</array>
 		<key>10.9-13A598</key>
 		<array>
-			<string>AirPortUtility</string>
 			<string>iTunes</string>
 		</array>
 		<key>10.9-13A603</key>
 		<array>
 			<string>iTunes</string>
-			<string>AirPortUtility</string>
 		</array>
 	</dict>
 	<key>Updates</key>
 	<dict>
-		<key>Supplemental-10.8.5</key>
+		<key>ARD-3.7</key>
 		<dict>
-			<key>sha1</key>
-			<string>18636c06f0db5b326752628fb7a2dfa3ce077ae1</string>
 			<key>name</key>
-			<string>OS X Mountain Lion 10.8.5 Supplemental Update</string>
-			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1686/en_US/OSXUpd10.8.5Supp.dmg</string>
-			<key>size</key>
-			<integer>19648899</integer>
-		</dict>
-		<key>iTunes</key>
-		<dict>
+			<string>Apple Remote Desktop 3.7 Client</string>
 			<key>sha1</key>
-			<string>3b6deef97465a11ee1746b59da8eec6f04a6c0ea</string>
-			<key>name</key>
-			<string>iTunes 11.1.1</string>
-			<key>url</key>
-			<string>https://secure-appldnld.apple.com/iTunes11/091-9970.20131002.r3miz/iTunes11.1.1.dmg</string>
+			<string>dc93c3f62309898e317fe0704ca737ad066f3d91</string>
 			<key>size</key>
-			<integer>225609082</integer>
+			<integer>5272002</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1697/en_US/RemoteDesktopClient3.7.dmg</string>
 		</dict>
 		<key>AirPortUtility</key>
 		<dict>
-			<key>sha1</key>
-			<string>7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
 			<key>name</key>
 			<string>AirPort Utility 6.3.1 for Mac</string>
-			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg</string>
+			<key>sha1</key>
+			<string>7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
 			<key>size</key>
 			<integer>22480138</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg</string>
+		</dict>
+		<key>SafariML</key>
+		<dict>
+			<key>name</key>
+			<string>Safari 6.1 for Mountain Lion</string>
+			<key>sha1</key>
+			<string>359d0955d92b92d7a1dba7a7ff818dd36573735d</string>
+			<key>size</key>
+			<integer>52895927</integer>
+			<key>url</key>
+			<string>http://swcdn.apple.com/content/downloads/18/32/041-6651/147ugedbeiqpz43czixlgawayfoa7tjyjv/Safari6.1MountainLion.pkg</string>
+		</dict>
+		<key>Supplemental-10.8.5</key>
+		<dict>
+			<key>name</key>
+			<string>OS X Mountain Lion 10.8.5 Supplemental Update</string>
+			<key>sha1</key>
+			<string>18636c06f0db5b326752628fb7a2dfa3ce077ae1</string>
+			<key>size</key>
+			<integer>19648899</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1686/en_US/OSXUpd10.8.5Supp.dmg</string>
+		</dict>
+		<key>iTunes</key>
+		<dict>
+			<key>name</key>
+			<string>iTunes 11.1.2</string>
+			<key>sha1</key>
+			<string>63e61678caa50dd41720751f362897195ce732b1</string>
+			<key>size</key>
+			<integer>231491021</integer>
+			<key>url</key>
+			<string>https://secure-appldnld.apple.com/iTunes11/091-9744.20131022.N34FF/iTunes11.1.2.dmg</string>
 		</dict>
 	</dict>
 </dict>
