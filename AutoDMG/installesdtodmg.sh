@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# This script performs the main steps needed to create a deployment image:
+#
+#    1. Create a new read/write sparse disk image.
+#    2. Install a list of packages, starting with the OS install, with the
+#       sparse image as the target.
+#    3. Convert the sparse disk to a read only compressed image.
+#
+# The generated image will need to be scanned with asr before it can be used
+# for deployment.
+#
+# Usage:
+#
+#   installesdtodmg.sh user group output.dmg "/Volumes/OS X Install ESD/OSInstall.mpkg" [package.pkg ...]
 
 
 declare -r TESTING="no"
@@ -64,25 +78,25 @@ shift 3
 tempdir=$(mktemp -d -t installesdtodmg)
 tempdirs+=("$tempdir")
 freespace=$(df -g / | tail -1 | awk '{print $4}')
-if [[ "$freespace" -lt 10 ]]; then
-    echo "IED:FAILURE:Less than 10 GB free disk space, aborting"
+if [[ "$freespace" -lt 15 ]]; then
+    echo "IED:FAILURE:Less than 15 GB free disk space, aborting"
     exit 1
 fi
 
 
 # Create and mount a sparse image.
-echo "IED:MSG:Initializing disk image"
+echo "IED:PHASE:sparseimage"
+echo "IED:MSG:Creating disk image"
 sparsedmg="$tempdir/os.sparseimage"
 hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "Macintosh HD" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
 sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
 dmgmounts+=("$sparsemount")
 
-# Perform the OS install.
+# Install OS and packages.
 export COMMAND_LINE_INSTALL=1
 declare -i pkgnum=0
 for package; do
-    echo "selecting package $pkgnum $package"
-    echo "IED:PACKAGE:$pkgnum:$package"
+    echo "IED:PHASE:install $pkgnum:$package"
     let pkgnum++
     if [[ $pkgnum -eq 1 ]]; then
         echo "IED:MSG:Starting OS install"
@@ -118,13 +132,14 @@ echo "IED:MSG:Ejecting image"
 unmount_dmgs
 
 # Convert the sparse image to a compressed image.
+echo "IED:PHASE:asr"
 echo "IED:MSG:Converting disk image to read only"
-if ! hdiutil convert -format UDZO "$sparsedmg" -o "$compresseddmg"; then
+if ! hdiutil convert -puppetstrings -format UDZO "$sparsedmg" -o "$compresseddmg"; then
     echo "IED:FAILURE:Disk image conversion failed"
     exit 103
 fi
 
-# Change ownership to that of the containing directory.
+# Change ownership.
 echo "IED:MSG:Changing owner"
 if ! chown "${user}:$group" "$compresseddmg"; then
     echo "IED:FAILURE:Ownership change failed"

@@ -90,7 +90,7 @@ class ProgressWatcher(NSObject):
                     else:
                         NSLog(u"unrecognized progress data: %@", string)
                         string = u""
-                self.postNotification_({u"action": u"update_progressbar", u"percent": self.asrPercent})
+                self.postNotification_({u"action": u"update_progress", u"percent": self.asrPercent})
             notification.object().readInBackgroundAndNotify()
     
     def notifyIEDProgressData_(self, notification):
@@ -116,6 +116,8 @@ class ProgressWatcher(NSObject):
                 self.parseInstallerProgress_(string[10:])
             elif string.startswith(u"IED:"):
                 self.parseIEDProgress_(string[4:])
+            elif string.startswith(u"MESSAGE:") or string.startswith(u"PERCENT:"):
+                self.parseHdiutilProgress_(string)
             else:
                 NSLog(u"(Ignoring progress %@)", string)
         except BaseException as e:
@@ -124,7 +126,7 @@ class ProgressWatcher(NSObject):
     def parseInstallerProgress_(self, string):
         if string.startswith(u"%"):
             progress = float(string[1:])
-            self.postNotification_({u"action": u"update_package_progress", u"percent": progress})
+            self.postNotification_({u"action": u"update_progress", u"percent": progress})
         elif string.startswith(u"PHASE:"):
             message = string[6:]
             self.postNotification_({u"action": u"update_message", u"message": message})
@@ -135,23 +137,25 @@ class ProgressWatcher(NSObject):
             #NSLog(u"(Ignoring installer progress %@)", string)
     
     def parseIEDProgress_(self, string):
-        if string.startswith(u"%"):
-            progress = float(string[1:])
-            if progress < 0:
-                progress = None
-            self.postNotification_({u"action": u"update_progress", u"percent": progress})
-        elif string.startswith(u"MSG:"):
+        if string.startswith(u"MSG:"):
             message = string[4:]
             self.postNotification_({u"action": u"update_message", u"message": message})
-        elif string.startswith(u"PACKAGE:"):
-            numstr, _, name = string[8:].partition(u":")
-            num = int(numstr)
-            self.postNotification_({u"action": u"select_package", u"name": name, u"num": num})
+        elif string.startswith(u"PHASE:"):
+            phase = string[6:]
+            self.postNotification_({u"action": u"select_phase", u"phase": phase})
         elif string.startswith(u"FAILURE:"):
             message = string[8:]
             self.postNotification_({u"action": u"notify_failure", u"message": message})
         else:
             NSLog(u"(Unknown IED progress %@)", string)
+    
+    def parseHdiutilProgress_(self, string):
+        if string.startswith(u"MESSAGE:"):
+            message = string[8:]
+            self.postNotification_({u"action": u"update_message", u"message": message})
+        elif string.startswith(u"PERCENT:"):
+            progress = float(string[8:])
+            self.postNotification_({u"action": u"update_progress", u"percent": progress})
     
     def postNotification_(self, msgDict):
         msg, error = NSPropertyListSerialization.dataWithPropertyList_format_options_error_(msgDict,
@@ -205,7 +209,7 @@ def main(argv):
     iedparser.add_argument(u"-u", u"--user", help=u"Change owner of DMG", required=True)
     iedparser.add_argument(u"-g", u"--group", help=u"Change group of DMG", required=True)
     iedparser.add_argument(u"-o", u"--output", help=u"Set output path", required=True)
-    iedparser.add_argument(u"packages", help=u"Additional packages", nargs=u"+")
+    iedparser.add_argument(u"packages", help=u"Packages to install", nargs=u"+")
     iedparser.set_defaults(func=installesdtodmg)
     
     asrparser = sp.add_parser(u"imagescan", help=u"Perform asr imagescan of dmg")
