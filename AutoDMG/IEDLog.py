@@ -23,7 +23,7 @@ IEDLogLevelDebug     = 7
 
 class IEDLog(NSObject):
     
-    logLevel = IEDLogLevelWarning
+    logLevel = IEDLogLevelNotice
 
 
 def LogMessage(level, message):
@@ -31,25 +31,16 @@ def LogMessage(level, message):
         NSLog(u"%@", message)
 
 def LogDebug(*args):
-    if IEDLog.logLevel >= IEDLogLevelDebug:
-        NSLog(*args)
+    LogMessage(IEDLogLevelDebug, NSString.stringWithFormat_(*args))
 
 def LogInfo(*args):
-    if IEDLog.logLevel >= IEDLogLevelInfo:
-        NSLog(*args)
+    LogMessage(IEDLogLevelInfo, NSString.stringWithFormat_(*args))
 
 def LogNotice(*args):
-    if IEDLog.logLevel >= IEDLogLevelNotice:
-        NSLog(*args)
+    LogMessage(IEDLogLevelNotice, NSString.stringWithFormat_(*args))
 
 def LogWarning(*args):
-    if IEDLog.logLevel >= IEDLogLevelWarning:
-        NSLog(*args)
+    LogMessage(IEDLogLevelWarning, NSString.stringWithFormat_(*args))
 
 def LogError(*args):
-    if IEDLog.logLevel >= IEDLogLevelError:
-        NSLog(*args)
-
-def LogCritical(*args):
-        NSLog(*args)
-
+    LogMessage(IEDLogLevelError, NSString.stringWithFormat_(*args))
