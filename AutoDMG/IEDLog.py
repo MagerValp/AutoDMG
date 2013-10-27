@@ -9,6 +9,7 @@
 
 
 from Foundation import *
+import inspect
 
 
 IEDLogLevelEmergency = 0
@@ -28,7 +29,16 @@ class IEDLog(NSObject):
 
 def LogMessage(level, message):
     if IEDLog.logLevel >= level:
-        NSLog(u"%@", message)
+        prefix = u""
+        if level == IEDLogLevelDebug:
+            for caller in inspect.stack()[1:]:
+                modname = inspect.getmodule(caller[0]).__name__
+                if modname == u"IEDLog":
+                    continue
+                lineno = caller[2]
+                prefix = u"(%s:%d) " % (modname, lineno)
+                break
+        NSLog(u"%@%@", prefix, message)
 
 def LogDebug(*args):
     LogMessage(IEDLogLevelDebug, NSString.stringWithFormat_(*args))
