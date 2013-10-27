@@ -102,7 +102,7 @@ class IEDWorkflow(NSObject):
         self.newSourcePath = path
         if self.installerMountPoint:
             self.delegate.ejectingSource()
-            self.dmgHelper.detachAllWithTarget_selector_(self, self.continueSetSource_)
+            self.dmgHelper.detachAll_(self.continueSetSource_)
         else:
             self.continueSetSource_({})
     
