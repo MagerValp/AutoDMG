@@ -11,6 +11,9 @@ from Foundation import *
 import os
 import hashlib
 
+from IEDLog import *
+
+
 class IEDUpdateCache(NSObject):
     """Managed updates cached on disk in the Application Support directory."""
     
@@ -31,65 +34,126 @@ class IEDUpdateCache(NSObject):
                 os.makedirs(self.updateDir)
             except OSError as e:
                 NSLog(u"Failed to create %@: %@", self.updateDir, unicode(e))
+        
         return self
     
-    def isCached_(self, sha1):
-        return os.path.exists(self.getUpdatePath_(sha1))
+    def initWithDelegate_(self, delegate):
+        self = self.init()
+        if self is None:
+            return None
+        
+        self.delegate = delegate
+        
+        return self
     
-    def getUpdatePath_(self, sha1):
+    # Given a dictionary with sha1 hashes pointing to filenames, clean the
+    # cache of unreferenced items, and create symlinks from the filenames to
+    # the corresponding cache files.
+    def pruneAndCreateSymlinks(self, symlinks):
+        LogInfo(u"Pruning cache")
+        
+        self.symlinks = symlinks
+        
+        # Create a reverse dictionary and a set of filenames.
+        names = dict()
+        filenames = set()
+        for sha1, name in symlinks.iteritems():
+            names[name] = sha1
+            filenames.add(name)
+            filenames.add(sha1)
+        
+        for item in os.listdir(self.updateDir):
+            try:
+                itempath = os.path.join(self.updateDir, item)
+                if item not in filenames:
+                    LogInfo(u"Removing %s" % item)
+                    os.unlink(itempath)
+            except OSError as e:
+                LogWarning(u"Cache pruning of %s failed: %s" % (item, unicode(e)))
+        for sha1, name in symlinks.iteritems():
+            sha1path = os.path.join(self.updateDir, sha1)
+            linkpath = os.path.join(self.updateDir, name)
+            if os.path.exists(sha1path):
+                if os.path.lexists(linkpath):
+                    if os.readlink(linkpath) == sha1:
+                        LogDebug(u"Found %s -> %s" % (name, sha1))
+                        continue
+                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkpath)))
+                    try:
+                        os.unlink(linkpath)
+                    except OSError as e:
+                        LogWarning(u"Cache pruning of %s failed: %s" % (name, unicode(c)))
+                        continue
+                LogDebug(u"Creating %s -> %s" % (name, sha1))
+                os.symlink(sha1, linkpath)
+            else:
+                if os.path.lexists(linkpath):
+                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkpath)))
+                    try:
+                        os.unlink(linkpath)
+                    except OSError as e:
+                        LogWarning(u"Cache pruning of %s failed: %s" % (name, unicode(c)))
+            
+    
+    def isCached_(self, sha1):
+        return os.path.exists(self.cachePath_(sha1))
+    
+    def updatePath_(self, sha1):
+        return os.path.join(self.updateDir, self.symlinks[sha1])
+    
+    def cachePath_(self, sha1):
         return os.path.join(self.updateDir, sha1)
     
-    def getUpdateTmpPath_(self, sha1):
+    def cacheTmpPath_(self, sha1):
         return os.path.join(self.updateDir, sha1 + u".part")
     
-    def notifyTarget_(self, message):
-        self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.selector,
-                                                                          message,
-                                                                          False)
     
-    def failWithErrorMessage_(self, error):
-        self.notifyTarget_({u"action": u"failed",
-                            u"update": self.update,
-                            u"error-message": error})
     
-    def downloadUpdates_withTarget_selector_(self, updates, target, selector):
-        self.target = target
-        self.selector = selector
+    # Download updates to cache.
+    #
+    # Delegate methods:
+    #
+    #     - (void)downloadAllDone
+    #     - (void)downloadStarting:(NSDictionary *)update
+    #     - (void)downloadGotData:(NSDictionary *)update bytesRead:(NSString *)bytes
+    #     - (void)downloadSucceeded:(NSDictionary *)update
+    #     - (void)downloadFailed:(NSDictionary *)update withError:(NSString *)message
+    
+    def downloadUpdates_(self, updates):
         self.updates = updates
         self.downloadNextUpdate()
     
     def downloadNextUpdate(self):
         if self.updates:
-            self.update = self.updates.pop(0)
+            self.package = self.updates.pop(0)
             self.bytesReceived = 0
-            self.notifyTarget_({u"action": u"start",
-                                u"update": self.update})
-            path = self.getUpdateTmpPath_(self.update[u"sha1"])
+            self.checksum = hashlib.sha1()
+            self.delegate.downloadStarting_(self.package)
+            
+            path = self.cacheTmpPath_(self.package.sha1())
             if not NSFileManager.defaultManager().createFileAtPath_contents_attributes_(path, None, None):
                 error = u"Couldn't create temporary file at %s" % path
-                self.failWithErrorMessage_(error)
+                self.delegate.downloadFailed_withError_(self.package, error)
                 return
             self.fileHandle = NSFileHandle.fileHandleForWritingAtPath_(path)
             if not self.fileHandle:
                 error = u"Couldn't open %s for writing" % path
-                self.failWithErrorMessage_(error)
+                self.delegate.downloadFailed_withError_(self.package, error)
                 return
-            url = NSURL.URLWithString_(self.update[u"url"])
+            
+            url = NSURL.URLWithString_(self.package.url())
             request = NSURLRequest.requestWithURL_(url)
             NSURLConnection.connectionWithRequest_delegate_(request, self)
         else:
-            self.notifyTarget_({u"action": u"alldone"})
+            self.delegate.downloadAllDone()
     
     def connection_didFailWithError_(self, connection, error):
-        NSLog(u"%@ failed: %@", self.update[u"name"], error)
+        NSLog(u"%@ failed: %@", self.package.name(), error)
         self.fileHandle.closeFile()
-        self.failWithErrorMessage_(error.localizedDescription())
+        self.delegate.downloadFailed_withError_(self.package, error.localizedDescription())
     
     def connection_didReceiveResponse_(self, connection, response):
-        NSLog(u"%@ status code %d", self.update[u"name"], response.statusCode())
-        self.notifyTarget_({u"action": u"response",
-                            u"update": self.update,
-                            u"response": response})
+        NSLog(u"%@ status code %d", self.package.name(), response.statusCode())
     
     def connection_didReceiveData_(self, connection, data):
         try:
@@ -97,51 +161,36 @@ class IEDUpdateCache(NSObject):
         except BaseException as e:
             NSLog(u"Write error: %@", unicode(e))
             connection.cancel()
-            error = u"Writing to %s failed: %s" % (self.getUpdateTmpPath_(self.update[u"sha1"]), unicode(e))
+            error = u"Writing to %s failed: %s" % (self.cacheTmpPath_(self.package.sha1()), unicode(e))
             self.fileHandle.closeFile()
-            self.failWithErrorMessage_(error)
+            self.delegate.downloadFailed_withError_(self.package, error)
             return
+        self.checksum.update(data)
         self.bytesReceived += data.length()
-        self.notifyTarget_({u"action": u"data",
-                            u"update": self.update,
-                            u"bytes-received": self.bytesReceived})
+        self.delegate.downloadGotData_bytesRead_(self.package, self.bytesReceived)
     
     def connectionDidFinishLoading_(self, connection):
-        NSLog(u"%@ finished downloading to %@", self.update[u"name"], self.getUpdateTmpPath_(self.update[u"sha1"]))
+        NSLog(u"%@ finished downloading to %@", self.package.name(), self.cacheTmpPath_(self.package.sha1()))
         self.fileHandle.closeFile()
-        self.performSelectorInBackground_withObject_(self.calculateChecksum_, None)
-    
-    def calculateChecksum_(self, args):
-        self.notifyTarget_({u"action": u"checksumming",
-                            u"update": self.update})
-        sha1 = self.update[u"sha1"]
-        src = self.getUpdateTmpPath_(sha1)
-        dst = self.getUpdatePath_(sha1)
-        
-        m = hashlib.sha1()
-        bytesRead = 0
-        with open(src) as f:
-            while True:
-                data = f.read(1024 * 1024)
-                if not data:
-                    break
-                m.update(data)
-                bytesRead += len(data)
-                self.notifyTarget_({u"action": u"checksum-progress",
-                                    u"bytes-read": bytesRead,
-                                    u"update": self.update})
-        if m.hexdigest() != sha1:
-            self.failWithErrorMessage_(u"Expected sha1 checksum %s but got %s" % (sha1.lower(), m.hexdigest().lower()))
-            return
-        try:
-            os.rename(src, dst)
-        except OSError as e:
-            self.failWithErrorMessage_(u"Failed when moving download to %s: %s" % (dst, unicode(e)))
-            return
-        self.notifyTarget_({u"action": u"checksum-ok",
-                            u"update": self.update})
-        self.performSelectorOnMainThread_withObject_waitUntilDone_(self.checksumOK_, None, False)
-    
-    def checksumOK_(self, args):
-        self.downloadNextUpdate()
-
+        if self.checksum.hexdigest() == self.package.sha1():
+            try:
+                os.rename(self.cacheTmpPath_(self.package.sha1()),
+                          self.cachePath_(self.package.sha1()))
+            except OSError as e:
+                error = u"Failed when moving download to %s: %s" % (self.cachePath_(self.package.sha1()), unicode(e))
+                self.delegate.downloadFailed_withError_(self.package, error)
+                return
+            try:
+                os.symlink(self.cachePath_(self.package.sha1()), os.path.basename(self.package.url()))
+            except OSError as e:
+                linkpath = os.path.join(self.updateDir, os.path.basename(self.package.url()))
+                error = u"Failed when creating link from %s to %s: %s" % (self.package.sha1(),
+                                                                          linkpath,
+                                                                          unicode(e))
+                self.delegate.downloadFailed_withError_(self.package, error)
+                return
+            self.delegate.downloadSucceeded_(self.package)
+            self.downloadNextUpdate()
+        else:
+            error = u"Expected sha1 checksum %s but got %s" % (sha1.lower(), m.hexdigest().lower())
+            self.delegate.downloadFailed_withError_(self.package, error)

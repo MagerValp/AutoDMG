@@ -13,9 +13,6 @@ import plistlib
 import time
 
 
-IEDDMGHelperDebug = False
-
-
 class IEDDMGHelper(NSObject):
     
     def init(self):
@@ -29,9 +26,22 @@ class IEDDMGHelper(NSObject):
         
         return self
     
+    def initWithDelegate_(self, handler):
+        self = self.init()
+        if self is None:
+            return None
+        
+        self.handler = handler
+        
+        return self
+    
+    # Send a message to handler in the main thread.
+    def tellHandler_message_(self, selector, message):
+        if self.handler.respondsToSelector_(selector):
+            self.handler.performSelectorOnMainThread_withObject_waitUntilDone_(selector, message, False)
+    
     def hdiutilAttach_(self, args):
-        dmgPath, target, selector = args
-        if IEDDMGHelperDebug: (u"hdiutilAttach:%@", dmgPath)
+        dmgPath, selector = args
         p = subprocess.Popen([u"/usr/bin/hdiutil",
                               u"attach",
                               dmgPath,
@@ -48,55 +58,43 @@ class IEDDMGHelper(NSObject):
             errstr = u"hdiutil attach failed with return code %d" % p.returncode
             if err:
                 errstr += u": %s" % err
-            target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                         {u"success": False,
-                                                                           u"dmg-path": dmgPath,
-                                                                           u"error-message": errstr},
-                                                                          False)
+            self.tellHandler_message_(selector, {u"success": False,
+                                              u"dmg-path": dmgPath,
+                                              u"error-message": errstr})
             return
         plist = plistlib.readPlistFromString(out)
-        if IEDDMGHelperDebug: (u"plist = %@", plist)
         for partition in plist[u"system-entities"]:
             if u"mount-point" in partition:
                 self.dmgs[dmgPath] = partition[u"mount-point"]
-                if IEDDMGHelperDebug: (u"self.dmgs = %@", self.dmgs)
                 break
         else:
-            target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                         {u"success": False,
-                                                                          u"dmg-path": dmgPath,
-                                                                          u"error-message": u"No mounted filesystem in %s" % dmgPath},
-                                                                         False)
+            self.tellHandler_message_(selector, {u"success": False,
+                                                 u"dmg-path": dmgPath,
+                                                 u"error-message": u"No mounted filesystem in %s" % dmgPath})
             return
-        target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                     {u"success": True,
-                                                                      u"dmg-path": dmgPath,
-                                                                      u"mount-point": self.dmgs[dmgPath]},
-                                                                     False)
+        self.tellHandler_message_(selector, {u"success": True,
+                                             u"dmg-path": dmgPath,
+                                             u"mount-point": self.dmgs[dmgPath]})
     
-    # Attach a dmg and send the target a success dictionary.
-    def attach_withTarget_selector_(self, dmgPath, target, selector):
-        if IEDDMGHelperDebug: (u"attach_withTarget_selector_")
+    # Attach a dmg and send a success dictionary.
+    def attach_selector_(self, dmgPath, selector):
         if dmgPath in self.dmgs:
-            target.performSelector_withObject_(selector, {u"success": True,
-                                                          u"dmg-path": dmgPath,
-                                                          u"mount-point": self.dmgs[dmgPath]})
+            self.tellHandler_message_(selector, {u"success": True,
+                                                 u"dmg-path": dmgPath,
+                                                 u"mount-point": self.dmgs[dmgPath]})
         else:
-            self.performSelectorInBackground_withObject_(self.hdiutilAttach_, [dmgPath, target, selector])
+            self.performSelectorInBackground_withObject_(self.hdiutilAttach_, [dmgPath, selector])
     
     def hdiutilDetach_(self, args):
-        dmgPath, target, selector = args
-        if IEDDMGHelperDebug: (u"hdiutilDetach:%@", dmgPath)
+        dmgPath, selector = args
         try:
             cmd = [u"/usr/bin/hdiutil",
                    u"detach",
                    self.dmgs[dmgPath]]
         except KeyError:
-            target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                         {u"success": False,
-                                                                          u"dmg-path": dmgPath,
-                                                                          u"error-message": u"%s not mounted" % dmgPath},
-                                                                         False)
+            self.tellHandler_message_(selector, {u"success": False,
+                                                 u"dmg-path": dmgPath,
+                                                 u"error-message": u"%s not mounted" % dmgPath})
         maxtries = 5
         for tries in range(maxtries):
             if tries == maxtries >> 1:
@@ -106,56 +104,45 @@ class IEDDMGHelper(NSObject):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
             out, err = p.communicate()
-            if IEDDMGHelperDebug: (u"%@ returned %d", cmd, p.returncode)
             if p.returncode == 0:
                 del self.dmgs[dmgPath]
-                target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                             {u"success": True,
-                                                                              u"dmg-path": dmgPath},
-                                                                             False)
+                self.tellHandler_message_(selector, {u"success": True, u"dmg-path": dmgPath})
                 return
             elif tries == maxtries - 1:
                 errstr = u"hdiutil detach failed with return code %d" % p.returncode
                 if err:
                     errstr += u": %s" % err
-                target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                             {u"success": False,
-                                                                              u"dmg-path": dmgPath,
-                                                                              u"error-message": errstr},
-                                                                             False)
+                self.tellHandler_message_(selector, {u"success": False,
+                                                     u"dmg-path": dmgPath,
+                                                     u"error-message": errstr})
             else:
                 time.sleep(1)
     
-    # Detach a dmg and send the target a success dictionary.
-    def detach_withTarget_selector_(self, dmgPath, target, selector):
-        if IEDDMGHelperDebug: (u"detach_withTarget_selector_")
+    # Detach a dmg and send a success dictionary.
+    def detach_selector_(self, dmgPath, selector):
         if dmgPath in self.dmgs:
-            self.performSelectorInBackground_withObject_(self.hdiutilDetach_, [dmgPath, target, selector])
+            self.performSelectorInBackground_withObject_(self.hdiutilDetach_, [dmgPath, selector])
         else:
-            target.performSelector_withObject_(selector, {u"success": False,
-                                                          u"dmg-path": dmgPath,
-                                                          u"error-message": u"%s isn't mounted" % dmgPath})
+            self.tellHandler_message_(selector, {u"success": False,
+                                                 u"dmg-path": dmgPath,
+                                                 u"error-message": u"%s isn't mounted" % dmgPath})
     
-    # Detach all mounted dmgs and send the target a message with a dictionary
-    # of detach failures.
-    def detachAllWithTarget_selector_(self, target, selector):
-        if IEDDMGHelperDebug: (u"detachAllWithTarget_selector_")
+    # Detach all mounted dmgs and send a message with a dictionary of detach
+    # failures.
+    def detachAll_(self, selector):
         self.detachAllFailed = dict()
         self.detachAllCount = len(self.dmgs)
-        self.detachAllTarget = target
         self.detachAllSelector = selector
         if self.dmgs:
             for dmgPath in self.dmgs.keys():
-                self.performSelectorInBackground_withObject_(self.hdiutilDetach_, [dmgPath, self, self.handleDetachAllResult_])
+                self.performSelectorInBackground_withObject_(self.hdiutilDetach_, [dmgPath, self.handleDetachAllResult_])
         else:
-            target.performSelector_withObject_(selector, {})
+            if self.handler.respondsToSelector_(selector):
+                self.handler.performSelector_withObject_(selector, {})
     
     def handleDetachAllResult_(self, result):
-        if IEDDMGHelperDebug: (u"handleDetachAllResult_")
         if result[u"success"] == False:
             self.detachAllFailed[result[u"dmg-path"]] = result[u"error-message"]
         self.detachAllCount -= 1
         if self.detachAllCount == 0:
-            self.detachAllTarget.performSelectorOnMainThread_withObject_waitUntilDone_(self.detachAllSelector,
-                                                                                       self.detachAllFailed,
-                                                                                       False)
+            self.tellHandler_message_(self.detachAllSelector, self.detachAllFailed)

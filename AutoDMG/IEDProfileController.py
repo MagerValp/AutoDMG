@@ -15,25 +15,21 @@ import os.path
 
 
 class IEDProfileController(NSObject):
-    """Singleton class to keep track of update profiles, containing lists of
-       the latest updates needed to build a fully updated OS X image."""
-    
-    _instance = None
+    """Keep track of update profiles, containing lists of the latest updates
+    needed to build a fully updated OS X image."""
     
     profileUpdateWindow = IBOutlet()
     progressBar = IBOutlet()
+    delegate = IBOutlet()
     
-    def init(self):
-        # Return singleton instance if it's already initialized.
-        if IEDProfileController._instance:
-            return IEDProfileController._instance
-        
-        # Otherwise we initialize a new instance.
-        self = super(IEDProfileController, self).init()
-        if self is None:
-            return None
-        IEDProfileController._instance = self
-        
+    #def init(self):
+    #    self = super(IEDProfileController, self).init()
+    #    if self is None:
+    #        return None
+    #    
+    #    return self
+    
+    def awakeFromNib(self):
         # Save the path to UpdateProfiles.plist in the user's application
         # support directory.
         fm = NSFileManager.defaultManager()
@@ -51,8 +47,6 @@ class IEDProfileController(NSObject):
         latestProfiles = self.updateUsersProfilesIfNewer_(bundleUpdateProfiles)
         # Load the profiles.
         self.loadProfilesFromPlist_(latestProfiles)
-        
-        return self
     
     def profileForVersion_Build_(self, version, build):
         """Return the update profile for a certain OS X version and build."""
@@ -92,7 +86,12 @@ class IEDProfileController(NSObject):
                 profile.append(plist[u"Updates"][update])
             self.profiles[name] = profile
         self.publicationDate = plist[u"PublicationDate"]
+        self.updatePaths = dict()
+        for name, update in plist[u"Updates"].iteritems():
+            self.updatePaths[update[u"sha1"]] = os.path.basename(update[u"url"])
+        self.delegate.profilesUpdated()
     
+    # FIXME: use a delegate protocol instead.
     def updateFromURL_withTarget_selector_(self, url, target, selector):
         """Download the latest update profiles asynchronously and notify
            target with the result."""

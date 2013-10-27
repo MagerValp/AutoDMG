@@ -17,14 +17,17 @@ from IEDProfileController import *
 
 class IEDAppDelegate(NSObject):
     
+    mainWindowController = IBOutlet()
+    profileController = IBOutlet()
+    
     def init(self):
         self = super(IEDAppDelegate, self).init()
         if self is None:
             return None
         
         defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
-        defaults = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
-        self.defaults().registerDefaults_(defaults)
+        defaultsDict = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
+        self.defaults().registerDefaults_(defaultsDict)
         
         IEDLog.logLevel = NSUserDefaults.standardUserDefaults().integerForKey_(u"LogLevel")
         
@@ -36,6 +39,7 @@ class IEDAppDelegate(NSObject):
         return NSUserDefaults.standardUserDefaults()
     
     def applicationDidFinishLaunching_(self, sender):
+        LogDebug(u"applicationDidFinishLaunching:")
         
         updateProfileInterval = self.defaults().integerForKey_(u"UpdateProfileInterval")
         if updateProfileInterval != 0:
@@ -45,5 +49,14 @@ class IEDAppDelegate(NSObject):
                 self.profileController.updateFromURL_withTarget_selector_(url, self, self.profileUpdateDone_)
     
     def profileUpdateDone_(self, result):
+        LogDebug(u"profileUpdateDone:%@", result)
         if result[u"success"]:
             self.defaults().setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
+    
+    def applicationShouldTerminate_(self, sender):
+        LogDebug(u"applicationShouldTerminate:")
+        return self.mainWindowController.applicationShouldTerminate_(sender)
+    
+    def applicationWillTerminate_(self, sender):
+        LogDebug(u"applicationWillTerminate:")
+        return

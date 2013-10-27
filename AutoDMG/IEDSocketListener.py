@@ -11,35 +11,41 @@ from Foundation import *
 import os
 import socket
 
+from IEDLog import *
+
 
 IEDSL_MAX_MSG_SIZE = 4096
 
 
 class IEDSocketListener(NSObject):
+    """Open a unix domain datagram socket and wait for messages encoded as
+    plists, which are decoded and passed on to the delegate."""
     
-    target = None
-    action = None
-    watchThread = None
-    
-    def listenOnSocketInDir_withName_target_action_(self, sockdir, name, target, action):
-        socketPath = NSString.stringWithFormat_(u"%@/%@.%@", sockdir, name, os.urandom(8).encode("hex"))
-        self.target = target
-        self.action = action
-        self.watchThread = NSThread.alloc().initWithTarget_selector_object_(self, u"listenInBackground:", socketPath)
+    def listenOnSocket_withDelegate_(self, path, delegate):
+        self.socketPath = NSString.stringWithFormat_(u"%@.%@", path, os.urandom(8).encode("hex"))
+        LogDebug(u"Creating socket at %@", self.socketPath)
+        self.delegate = delegate
+        self.watchThread = NSThread.alloc().initWithTarget_selector_object_(self, u"listenInBackground:", None)
         self.watchThread.start()
-        return socketPath
+        return self.socketPath
     
     def stopListening(self):
+        LogDebug(u"stopListening")
         self.watchThread.cancel()
+        try:
+            os.unlink(self.socketPath)
+        except BaseException as e:
+            LogWarning(u"Couldn't remove listener socket %@: %@", self.socketPath, unicode(e))
     
-    def listenInBackground_(self, socketPath):
+    def listenInBackground_(self, ignored):
         try:
             sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-            sock.bind(socketPath)
+            sock.bind(self.socketPath)
         except socket.error as e:
-            NSLog(u"Error creating datagram socket at %@: %@", socketPath, unicode(e))
+            LogError(u"Error creating datagram socket at %@: %@", self.socketPath, unicode(e))
             return
         
+        LogDebug(u"Listening to socket in background thread")
         while True:
             msg = sock.recv(IEDSL_MAX_MSG_SIZE, socket.MSG_WAITALL)
             if not msg:
@@ -50,7 +56,8 @@ class IEDSocketListener(NSObject):
                                                                                                           None,
                                                                                                           None)
             if not plist:
-                NSLog(u"Error decoding plist: %@", error)
+                LogError(u"Error decoding plist: %@", error)
                 continue
-            if self.target.respondsToSelector_(self.action):
-                self.target.performSelectorOnMainThread_withObject_waitUntilDone_(self.action, plist, NO)
+            LogDebug(u"Received message on socket: %@", plist)
+            if self.delegate.respondsToSelector_(u"socketReceivedMessage:"):
+                self.delegate.performSelectorOnMainThread_withObject_waitUntilDone_(u"socketReceivedMessage:", plist, NO)
