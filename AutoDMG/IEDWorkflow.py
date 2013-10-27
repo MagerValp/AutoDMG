@@ -72,6 +72,11 @@ class IEDWorkflow(NSObject):
         else:
             self.delegate.detachFailed_details_(result[u"dmg-path"], result[u"error-message"])
     
+    def detachInstallerDMGs(self):
+        LogDebug(u"Detaching installer DMGs")
+        for dmgPath, mountPoint in self.attachedPackageDMGs.iteritems():
+            self.dmgHelper.detach_selector_(dmgPath, self.handleDetachResult_)
+    
     
     
     # External state of controller.
@@ -306,8 +311,6 @@ class IEDWorkflow(NSObject):
         self.delegate.buildSetPhase_(self.currentPhase[u"title"])
         self.delegate.buildSetProgress_(self.progress)
     
-    
-    
     def fail_details_(self, message, text):
         LogError(u"Workflow failed: %@ (%@)", message, text)
         self.delegate.buildFailed_details_(message, text)
@@ -319,11 +322,6 @@ class IEDWorkflow(NSObject):
         LogDebug(u"Workflow stopping")
         self.detachInstallerDMGs()
         self.delegate.buildStopped()
-    
-    def detachInstallerDMGs(self):
-        LogDebug(u"Detaching installer DMGs")
-        for dmgPath, mountPoint in self.attachedPackageDMGs.iteritems():
-            self.dmgHelper.detach_selector_(dmgPath, self.handleDetachResult_)
     
     
     
@@ -474,14 +472,23 @@ class IEDWorkflow(NSObject):
             LogDebug(u"Script phase: %@", msg[u"phase"])
             self.nextPhase()
         
+        elif action == u"log_message":
+            LogMessage(msg[u"log_level"], msg[u"message"])
+        
         elif action == u"notify_failure":
-            self.notifyFailure_(msg[u"message"])
+            self.fail_details_(u"Build failed", msg[u"message"])
         
         elif action == u"task_done":
-            if msg[u"termination_status"] == 0:
+            status = msg[u"termination_status"]
+            if status == 0:
                 self.nextTask()
             else:
-                self.fail_details_(u"Build failed", u"task exited with status %@", msg[u"termination_status"])
+                details = NSString.stringWithFormat_(u"Task exited with status %@", msg[u"termination_status"])
+                LogError(u"%@", details)
+                # Status codes 100-199 are from installesdtodmg.sh, and have
+                # been preceeded by a "notify_failure" message.
+                if (status < 100) or (status > 199):
+                    self.fail_details_(u"Build failed", details)
         
         else:
             self.fail_details_(u"Unknown progress notification", u"Message: %@", msg)

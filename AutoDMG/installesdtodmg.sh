@@ -62,12 +62,12 @@ trap perform_cleanup EXIT
 
 if [[ $(id -u) -ne 0 ]]; then
     echo "IED:FAILURE:$(basename "$0") must run as root"
-    exit 1
+    exit 100
 fi
 
 if [[ $# -lt 4 ]]; then
     echo "IED:FAILURE:Usage: $(basename "$0") user group output.dmg OSInstall.mpkg [package...]"
-    exit 1
+    exit 100
 fi
 user="$1"
 group="$2"
@@ -80,7 +80,7 @@ tempdirs+=("$tempdir")
 freespace=$(df -g / | tail -1 | awk '{print $4}')
 if [[ "$freespace" -lt 15 ]]; then
     echo "IED:FAILURE:Less than 15 GB free disk space, aborting"
-    exit 1
+    exit 100
 fi
 
 
@@ -118,10 +118,15 @@ for package; do
         echo "installer:%100.0"
         sleep 1
     else
-        installer -verboseR -pkg "$package" -target "$sparsemount"
+        installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
         declare -i result=$?
         if [[ $result -ne 0 ]]; then
-            echo "IED:FAILURE:OS install failed with return code $result"
+            if [[ $pkgnum -eq 1 ]]; then
+                pkgname="OS install"
+            else
+                pkgname=$(basename "$package")
+            fi
+            echo "IED:FAILURE:$pkgname failed with return code $result"
             exit 102
         fi
     fi

@@ -14,10 +14,14 @@ import os
 import sys
 import argparse
 import socket
+import re
+import traceback
 from Foundation import *
 
 
 class ProgressWatcher(NSObject):
+    
+    re_installerlog = re.compile(r'^.+? installer\[\d+\] <(?P<level>[^>]+)>: (?P<message>.*)$')
     
     def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -31,6 +35,7 @@ class ProgressWatcher(NSObject):
         outpipe = NSPipe.alloc().init()
         stdoutHandle = outpipe.fileHandleForReading()
         task.setStandardOutput_(outpipe)
+        task.setStandardError_(outpipe)
         
         task.setLaunchPath_(args[0])
         task.setArguments_(args[1:])
@@ -119,9 +124,13 @@ class ProgressWatcher(NSObject):
             elif string.startswith(u"MESSAGE:") or string.startswith(u"PERCENT:"):
                 self.parseHdiutilProgress_(string)
             else:
-                NSLog(u"(Ignoring progress %@)", string)
+                m = self.re_installerlog.match(string)
+                if m:
+                    self.parseInstallerLogLevel_Message_(m.group(u"level"), m.group(u"message"))
+                else:
+                    NSLog(u"(Ignoring progress %@)", string)
         except BaseException as e:
-            NSLog(u"Progress parsing failed with exception: %s" % e)
+            NSLog(u"Progress parsing failed: %s" % traceback.format_exc())
     
     def parseInstallerProgress_(self, string):
         if string.startswith(u"%"):
@@ -135,6 +144,23 @@ class ProgressWatcher(NSObject):
         else:
             pass
             #NSLog(u"(Ignoring installer progress %@)", string)
+    
+    def parseInstallerLogLevel_Message_(self, level, message):
+        try:
+            logLevel = {
+                u"panic":       0,
+                u"emergency":   0,
+                u"alert":       1,
+                u"critical":    2,
+                u"error":       3,
+                u"warning":     4,
+                u"notice":      5,
+                u"info":        6,
+                u"debug":       7,
+            }[level.lower()]
+        except KeyError:
+            logLevel = 4
+        self.postNotification_({u"action": u"log_message", u"log_level": logLevel, u"message": message})
     
     def parseIEDProgress_(self, string):
         if string.startswith(u"MSG:"):
