@@ -10,6 +10,7 @@
 from Foundation import *
 import os
 import socket
+import glob
 
 from IEDLog import *
 
@@ -22,6 +23,12 @@ class IEDSocketListener(NSObject):
     plists, which are decoded and passed on to the delegate."""
     
     def listenOnSocket_withDelegate_(self, path, delegate):
+        for oldsocket in glob.glob(u"%s.*" % path):
+            LogDebug(u"Removing old socket %@", oldsocket)
+            try:
+                os.unlink(oldsocket)
+            except:
+                pass
         self.socketPath = NSString.stringWithFormat_(u"%@.%@", path, os.urandom(8).encode("hex"))
         LogDebug(u"Creating socket at %@", self.socketPath)
         self.delegate = delegate
