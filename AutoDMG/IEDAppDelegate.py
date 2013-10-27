@@ -31,8 +31,6 @@ class IEDAppDelegate(NSObject):
         
         IEDLog.logLevel = NSUserDefaults.standardUserDefaults().integerForKey_(u"LogLevel")
         
-        self.profileController = IEDProfileController.alloc().init()
-        
         return self
     
     def defaults(self):
