@@ -11,18 +11,24 @@
 from Foundation import *
 
 
-IEDLogLevelCritical = 0
-IEDLogLevelError    = 1
-IEDLogLevelWarning  = 2
-IEDLogLevelNotice   = 3
-IEDLogLevelInfo     = 4
-IEDLogLevelDebug    = 5
+IEDLogLevelEmergency = 0
+IEDLogLevelAlert     = 1
+IEDLogLevelCritical  = 2
+IEDLogLevelError     = 3
+IEDLogLevelWarning   = 4
+IEDLogLevelNotice    = 5
+IEDLogLevelInfo      = 6
+IEDLogLevelDebug     = 7
 
 
 class IEDLog(NSObject):
     
     logLevel = IEDLogLevelWarning
 
+
+def LogMessage(level, message):
+    if IEDLog.logLevel >= level:
+        NSLog(u"%@", message)
 
 def LogDebug(*args):
     if IEDLog.logLevel >= IEDLogLevelDebug:
