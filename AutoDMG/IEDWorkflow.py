@@ -458,7 +458,6 @@ class IEDWorkflow(NSObject):
     def socketReceivedMessage_(self, msg):
         # The message is a dictionary with "action" as the only required key.
         action = msg[u"action"]
-        LogDebug(u"socketReceivedMessage: %@", action)
         
         if action == u"update_progress":
             percent = msg[u"percent"]
