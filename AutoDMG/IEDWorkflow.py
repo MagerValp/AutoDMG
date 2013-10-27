@@ -84,6 +84,7 @@ class IEDWorkflow(NSObject):
     # Common delegate methods:
     #
     #     - (void)displayAlert:(NSString *)message text:(NSString *)text
+    #     - (void)detachFailed:(NSString *)message details:(NSString *)details
     
     
     
@@ -193,8 +194,12 @@ class IEDWorkflow(NSObject):
     #
     #     - (void)buildStartingWithOutput:(NSString *)outputPath
     #     - (void)buildSetTotalWeight:(double)totalWeight
+    #     - (void)buildSetPhase:(NSString *)phase
+    #     - (void)buildSetProgress:(double)progress
+    #     - (void)buildSetProgressMessage:(NSString *)message
+    #     - (void)buildSucceeded
     #     - (void)buildFailed:(NSString *)message details:(NSString *)details
-    #     - (void)detachFailed:(NSString *)message details:(NSString *)details
+    #     - (void)buildStopped
     
     def start(self):
         self.delegate.buildStartingWithOutput_(self.outputPath())

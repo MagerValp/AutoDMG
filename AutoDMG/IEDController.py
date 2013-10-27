@@ -16,10 +16,6 @@ from IEDLog import *
 from IEDUpdateController import *
 from IEDWorkflow import *
 
-IEDTaskNone = 0
-IEDTaskInstall = 1
-IEDTaskImageScan = 2
-
 
 class IEDController(NSObject):
     
@@ -28,10 +24,8 @@ class IEDController(NSObject):
     sourceView = IBOutlet()
     sourceLabel = IBOutlet()
     
-    #applyUpdatesCheckbox = IBOutlet()
-    #updateTable = IBOutlet()
-    #updateTableLabel = IBOutlet()
-    #downloadButton = IBOutlet()
+    updateController = IBOutlet()
+    addPkgController = IBOutlet()
     
     buildButton = IBOutlet()
     
@@ -40,11 +34,6 @@ class IEDController(NSObject):
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
     buildProgressStopButton = IBOutlet()
-    
-    updateController = IBOutlet()
-    addPkgController = IBOutlet()
-    
-    progress = None
     
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
