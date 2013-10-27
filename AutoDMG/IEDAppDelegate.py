@@ -40,9 +40,11 @@ class IEDAppDelegate(NSObject):
         LogDebug(u"applicationDidFinishLaunching:")
         
         updateProfileInterval = self.defaults().integerForKey_(u"UpdateProfileInterval")
+        LogInfo(u"UpdateProfileInterval = %d", updateProfileInterval)
         if updateProfileInterval != 0:
             lastCheck = self.defaults().objectForKey_(u"LastUpdateProfileCheck")
             if lastCheck.timeIntervalSinceNow() < (-60 * 60 * 24 * updateProfileInterval):
+                LogInfo(u"Checking for updates")
                 url = NSURL.URLWithString_(self.defaults().stringForKey_(u"UpdateProfilesURL"))
                 self.profileController.updateFromURL_withTarget_selector_(url, self, self.profileUpdateDone_)
     

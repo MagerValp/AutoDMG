@@ -44,6 +44,7 @@ class IEDDMGHelper(NSObject):
     
     def hdiutilAttach_(self, args):
         dmgPath, selector = args
+        LogDebug(u"Attaching %@", dmgPath)
         p = subprocess.Popen([u"/usr/bin/hdiutil",
                               u"attach",
                               dmgPath,
@@ -88,8 +89,8 @@ class IEDDMGHelper(NSObject):
             self.performSelectorInBackground_withObject_(self.hdiutilAttach_, [dmgPath, selector])
     
     def hdiutilDetach_(self, args):
-        LogDebug(u"hdiutilDetach:%@", args)
         dmgPath, target, selector = args
+        LogDebug(u"Detaching %@", dmgPath)
         try:
             cmd = [u"/usr/bin/hdiutil",
                    u"detach",

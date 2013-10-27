@@ -172,6 +172,7 @@ class IEDWorkflow(NSObject):
                 u"version": version,
                 u"build": build,
             }
+            LogNotice(u"Accepted source %@: %@ %@ %@", self.newSourcePath, name, version, build)
             self.delegate.sourceSucceeded_(info)
         else:
             self.delegate.ejectingSource()
@@ -214,6 +215,7 @@ class IEDWorkflow(NSObject):
     #     - (void)buildStopped
     
     def start(self):
+        LogNotice(u"Starting build with output path of %@", self.outputPath())
         self.delegate.buildStartingWithOutput_(self.outputPath())
         
         # The workflow is split into tasks, and each task has one or more
@@ -260,12 +262,12 @@ class IEDWorkflow(NSObject):
             ],
         })
         
-        LogDebug(u"%@", self.tasks)
-        
         # Calculate total weight of all phases.
         self.totalWeight = 0
         for task in self.tasks:
+            LogInfo(u"Task %@ with %d phases:", task[u"method"], len(task[u"phases"]))
             for phase in task[u"phases"]:
+                LogInfo(u"    Phase '%@' with weight %.1f", phase[u"title"], phase[u"weight"] / 1048576.0)
                 self.totalWeight += phase[u"weight"]
         self.delegate.buildSetTotalWeight_(self.totalWeight)
         
@@ -293,7 +295,7 @@ class IEDWorkflow(NSObject):
             self.nextPhase()
             self.currentTask[u"method"]()
         else:
-            LogDebug(u"Last task done")
+            LogNotice(u"Build finished successfully, image saved to %@", self.outputPath())
             self.delegate.buildSucceeded()
             self.stop()
     
@@ -340,6 +342,7 @@ class IEDWorkflow(NSObject):
         for package in self.additionalPackages:
             if package.path().endswith(u".dmg"):
                 self.numberOfDMGsToAttach += 1
+                LogInfo(u"Attaching %@", package.path())
                 self.dmgHelper.attach_selector_(package.path(), self.attachPackageDMG_)
         if self.numberOfDMGsToAttach == 0:
             self.continuePrepare()
@@ -376,10 +379,14 @@ class IEDWorkflow(NSObject):
                                        u"No package found in %s" % package.name())
                     return
                 elif len(packagePaths) > 1:
-                    LogWarning(u"Multiple packages found for %s, using %s" % (update[u"name"], packagePaths[0]))
+                    LogWarning(u"Multiple packages found in disk image of %s, using %s" % (update[u"name"], packagePaths[0]))
                 self.packagesToInstall.append(packagePaths[0])
             else:
                 self.packagesToInstall.append(package.path())
+        
+        LogInfo(u"%d packages to install:", len(self.packagesToInstall))
+        for path in self.packagesToInstall:
+            LogInfo(u"    %@", path)
         
         # Task done.
         self.nextTask()
@@ -393,7 +400,7 @@ class IEDWorkflow(NSObject):
     #       the phases in sync with the script.
     
     def taskInstall(self):
-        LogDebug(u"taskInstall")
+        LogNotice(u"Install task running")
         
         # The script is wrapped with progresswatcher.py which parses script
         # output and sends it back as notifications to IEDSocketListener.
@@ -406,7 +413,9 @@ class IEDWorkflow(NSObject):
             u"--group", grp.getgrgid(os.getgid()).gr_name,
             u"--output", self.outputPath(),
         ] + self.packagesToInstall
-        LogNotice(u"Launching install with arguments: %@", args)
+        LogInfo(u"Launching install with arguments:")
+        for arg in args:
+            LogInfo(u"    '%@'", arg)
         self.performSelectorInBackground_withObject_(self.launchScript_, args)
     
     def launchScript_(self, args):
@@ -437,7 +446,7 @@ class IEDWorkflow(NSObject):
     #    1. Scan the image for restore.
     
     def taskFinalize(self):
-        LogDebug(u"taskFinalize")
+        LogNotice(u"Finalize task running")
         
         self.delegate.buildSetProgressMessage_(u"Scanning disk image for restore")
         # The script is wrapped with progresswatcher.py which parses script
@@ -448,7 +457,9 @@ class IEDWorkflow(NSObject):
             u"imagescan",
             self.outputPath(),
         ]
-        LogNotice(u"Launching finalize with arguments: %@", args)
+        LogInfo(u"Launching finalize with arguments:")
+        for arg in args:
+            LogInfo(u"    '%@'", arg)
         subprocess.Popen(args)
     
     
@@ -465,10 +476,11 @@ class IEDWorkflow(NSObject):
             self.delegate.buildSetProgress_(currentProgress)
         
         elif action == u"update_message":
+            LogMessage(IEDLogLevelInfo, msg[u"message"])
             self.delegate.buildSetProgressMessage_(msg[u"message"])
         
         elif action == u"select_phase":
-            LogDebug(u"Script phase: %@", msg[u"phase"])
+            LogNotice(u"Script phase: %@", msg[u"phase"])
             self.nextPhase()
         
         elif action == u"log_message":

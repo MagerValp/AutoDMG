@@ -65,6 +65,7 @@ class IEDController(NSObject):
     # Helper methods.
     
     def displayAlert_text_(self, message, text):
+        LogDebug(u"Displaying alert: %@ (%@)", message, text)
         alert = NSAlert.alloc().init()
         alert.setMessageText_(message)
         alert.setInformativeText_(text)

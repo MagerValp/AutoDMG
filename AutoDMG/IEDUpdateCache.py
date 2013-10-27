@@ -33,7 +33,7 @@ class IEDUpdateCache(NSObject):
             try:
                 os.makedirs(self.updateDir)
             except OSError as e:
-                NSLog(u"Failed to create %@: %@", self.updateDir, unicode(e))
+                LogError(u"Failed to create %@: %@", self.updateDir, unicode(e))
         
         return self
     
@@ -148,18 +148,18 @@ class IEDUpdateCache(NSObject):
             self.delegate.downloadAllDone()
     
     def connection_didFailWithError_(self, connection, error):
-        NSLog(u"%@ failed: %@", self.package.name(), error)
+        LogError(u"%@ failed: %@", self.package.name(), error)
         self.fileHandle.closeFile()
         self.delegate.downloadFailed_withError_(self.package, error.localizedDescription())
     
     def connection_didReceiveResponse_(self, connection, response):
-        NSLog(u"%@ status code %d", self.package.name(), response.statusCode())
+        LogInfo(u"%@ status code %d", self.package.name(), response.statusCode())
     
     def connection_didReceiveData_(self, connection, data):
         try:
             self.fileHandle.writeData_(data)
         except BaseException as e:
-            NSLog(u"Write error: %@", unicode(e))
+            LogError(u"Write error: %@", unicode(e))
             connection.cancel()
             error = u"Writing to %s failed: %s" % (self.cacheTmpPath_(self.package.sha1()), unicode(e))
             self.fileHandle.closeFile()
@@ -170,7 +170,7 @@ class IEDUpdateCache(NSObject):
         self.delegate.downloadGotData_bytesRead_(self.package, self.bytesReceived)
     
     def connectionDidFinishLoading_(self, connection):
-        NSLog(u"%@ finished downloading to %@", self.package.name(), self.cacheTmpPath_(self.package.sha1()))
+        LogInfo(u"%@ finished downloading to %@", self.package.name(), self.cacheTmpPath_(self.package.sha1()))
         self.fileHandle.closeFile()
         if self.checksum.hexdigest() == self.package.sha1():
             try:
@@ -178,6 +178,7 @@ class IEDUpdateCache(NSObject):
                           self.cachePath_(self.package.sha1()))
             except OSError as e:
                 error = u"Failed when moving download to %s: %s" % (self.cachePath_(self.package.sha1()), unicode(e))
+                LogError(error)
                 self.delegate.downloadFailed_withError_(self.package, error)
                 return
             try:
@@ -187,10 +188,13 @@ class IEDUpdateCache(NSObject):
                 error = u"Failed when creating link from %s to %s: %s" % (self.package.sha1(),
                                                                           linkpath,
                                                                           unicode(e))
+                LogError(error)
                 self.delegate.downloadFailed_withError_(self.package, error)
                 return
+            LogNotice(u"%@ added to cache with sha1 %@", self.package.name(), self.package.sha1())
             self.delegate.downloadSucceeded_(self.package)
             self.downloadNextUpdate()
         else:
             error = u"Expected sha1 checksum %s but got %s" % (sha1.lower(), m.hexdigest().lower())
+            LogError(error)
             self.delegate.downloadFailed_withError_(self.package, error)

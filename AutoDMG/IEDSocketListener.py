@@ -24,13 +24,13 @@ class IEDSocketListener(NSObject):
     
     def listenOnSocket_withDelegate_(self, path, delegate):
         for oldsocket in glob.glob(u"%s.*" % path):
-            LogDebug(u"Removing old socket %@", oldsocket)
+            LogInfo(u"Removing old socket %@", oldsocket)
             try:
                 os.unlink(oldsocket)
             except:
                 pass
         self.socketPath = NSString.stringWithFormat_(u"%@.%@", path, os.urandom(8).encode("hex"))
-        LogDebug(u"Creating socket at %@", self.socketPath)
+        LogInfo(u"Creating socket at %@", self.socketPath)
         self.delegate = delegate
         self.watchThread = NSThread.alloc().initWithTarget_selector_object_(self, u"listenInBackground:", None)
         self.watchThread.start()
