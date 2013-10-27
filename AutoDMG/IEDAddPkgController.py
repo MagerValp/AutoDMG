@@ -13,6 +13,7 @@ from objc import IBAction, IBOutlet
 import os.path
 import subprocess
 
+from IEDLog import *
 from IEDPackage import *
 
 
@@ -29,6 +30,7 @@ class IEDAddPkgController(NSObject):
             return None
         
         self.packages = list()
+        self.packagePaths = set()
         
         return self
     
@@ -52,7 +54,7 @@ class IEDAddPkgController(NSObject):
                              stderr=subprocess.PIPE)
         out, err = p.communicate()
         if p.returncode != 0:
-            NSLog(u"du failed with exit code %d", p.returncode)
+            LogError(u"du failed with exit code %d", p.returncode)
         else:
             return int(out.split()[0]) * 1024
     
@@ -72,6 +74,7 @@ class IEDAddPkgController(NSObject):
         row = self.tableView.selectedRow()
         if row == -1:
             return
+        self.packagePaths.remove(self.packages[row].path())
         del self.packages[row]
         self.tableView.reloadData()
     
@@ -89,9 +92,6 @@ class IEDAddPkgController(NSObject):
         elif column.identifier() == u"name":
             return self.packages[row].name()
     
-    def tableView_setObjectValue_forTableColumn_row_(self, tableView, obj, column, row):
-        self.packages.insert(row, obj)
-    
     def tableView_validateDrop_proposedRow_proposedDropOperation_(self, tableView, info, row, operation):
         if info.draggingSource() == tableView:
             return NSDragOperationMove
@@ -100,6 +100,10 @@ class IEDAddPkgController(NSObject):
         if not paths:
             return NSDragOperationNone
         for path in paths:
+            # Don't allow multiple copies.
+            if path in self.packagePaths:
+                return NSDragOperationNone
+            # Ensure the file extension is pkg or mpkg.
             name, ext = os.path.splitext(path)
             if ext.lower() not in (u".pkg", u".mpkg"):
                 return NSDragOperationNone
@@ -123,6 +127,7 @@ class IEDAddPkgController(NSObject):
                 package.setSize_(self.getPackageSize_(path))
                 package.setImage_(NSWorkspace.sharedWorkspace().iconForFile_(path))
                 self.packages.insert(row + i, package)
+                self.packagePaths.add(path)
         tableView.reloadData()
         return True
     
