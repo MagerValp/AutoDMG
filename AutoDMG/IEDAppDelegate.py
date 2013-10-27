@@ -11,6 +11,7 @@ from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet
 
+from IEDLog import *
 from IEDProfileController import *
 
 
@@ -24,6 +25,8 @@ class IEDAppDelegate(NSObject):
         defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
         defaults = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
         self.defaults().registerDefaults_(defaults)
+        
+        IEDLog.logLevel = NSUserDefaults.standardUserDefaults().integerForKey_(u"LogLevel")
         
         self.profileController = IEDProfileController.alloc().init()
         
