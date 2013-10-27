@@ -183,6 +183,7 @@ class IEDController(NSObject):
         self.buildProgressBar.setDoubleValue_(0.0)
         self.buildProgressMessage.setStringValue_(u"")
         self.buildProgressWindow.makeKeyAndOrderFront_(self)
+        self.disableMainWindowControls()
     
     def buildSetTotalWeight_(self, totalWeight):
         self.buildProgressBar.setMaxValue_(totalWeight)
