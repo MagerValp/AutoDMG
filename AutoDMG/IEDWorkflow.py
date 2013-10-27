@@ -169,8 +169,15 @@ class IEDWorkflow(NSObject):
             }
             self.delegate.sourceSucceeded_(info)
         else:
-            self.sourceFailed_text_(u"Version mismatch",
-                                    u"The major version of the installer and the current OS must match.")
+            self.delegate.ejectingSource()
+            self.dmgHelper.detachAll_(self.rejectSource_)
+    
+    def rejectSource_(self, failedUnmounts):
+        self.delegate.sourceFailed_text_(u"Version mismatch",
+                                         u"The major version of the installer and the current OS must match.")
+        if failedUnmounts:
+            text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
+            self.delegate.displayAlert_text_(u"Failed to eject dmgs", text)
     
     
     

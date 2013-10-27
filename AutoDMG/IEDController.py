@@ -127,6 +127,7 @@ class IEDController(NSObject):
     def sourceFailed_text_(self, message, text):
         self.displayAlert_text_(message, text)
         self.sourceView.setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
+        self.sourceView.setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"")
     
     

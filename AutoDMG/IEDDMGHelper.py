@@ -100,6 +100,8 @@ class IEDDMGHelper(NSObject):
                                                                           u"dmg-path": dmgPath,
                                                                           u"error-message": u"%s not mounted" % dmgPath},
                                                                          False)
+            return
+        del self.dmgs[dmgPath]
         maxtries = 5
         for tries in range(maxtries):
             if tries == maxtries >> 1:
@@ -110,7 +112,6 @@ class IEDDMGHelper(NSObject):
                                  stderr=subprocess.PIPE)
             out, err = p.communicate()
             if p.returncode == 0:
-                del self.dmgs[dmgPath]
                 target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
                                                                              {u"success": True, u"dmg-path": dmgPath},
                                                                              False)
