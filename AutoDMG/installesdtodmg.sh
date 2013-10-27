@@ -10,9 +10,9 @@
 # The generated image will need to be scanned with asr before it can be used
 # for deployment.
 #
-# Usage:
+# Usage (mount InstallESD.dmg first):
 #
-#   installesdtodmg.sh user group output.dmg "/Volumes/OS X Install ESD/OSInstall.mpkg" [package.pkg ...]
+#   installesdtodmg.sh user group output.dmg "/Volumes/OS X Install ESD/Packages/OSInstall.mpkg" [package.pkg ...]
 
 
 declare -r TESTING="no"
