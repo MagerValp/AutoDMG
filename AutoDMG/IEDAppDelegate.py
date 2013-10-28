@@ -43,10 +43,14 @@ class IEDAppDelegate(NSObject):
         if updateProfileInterval != 0:
             lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
             if lastCheck.timeIntervalSinceNow() < (-60 * 60 * 24 * updateProfileInterval):
-                LogInfo(u"Checking for updates")
-                url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
-                self.profileController.updateFromURL_withTarget_selector_(url, self, self.profileUpdateDone_)
+                self.checkForProfileUpdates(self)
     
+    @IBAction
+    def checkForProfileUpdates_(self, sender):
+        LogInfo(u"Checking for updates")
+        url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
+        self.profileController.updateFromURL_withTarget_selector_(url, self, self.profileUpdateDone_)
+        
     def profileUpdateDone_(self, result):
         LogDebug(u"profileUpdateDone:%@", result)
         if result[u"success"]:

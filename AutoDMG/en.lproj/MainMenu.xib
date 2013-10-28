@@ -269,9 +269,14 @@
                             <menuItem isSeparatorItem="YES" id="236">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Preferences…" enabled="NO" keyEquivalent="," id="129" userLabel="121">
+                            <menuItem title="Preferences…" keyEquivalent="," id="129">
                                 <connections>
                                     <action selector="makeKeyAndOrderFront:" target="M8Q-a7-rvP" id="nbB-de-JGf"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Check For Updates…" keyEquivalent="u" id="pDM-i2-6nF">
+                                <connections>
+                                    <action selector="checkForProfileUpdates:" target="373" id="EjO-D1-4zY"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="143">
@@ -302,7 +307,7 @@
                             <menuItem isSeparatorItem="YES" id="149">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Quit AutoDMG" keyEquivalent="q" id="136" userLabel="1111">
+                            <menuItem title="Quit AutoDMG" keyEquivalent="q" id="136">
                                 <connections>
                                     <action selector="terminate:" target="-1" id="369"/>
                                 </connections>
@@ -313,7 +318,7 @@
                 <menuItem title="File" id="83">
                     <menu key="submenu" title="File" id="81">
                         <items>
-                            <menuItem title="New" keyEquivalent="n" id="82" userLabel="9"/>
+                            <menuItem title="New" keyEquivalent="n" id="82"/>
                             <menuItem title="Open…" keyEquivalent="o" id="72"/>
                             <menuItem title="Open Recent" id="124">
                                 <menu key="submenu" title="Open Recent" systemMenu="recentDocuments" id="125">
@@ -326,20 +331,20 @@
                                     </items>
                                 </menu>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="79" userLabel="7">
+                            <menuItem isSeparatorItem="YES" id="79">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Close" keyEquivalent="w" id="73" userLabel="1">
+                            <menuItem title="Close" keyEquivalent="w" id="73">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="193"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Save" keyEquivalent="s" id="75" userLabel="3">
+                            <menuItem title="Save" keyEquivalent="s" id="75">
                                 <connections>
                                     <action selector="saveDocument:" target="-1" id="362"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Save As…" keyEquivalent="S" id="80" userLabel="8">
+                            <menuItem title="Save As…" keyEquivalent="S" id="80">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
                                     <action selector="saveDocumentAs:" target="-1" id="363"/>
@@ -505,8 +510,8 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Help" id="103" userLabel="1">
-                    <menu key="submenu" title="Help" id="106" userLabel="2">
+                <menuItem title="Help" id="103">
+                    <menu key="submenu" title="Help" id="106">
                         <items>
                             <menuItem title="AutoDMG Help" keyEquivalent="?" id="111">
                                 <connections>
@@ -720,19 +725,19 @@
                     <popUpButton verticalHuggingPriority="750" id="xsM-tS-GPh">
                         <rect key="frame" x="164" y="27" width="103" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="Emergency" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="G6h-BS-iXd" id="Eix-Y0-pl6">
+                        <popUpButtonCell key="cell" type="push" title="Emergency" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="G6h-BS-iXd" id="Eix-Y0-pl6">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="alJ-Aa-glz">
                                 <items>
-                                    <menuItem title="Emergency" state="on" id="G6h-BS-iXd"/>
+                                    <menuItem title="Emergency" id="G6h-BS-iXd"/>
                                     <menuItem title="Alert" id="y2b-SV-6aZ"/>
                                     <menuItem title="Critical" id="PvX-XN-KNa"/>
                                     <menuItem title="Error" id="uNK-lD-5B7"/>
                                     <menuItem title="Warning" id="YmQ-fV-JEJ"/>
                                     <menuItem title="Notice" id="4oD-q2-LDJ"/>
                                     <menuItem title="Info" id="2Iw-c2-obK"/>
-                                    <menuItem title="Debug" id="NYa-rv-boJ"/>
+                                    <menuItem title="Debug" state="on" id="NYa-rv-boJ"/>
                                 </items>
                             </menu>
                         </popUpButtonCell>
