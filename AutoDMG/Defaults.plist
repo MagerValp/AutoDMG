@@ -11,6 +11,6 @@
 	<key>UpdateProfileInterval</key>
 	<integer>1</integer>
 	<key>LogLevel</key>
-	<integer>7</integer>
+	<integer>6</integer>
 </dict>
 </plist>
