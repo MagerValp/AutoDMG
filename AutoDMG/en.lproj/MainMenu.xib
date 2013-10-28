@@ -725,7 +725,7 @@
                     <popUpButton verticalHuggingPriority="750" id="xsM-tS-GPh">
                         <rect key="frame" x="164" y="27" width="103" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="Emergency" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="G6h-BS-iXd" id="Eix-Y0-pl6">
+                        <popUpButtonCell key="cell" type="push" title="Info" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="2Iw-c2-obK" id="Eix-Y0-pl6">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="alJ-Aa-glz">
