@@ -507,6 +507,11 @@
                                     <action selector="arrangeInFront:" target="-1" id="39"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="View Log" keyEquivalent="l" id="uBZ-Et-rbi">
+                                <connections>
+                                    <action selector="toggleLogWindow:" target="Ssv-D7-Tkv" id="eVO-i1-LUt"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
@@ -725,7 +730,7 @@
                     <popUpButton verticalHuggingPriority="750" id="xsM-tS-GPh">
                         <rect key="frame" x="164" y="27" width="103" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="Info" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="2Iw-c2-obK" id="Eix-Y0-pl6">
+                        <popUpButtonCell key="cell" type="push" title="Info" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="2Iw-c2-obK" id="Eix-Y0-pl6">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="alJ-Aa-glz">
@@ -736,8 +741,8 @@
                                     <menuItem title="Error" id="uNK-lD-5B7"/>
                                     <menuItem title="Warning" id="YmQ-fV-JEJ"/>
                                     <menuItem title="Notice" id="4oD-q2-LDJ"/>
-                                    <menuItem title="Info" id="2Iw-c2-obK"/>
-                                    <menuItem title="Debug" state="on" id="NYa-rv-boJ"/>
+                                    <menuItem title="Info" state="on" id="2Iw-c2-obK"/>
+                                    <menuItem title="Debug" id="NYa-rv-boJ"/>
                                 </items>
                             </menu>
                         </popUpButtonCell>
@@ -755,6 +760,148 @@
             </view>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="TEB-LV-8aU"/>
+        <window title="Log" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="5oF-En-fug">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="163" y="199" width="1065" height="576"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <view key="contentView" id="JcL-bv-xO1">
+                <rect key="frame" x="0.0" y="0.0" width="1065" height="576"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0yR-ok-JsV">
+                        <rect key="frame" x="18" y="22" width="64" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Log level:" id="brp-gJ-Z6W">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <popUpButton verticalHuggingPriority="750" id="rr9-yW-D7j">
+                        <rect key="frame" x="86" y="17" width="103" height="26"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <popUpButtonCell key="cell" type="push" title="Info" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="4AS-D9-afg" id="yhE-DD-DY3">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" title="OtherViews" id="39N-fo-Hwg">
+                                <items>
+                                    <menuItem title="Emergency" id="NWg-g6-424"/>
+                                    <menuItem title="Alert" id="3uw-9M-NHH"/>
+                                    <menuItem title="Critical" id="ZjV-mG-oe1"/>
+                                    <menuItem title="Error" id="BMh-0e-trQ"/>
+                                    <menuItem title="Warning" id="kWO-pt-b4r"/>
+                                    <menuItem title="Notice" id="JSC-QN-f79"/>
+                                    <menuItem title="Info" state="on" id="4AS-D9-afg"/>
+                                    <menuItem title="Debug" id="R7O-6P-Mqt"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <action selector="setLevel:" target="Ssv-D7-Tkv" id="aSN-jT-V14"/>
+                            <binding destination="TEB-LV-8aU" name="selectedIndex" keyPath="values.LogLevel" id="d7k-vn-S3x">
+                                <dictionary key="options">
+                                    <bool key="NSRaisesForNotApplicableKeys" value="NO"/>
+                                    <bool key="NSConditionallySetsEnabled" value="NO"/>
+                                    <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </popUpButton>
+                    <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="fs2-vb-8RG">
+                        <rect key="frame" x="20" y="57" width="1025" height="499"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <clipView key="contentView" id="zAm-5t-U4I">
+                            <rect key="frame" x="1" y="17" width="1023" height="481"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" headerView="ptu-a8-jxB" id="mAJ-Fl-mrp">
+                                    <rect key="frame" x="0.0" y="0.0" width="1023" height="481"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <size key="intercellSpacing" width="3" height="2"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                    <tableColumns>
+                                        <tableColumn identifier="date" editable="NO" width="130" minWidth="130" maxWidth="130" id="u1t-JV-lMK">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Timestamp">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="z97-cC-uks">
+                                                <dateFormatter key="formatter" dateStyle="short" timeStyle="medium" id="MUR-I3-0Mo"/>
+                                                <font key="font" metaFont="fixedUser" size="11"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </tableColumn>
+                                        <tableColumn identifier="level" editable="NO" width="56" minWidth="56" maxWidth="56" id="JYq-3X-4uk">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Level">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" placeholderString="Emergency" id="5kj-kJ-9BK">
+                                                <font key="font" metaFont="fixedUser" size="11"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </tableColumn>
+                                        <tableColumn identifier="message" editable="NO" width="828" minWidth="500" maxWidth="3000" id="l1n-E7-V85">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Message">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="65W-Z8-a9d">
+                                                <font key="font" metaFont="fixedUser" size="11"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
+                                        </tableColumn>
+                                    </tableColumns>
+                                </tableView>
+                            </subviews>
+                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </clipView>
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="BYL-QI-2OZ">
+                            <rect key="frame" x="1" y="482" width="1023" height="16"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="fsk-Lb-uF8">
+                            <rect key="frame" x="224" y="17" width="15" height="102"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <tableHeaderView key="headerView" id="ptu-a8-jxB">
+                            <rect key="frame" x="0.0" y="0.0" width="1023" height="17"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </tableHeaderView>
+                    </scrollView>
+                    <button verticalHuggingPriority="750" id="aMO-qH-xF1">
+                        <rect key="frame" x="950" y="13" width="101" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="Save As…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HxQ-qA-NOa">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="saveLog:" target="Ssv-D7-Tkv" id="faf-2D-NQY"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="Ssv-D7-Tkv" id="Kby-wz-XGJ"/>
+            </connections>
+        </window>
+        <customObject id="Ssv-D7-Tkv" customClass="IEDLog">
+            <connections>
+                <outlet property="levelSelector" destination="rr9-yW-D7j" id="Zfa-ZU-EtP"/>
+                <outlet property="logTableView" destination="mAJ-Fl-mrp" id="Xk6-pH-wQF"/>
+                <outlet property="logWindow" destination="5oF-En-fug" id="BPe-qe-9XH"/>
+            </connections>
+        </customObject>
     </objects>
     <resources>
         <image name="AutoDMG" width="512" height="512"/>
