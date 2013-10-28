@@ -115,7 +115,7 @@ class IEDLog(NSObject):
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"log", u"txt"])
         formatter = NSDateFormatter.alloc().init()
-        formatter.setDateFormat_(u"yyyy-MM-dd HH.mm.ss")
+        formatter.setDateFormat_(u"yyyy-MM-dd HH.mm")
         dateStr = formatter.stringFromDate_(NSDate.date())
         panel.setNameFieldStringValue_(u"AutoDMG %s" % dateStr)
         result = panel.runModal()
@@ -139,7 +139,7 @@ class IEDLog(NSObject):
             NSAlert.alertWithError_(error).runModal()
             return
         formatter = NSDateFormatter.alloc().init()
-        formatter.setDateFormat_(u"yy-MM-dd HH:mm")
+        formatter.setDateFormat_(u"yyyy-MM-dd HH:mm:ss")
         for logLine in self.logLines:
             textLine = NSString.stringWithFormat_(u"%@ %@: %@\n",
                                                   formatter.stringFromDate_(logLine.date()),
