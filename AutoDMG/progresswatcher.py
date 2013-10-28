@@ -128,7 +128,7 @@ class ProgressWatcher(NSObject):
                 if m:
                     self.parseInstallerLogLevel_Message_(m.group(u"level"), m.group(u"message"))
                 else:
-                    NSLog(u"(Ignoring progress %@)", string)
+                    self.postNotification_({u"action": u"log_message", u"log_level": 7, u"message": string})
         except BaseException as e:
             NSLog(u"Progress parsing failed: %s" % traceback.format_exc())
     
@@ -140,10 +140,9 @@ class ProgressWatcher(NSObject):
             message = string[6:]
             self.postNotification_({u"action": u"update_message", u"message": message})
         elif string.startswith(u"STATUS:"):
-            pass
+            self.postNotification_({u"action": u"log_message", u"log_level": 7, u"message": string[7:]})
         else:
-            pass
-            #NSLog(u"(Ignoring installer progress %@)", string)
+            self.postNotification_({u"action": u"log_message", u"log_level": 7, u"message": string})
     
     def parseInstallerLogLevel_Message_(self, level, message):
         try:

@@ -132,12 +132,14 @@ for package; do
     fi
 done
 
+# Finalize image.
+echo "IED:PHASE:asr"
+
 # Eject the dmgs.
 echo "IED:MSG:Ejecting image"
 unmount_dmgs
 
 # Convert the sparse image to a compressed image.
-echo "IED:PHASE:asr"
 echo "IED:MSG:Converting disk image to read only"
 if ! hdiutil convert -puppetstrings -format UDZO "$sparsedmg" -o "$compresseddmg"; then
     echo "IED:FAILURE:Disk image conversion failed"
