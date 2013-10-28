@@ -167,12 +167,15 @@ class IEDWorkflow(NSObject):
         installerVersion = tuple(int(x) for x in version.split(u"."))
         runningVersion = tuple(int(x) for x in platform.mac_ver()[0].split(u"."))
         if installerVersion[:2] == runningVersion[:2]:
+            LogNotice(u"Accepted source %@: %@ %@ %@", self.newSourcePath, name, version, build)
+            self.installerName = name
+            self.installerVersion = version
+            self.installerBuild = build
             info = {
                 u"name": name,
                 u"version": version,
                 u"build": build,
             }
-            LogNotice(u"Accepted source %@: %@ %@ %@", self.newSourcePath, name, version, build)
             self.delegate.sourceSucceeded_(info)
         else:
             self.delegate.ejectingSource()
@@ -215,7 +218,9 @@ class IEDWorkflow(NSObject):
     #     - (void)buildStopped
     
     def start(self):
-        LogNotice(u"Starting build with output path of %@", self.outputPath())
+        LogNotice(u"Starting build")
+        LogNotice(u"Using installer: %@ %@ %@", self.installerName, self.installerVersion, self.installerBuild)
+        LogNotice(u"Using output path: %@", self.outputPath())
         self.delegate.buildStartingWithOutput_(self.outputPath())
         
         # The workflow is split into tasks, and each task has one or more
