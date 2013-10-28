@@ -22,13 +22,11 @@ IEDLogLevelInfo      = 6
 IEDLogLevelDebug     = 7
 
 
-class IEDLog(NSObject):
-    
-    logLevel = IEDLogLevelNotice
+defaults = NSUserDefaults.standardUserDefaults()
 
 
 def LogMessage(level, message):
-    if IEDLog.logLevel >= level:
+    if defaults.integerForKey_(u"LogLevel") >= level:
         prefix = u""
         if level == IEDLogLevelDebug:
             for caller in inspect.stack()[1:]:

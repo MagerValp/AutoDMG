@@ -269,7 +269,11 @@
                             <menuItem isSeparatorItem="YES" id="236">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Preferences…" enabled="NO" keyEquivalent="," id="129" userLabel="121"/>
+                            <menuItem title="Preferences…" enabled="NO" keyEquivalent="," id="129" userLabel="121">
+                                <connections>
+                                    <action selector="makeKeyAndOrderFront:" target="M8Q-a7-rvP" id="nbB-de-JGf"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="143">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
@@ -695,6 +699,57 @@
                 <outlet property="tableView" destination="6Sp-nj-RjN" id="TF5-ZT-MHv"/>
             </connections>
         </customObject>
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="M8Q-a7-rvP">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="163" y="199" width="407" height="77"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <view key="contentView" id="Tj1-NS-du2">
+                <rect key="frame" x="0.0" y="0.0" width="407" height="77"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="EeQ-bq-zQm">
+                        <rect key="frame" x="96" y="32" width="64" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Log level:" id="rhd-Qu-MKT">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <popUpButton verticalHuggingPriority="750" id="xsM-tS-GPh">
+                        <rect key="frame" x="164" y="27" width="103" height="26"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <popUpButtonCell key="cell" type="push" title="Emergency" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="G6h-BS-iXd" id="Eix-Y0-pl6">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <menu key="menu" title="OtherViews" id="alJ-Aa-glz">
+                                <items>
+                                    <menuItem title="Emergency" state="on" id="G6h-BS-iXd"/>
+                                    <menuItem title="Alert" id="y2b-SV-6aZ"/>
+                                    <menuItem title="Critical" id="PvX-XN-KNa"/>
+                                    <menuItem title="Error" id="uNK-lD-5B7"/>
+                                    <menuItem title="Warning" id="YmQ-fV-JEJ"/>
+                                    <menuItem title="Notice" id="4oD-q2-LDJ"/>
+                                    <menuItem title="Info" id="2Iw-c2-obK"/>
+                                    <menuItem title="Debug" id="NYa-rv-boJ"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <binding destination="TEB-LV-8aU" name="selectedIndex" keyPath="values.LogLevel" id="Anc-Sf-bGn">
+                                <dictionary key="options">
+                                    <bool key="NSRaisesForNotApplicableKeys" value="NO"/>
+                                    <bool key="NSConditionallySetsEnabled" value="NO"/>
+                                    <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </popUpButton>
+                </subviews>
+            </view>
+        </window>
+        <userDefaultsController representsSharedInstance="YES" id="TEB-LV-8aU"/>
     </objects>
     <resources>
         <image name="AutoDMG" width="512" height="512"/>

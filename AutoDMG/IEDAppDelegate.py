@@ -15,6 +15,9 @@ from IEDLog import *
 from IEDProfileController import *
 
 
+defaults = NSUserDefaults.standardUserDefaults()
+
+
 class IEDAppDelegate(NSObject):
     
     mainWindowController = IBOutlet()
@@ -25,33 +28,29 @@ class IEDAppDelegate(NSObject):
         if self is None:
             return None
         
-        defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
-        defaultsDict = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
-        self.defaults().registerDefaults_(defaultsDict)
-        
-        IEDLog.logLevel = NSUserDefaults.standardUserDefaults().integerForKey_(u"LogLevel")
-        
         return self
     
-    def defaults(self):
-        return NSUserDefaults.standardUserDefaults()
+    def initialize(self):
+        defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
+        defaultsDict = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
+        defaults.registerDefaults_(defaultsDict)
     
     def applicationDidFinishLaunching_(self, sender):
         LogDebug(u"applicationDidFinishLaunching:")
         
-        updateProfileInterval = self.defaults().integerForKey_(u"UpdateProfileInterval")
+        updateProfileInterval = defaults.integerForKey_(u"UpdateProfileInterval")
         LogInfo(u"UpdateProfileInterval = %d", updateProfileInterval)
         if updateProfileInterval != 0:
-            lastCheck = self.defaults().objectForKey_(u"LastUpdateProfileCheck")
+            lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
             if lastCheck.timeIntervalSinceNow() < (-60 * 60 * 24 * updateProfileInterval):
                 LogInfo(u"Checking for updates")
-                url = NSURL.URLWithString_(self.defaults().stringForKey_(u"UpdateProfilesURL"))
+                url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
                 self.profileController.updateFromURL_withTarget_selector_(url, self, self.profileUpdateDone_)
     
     def profileUpdateDone_(self, result):
         LogDebug(u"profileUpdateDone:%@", result)
         if result[u"success"]:
-            self.defaults().setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
+            defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
     
     def applicationShouldTerminate_(self, sender):
         LogDebug(u"applicationShouldTerminate:")
