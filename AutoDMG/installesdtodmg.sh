@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# This script performs the main steps needed to create a deployment image:
+#
+#    1. Create a new read/write sparse disk image.
+#    2. Install a list of packages, starting with the OS install, with the
+#       sparse image as the target.
+#    3. Convert the sparse disk to a read only compressed image.
+#
+# The generated image will need to be scanned with asr before it can be used
+# for deployment.
+#
+# Usage (mount InstallESD.dmg first):
+#
+#   installesdtodmg.sh user group output.dmg "/Volumes/OS X Install ESD/Packages/OSInstall.mpkg" [package.pkg ...]
 
 
 declare -r TESTING="no"
@@ -48,12 +62,12 @@ trap perform_cleanup EXIT
 
 if [[ $(id -u) -ne 0 ]]; then
     echo "IED:FAILURE:$(basename "$0") must run as root"
-    exit 1
+    exit 100
 fi
 
 if [[ $# -lt 4 ]]; then
     echo "IED:FAILURE:Usage: $(basename "$0") user group output.dmg OSInstall.mpkg [package...]"
-    exit 1
+    exit 100
 fi
 user="$1"
 group="$2"
@@ -64,25 +78,25 @@ shift 3
 tempdir=$(mktemp -d -t installesdtodmg)
 tempdirs+=("$tempdir")
 freespace=$(df -g / | tail -1 | awk '{print $4}')
-if [[ "$freespace" -lt 10 ]]; then
-    echo "IED:FAILURE:Less than 10 GB free disk space, aborting"
-    exit 1
+if [[ "$freespace" -lt 15 ]]; then
+    echo "IED:FAILURE:Less than 15 GB free disk space, aborting"
+    exit 100
 fi
 
 
 # Create and mount a sparse image.
-echo "IED:MSG:Initializing disk image"
+echo "IED:PHASE:sparseimage"
+echo "IED:MSG:Creating disk image"
 sparsedmg="$tempdir/os.sparseimage"
 hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "Macintosh HD" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
 sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
 dmgmounts+=("$sparsemount")
 
-# Perform the OS install.
+# Install OS and packages.
 export COMMAND_LINE_INSTALL=1
 declare -i pkgnum=0
 for package; do
-    echo "selecting package $pkgnum $package"
-    echo "IED:PACKAGE:$pkgnum:$package"
+    echo "IED:PHASE:install $pkgnum:$package"
     let pkgnum++
     if [[ $pkgnum -eq 1 ]]; then
         echo "IED:MSG:Starting OS install"
@@ -104,10 +118,15 @@ for package; do
         echo "installer:%100.0"
         sleep 1
     else
-        installer -verboseR -pkg "$package" -target "$sparsemount"
+        installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
         declare -i result=$?
         if [[ $result -ne 0 ]]; then
-            echo "IED:FAILURE:OS install failed with return code $result"
+            if [[ $pkgnum -eq 1 ]]; then
+                pkgname="OS install"
+            else
+                pkgname=$(basename "$package")
+            fi
+            echo "IED:FAILURE:$pkgname failed with return code $result"
             exit 102
         fi
     fi
@@ -118,13 +137,14 @@ echo "IED:MSG:Ejecting image"
 unmount_dmgs
 
 # Convert the sparse image to a compressed image.
+echo "IED:PHASE:asr"
 echo "IED:MSG:Converting disk image to read only"
-if ! hdiutil convert -format UDZO "$sparsedmg" -o "$compresseddmg"; then
+if ! hdiutil convert -puppetstrings -format UDZO "$sparsedmg" -o "$compresseddmg"; then
     echo "IED:FAILURE:Disk image conversion failed"
     exit 103
 fi
 
-# Change ownership to that of the containing directory.
+# Change ownership.
 echo "IED:MSG:Changing owner"
 if ! chown "${user}:$group" "$compresseddmg"; then
     echo "IED:FAILURE:Ownership change failed"

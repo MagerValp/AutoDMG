@@ -7,6 +7,8 @@
 	<key>LastUpdateProfileCheck</key>
 	<date>1970-01-01T00:00:00Z</date>
 	<key>UpdateProfileInterval</key>
-    <integer>1</integer>
+	<integer>1</integer>
+	<key>LogLevel</key>
+	<integer>7</integer>
 </dict>
 </plist>

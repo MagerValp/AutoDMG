@@ -12,28 +12,18 @@ from Foundation import *
 from objc import IBOutlet
 
 import os.path
+from IEDLog import *
 
 
 class IEDProfileController(NSObject):
-    """Singleton class to keep track of update profiles, containing lists of
-       the latest updates needed to build a fully updated OS X image."""
-    
-    _instance = None
+    """Keep track of update profiles, containing lists of the latest updates
+    needed to build a fully updated OS X image."""
     
     profileUpdateWindow = IBOutlet()
     progressBar = IBOutlet()
+    delegate = IBOutlet()
     
-    def init(self):
-        # Return singleton instance if it's already initialized.
-        if IEDProfileController._instance:
-            return IEDProfileController._instance
-        
-        # Otherwise we initialize a new instance.
-        self = super(IEDProfileController, self).init()
-        if self is None:
-            return None
-        IEDProfileController._instance = self
-        
+    def awakeFromNib(self):
         # Save the path to UpdateProfiles.plist in the user's application
         # support directory.
         fm = NSFileManager.defaultManager()
@@ -51,16 +41,16 @@ class IEDProfileController(NSObject):
         latestProfiles = self.updateUsersProfilesIfNewer_(bundleUpdateProfiles)
         # Load the profiles.
         self.loadProfilesFromPlist_(latestProfiles)
-        
-        return self
     
     def profileForVersion_Build_(self, version, build):
         """Return the update profile for a certain OS X version and build."""
         
         try:
-            return self.profiles[u"%s-%s" % (version, build)]
+            profile = self.profiles[u"%s-%s" % (version, build)]
         except KeyError:
-            return None
+            profile = None
+        LogNotice(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
+        return profile
     
     def updateUsersProfilesIfNewer_(self, plist):
         """Update the user's update profiles if plist is newer. Returns
@@ -79,8 +69,9 @@ class IEDProfileController(NSObject):
     def saveUsersProfiles_(self, plist):
         """Save UpdateProfiles.plist to application support."""
         
+        LogInfo(u"Saving update profiles with PublicationDate %@", plist[u"PublicationDate"])
         if not plist.writeToFile_atomically_(self.userUpdateProfilesPath, False):
-            NSLog(u"Failed to write %@", self.userUpdateProfilesPath)
+            LogError(u"Failed to write %@", self.userUpdateProfilesPath)
     
     def loadProfilesFromPlist_(self, plist):
         """Load UpdateProfiles from a plist dictionary."""
@@ -92,7 +83,12 @@ class IEDProfileController(NSObject):
                 profile.append(plist[u"Updates"][update])
             self.profiles[name] = profile
         self.publicationDate = plist[u"PublicationDate"]
+        self.updatePaths = dict()
+        for name, update in plist[u"Updates"].iteritems():
+            self.updatePaths[update[u"sha1"]] = os.path.basename(update[u"url"])
+        self.delegate.profilesUpdated()
     
+    # FIXME: use a delegate protocol instead.
     def updateFromURL_withTarget_selector_(self, url, target, selector):
         """Download the latest update profiles asynchronously and notify
            target with the result."""
@@ -121,7 +117,7 @@ class IEDProfileController(NSObject):
         if not plist:
             self.failUpdate_withTarget_selector_(u"Couldn't decode update data.", target, selector)
             return
-        NSLog(u"Downloaded update profiles with PublicationDate = %@", plist[u"PublicationDate"])
+        LogNotice(u"Downloaded update profiles with PublicationDate %@", plist[u"PublicationDate"])
         latestProfiles = self.updateUsersProfilesIfNewer_(plist)
         self.loadProfilesFromPlist_(latestProfiles)
         dateFormatter = NSDateFormatter.alloc().init()
@@ -135,7 +131,7 @@ class IEDProfileController(NSObject):
     def failUpdate_withTarget_selector_(self, error, target, selector):
         """Notify target of a failed update."""
         
-        NSLog(u"Profile update failed: %@", error)
+        LogError(u"Profile update failed: %@", error)
         if target:
             target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
                                                                          {u"success": False,

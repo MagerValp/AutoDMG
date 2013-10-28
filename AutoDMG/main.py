@@ -20,10 +20,7 @@ from PyObjCTools import AppHelper
 import IEDAppDelegate
 import IEDController
 import IEDSourceSelector
-import IEDSocketListener
-import IEDDMGHelper
-import IEDProfileController
-import IEDUpdateCache
+import IEDAddPkgController
 
 # pass control to AppKit
 AppHelper.runEventLoop()
