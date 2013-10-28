@@ -27,6 +27,7 @@ class IEDController(NSObject):
     
     updateController = IBOutlet()
     addPkgController = IBOutlet()
+    logController = IBOutlet()
     
     buildButton = IBOutlet()
     
@@ -214,7 +215,14 @@ class IEDController(NSObject):
             NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
     
     def buildFailed_details_(self, message, details):
-        self.displayAlert_text_(message, details)
+        alert = NSAlert.alloc().init()
+        alert.setMessageText_(message)
+        alert.setInformativeText_(details)
+        alert.addButtonWithTitle_(u"OK")
+        alert.addButtonWithTitle_(u"View Log")
+        button = alert.runModal()
+        if button == NSAlertSecondButtonReturn:
+            self.logController.displayLogWindow_(self)
     
     def buildStopped(self):
         self.buildProgressWindow.orderOut_(self)

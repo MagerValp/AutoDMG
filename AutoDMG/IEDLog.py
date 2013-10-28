@@ -54,7 +54,6 @@ class IEDLog(NSObject):
     def awakeFromNib(self):
         global defaults
         self.levelSelector.selectItemAtIndex_(defaults.integerForKey_(u"LogLevel"))
-        self.logWindowVisible = False
         self.logTableView.setDataSource_(self)
     
     # Helper methods.
@@ -81,21 +80,11 @@ class IEDLog(NSObject):
     
     
     
-    # Act on user toggling log window.
+    # Act on user showing log window.
     
     @IBAction
-    def toggleLogWindow_(self, sender):
-        if self.logWindowVisible:
-            self.logWindow.orderOut_(self)
-            self.logWindowVisible = False
-        else:
-            self.logWindow.makeKeyAndOrderFront_(self)
-            self.logWindowVisible = True
-    
-    # NSWindowDelegate methods.
-    
-    def windowWillClose_(self, sender):
-        self.logWindowVisible = False
+    def displayLogWindow_(self, sender):
+        self.logWindow.makeKeyAndOrderFront_(self)
     
     
     

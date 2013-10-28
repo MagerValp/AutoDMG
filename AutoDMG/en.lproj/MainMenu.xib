@@ -508,7 +508,7 @@
                             </menuItem>
                             <menuItem title="View Log" keyEquivalent="l" id="uBZ-Et-rbi">
                                 <connections>
-                                    <action selector="toggleLogWindow:" target="Ssv-D7-Tkv" id="eVO-i1-LUt"/>
+                                    <action selector="displayLogWindow:" target="Ssv-D7-Tkv" id="UiZ-fv-jWV"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -542,6 +542,7 @@
                 <outlet property="buildProgressPhase" destination="PSc-ey-sYw" id="ZoT-hl-E5F"/>
                 <outlet property="buildProgressStopButton" destination="jNK-oL-72V" id="GW1-KW-SzP"/>
                 <outlet property="buildProgressWindow" destination="Xho-YZ-fRH" id="c89-Hr-l1E"/>
+                <outlet property="logController" destination="Ssv-D7-Tkv" id="Rnb-Ky-1XY"/>
                 <outlet property="mainWindow" destination="GmA-Xb-izQ" id="JNO-Fx-207"/>
                 <outlet property="sourceBox" destination="zyE-7U-hFC" id="zew-uO-2Pr"/>
                 <outlet property="sourceImage" destination="Cmr-I4-xoi" id="Ly3-Qh-J5h"/>
