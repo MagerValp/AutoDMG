@@ -48,6 +48,8 @@ class IEDUpdateController(NSObject):
         self.downloadTotalSize = 0
         self.downloads = list()
         self.delegate = None
+        self.version = None
+        self.build = None
         
         return self
     
@@ -116,10 +118,14 @@ class IEDUpdateController(NSObject):
     
     def profilesUpdated(self):
         self.cache.pruneAndCreateSymlinks(self.profileController.updatePaths)
+        if self.version or self.build:
+            self.loadProfileForVersion_build_(self.version, self.build)
     
     # Load update profile.
     
     def loadProfileForVersion_build_(self, version, build):
+        self.version = version
+        self.build = build
         profile = self.profileController.profileForVersion_Build_(version, build)
         self.updates = list()
         if profile:
