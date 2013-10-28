@@ -71,26 +71,26 @@ class IEDUpdateCache(NSObject):
             except OSError as e:
                 LogWarning(u"Cache pruning of %s failed: %s" % (item, unicode(e)))
         for sha1, name in symlinks.iteritems():
-            sha1path = os.path.join(self.updateDir, sha1)
-            linkpath = os.path.join(self.updateDir, name)
-            if os.path.exists(sha1path):
-                if os.path.lexists(linkpath):
-                    if os.readlink(linkpath) == sha1:
+            sha1Path = os.path.join(self.updateDir, sha1)
+            linkPath = os.path.join(self.updateDir, name)
+            if os.path.exists(sha1Path):
+                if os.path.lexists(linkPath):
+                    if os.readlink(linkPath) == sha1:
                         LogDebug(u"Found %s -> %s" % (name, sha1))
                         continue
-                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkpath)))
+                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
                     try:
-                        os.unlink(linkpath)
+                        os.unlink(linkPath)
                     except OSError as e:
                         LogWarning(u"Cache pruning of %s failed: %s" % (name, unicode(c)))
                         continue
                 LogDebug(u"Creating %s -> %s" % (name, sha1))
-                os.symlink(sha1, linkpath)
+                os.symlink(sha1, linkPath)
             else:
-                if os.path.lexists(linkpath):
-                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkpath)))
+                if os.path.lexists(linkPath):
+                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
                     try:
-                        os.unlink(linkpath)
+                        os.unlink(linkPath)
                     except OSError as e:
                         LogWarning(u"Cache pruning of %s failed: %s" % (name, unicode(c)))
             
@@ -123,6 +123,11 @@ class IEDUpdateCache(NSObject):
         self.updates = updates
         self.downloadNextUpdate()
     
+    def stopDownload(self):
+        self.connection.cancel()
+        self.delegate.downloadStopped_(self.package)
+        self.delegate.downloadAllDone()
+    
     def downloadNextUpdate(self):
         if self.updates:
             self.package = self.updates.pop(0)
@@ -143,12 +148,15 @@ class IEDUpdateCache(NSObject):
             
             url = NSURL.URLWithString_(self.package.url())
             request = NSURLRequest.requestWithURL_(url)
-            NSURLConnection.connectionWithRequest_delegate_(request, self)
+            self.connection = NSURLConnection.connectionWithRequest_delegate_(request, self)
+            if self.connection:
+                self.delegate.downloadStarted_(self.package)
         else:
             self.delegate.downloadAllDone()
     
     def connection_didFailWithError_(self, connection, error):
         LogError(u"%@ failed: %@", self.package.name(), error)
+        self.delegate.downloadStopped_(self.package)
         self.fileHandle.closeFile()
         self.delegate.downloadFailed_withError_(self.package, error.localizedDescription())
     
@@ -172,6 +180,7 @@ class IEDUpdateCache(NSObject):
     def connectionDidFinishLoading_(self, connection):
         LogInfo(u"%@ finished downloading to %@", self.package.name(), self.cacheTmpPath_(self.package.sha1()))
         self.fileHandle.closeFile()
+        self.delegate.downloadStopped_(self.package)
         if self.checksum.hexdigest() == self.package.sha1():
             try:
                 os.rename(self.cacheTmpPath_(self.package.sha1()),
@@ -181,12 +190,12 @@ class IEDUpdateCache(NSObject):
                 LogError(error)
                 self.delegate.downloadFailed_withError_(self.package, error)
                 return
+            linkPath = os.path.join(self.updateDir, os.path.basename(self.package.url()))
             try:
-                os.symlink(self.cachePath_(self.package.sha1()), os.path.basename(self.package.url()))
+                os.symlink(self.package.sha1(), linkPath)
             except OSError as e:
-                linkpath = os.path.join(self.updateDir, os.path.basename(self.package.url()))
                 error = u"Failed when creating link from %s to %s: %s" % (self.package.sha1(),
-                                                                          linkpath,
+                                                                          linkPath,
                                                                           unicode(e))
                 LogError(error)
                 self.delegate.downloadFailed_withError_(self.package, error)

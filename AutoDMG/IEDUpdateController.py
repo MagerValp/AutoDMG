@@ -36,6 +36,7 @@ class IEDUpdateController(NSObject):
     downloadWindow = IBOutlet()
     downloadLabel = IBOutlet()
     downloadProgressBar = IBOutlet()
+    downloadStopButton = IBOutlet()
     
     def init(self):
         self = super(IEDUpdateController, self).init()
@@ -156,27 +157,49 @@ class IEDUpdateController(NSObject):
         self.downloadNumUpdates = len(self.downloads)
         self.cache.downloadUpdates_(self.downloads)
     
+    # Act on download stop button being clicked.
+    
+    @IBAction
+    def downloadStopButtonClicked_(self, sender):
+        self.cache.stopDownload()
+    
     # UpdateCache delegate methods.
     
     def downloadAllDone(self):
+        LogDebug(u"downloadAllDone")
         self.downloadWindow.orderOut_(self)
+        self.countDownloads()
+        self.enableControls()
+        if self.delegate:
+            self.delegate.updateControllerChanged()
     
     def downloadStarting_(self, package):
+        LogDebug(u"downloadStarting:")
         self.downloadProgressBar.setIndeterminate_(False)
         self.downloadProgressBar.setDoubleValue_(0.0)
         self.downloadProgressBar.setMaxValue_(package.size())
         self.downloadCounter += 1
         self.downloadLabel.setStringValue_(u"%s (%s)" % (package.name(), IEDFormatBytes(package.size())))
     
+    def downloadStarted_(self, package):
+        LogDebug(u"downloadStarted:")
+        self.downloadStopButton.setEnabled_(True)
+    
+    def downloadStopped_(self, package):
+        LogDebug(u"downloadStopped:")
+        self.downloadStopButton.setEnabled_(False)
+    
     def downloadGotData_bytesRead_(self, package, bytes):
         self.downloadProgressBar.setDoubleValue_(bytes)
     
     def downloadSucceeded_(self, package):
+        LogDebug(u"downloadSucceeded:")
         self.countDownloads()
         if self.delegate:
             self.delegate.updateControllerChanged()
     
     def downloadFailed_withError_(self, package, message):
+        LogDebug(u"downloadFailed:withError:")
         alert = NSAlert.alloc().init()
         alert.setMessageText_(u"Download failed")
         alert.setInformativeText_(message)

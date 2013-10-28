@@ -684,6 +684,9 @@
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="downloadStopButtonClicked:" target="3rI-qa-5R5" id="ClC-vA-Jnw"/>
+                        </connections>
                     </button>
                 </subviews>
             </view>
@@ -694,6 +697,7 @@
                 <outlet property="downloadButton" destination="OHd-Ex-bAG" id="4W3-8d-ZYh"/>
                 <outlet property="downloadLabel" destination="Da4-H5-lc3" id="FZ6-lD-ORD"/>
                 <outlet property="downloadProgressBar" destination="hDD-JB-5b9" id="gtW-On-GM5"/>
+                <outlet property="downloadStopButton" destination="116-BH-7he" id="wAI-wD-twQ"/>
                 <outlet property="downloadWindow" destination="yRz-g8-9TZ" id="EYO-vF-O7W"/>
                 <outlet property="profileController" destination="ole-mw-OQ3" id="9SN-Bm-mIp"/>
                 <outlet property="updateTable" destination="n3O-FC-EWE" id="Vy4-Sa-3Id"/>
