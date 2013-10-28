@@ -77,6 +77,7 @@ class IEDLog(NSObject):
         if defaults.integerForKey_(u"LogLevel") >= level:
             self.visibleLogLines.append(logLine)
             self.logTableView.reloadData()
+            self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
     
     
     
