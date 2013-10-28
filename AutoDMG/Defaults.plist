@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>HelpURL</key>
+	<string>https://github.com/MagerValp/AutoDMG/wiki</string>
 	<key>UpdateProfilesURL</key>
 	<string>https://raw.github.com/MagerValp/AutoDMG/master/AutoDMG/UpdateProfiles.plist</string>
 	<key>LastUpdateProfileCheck</key>

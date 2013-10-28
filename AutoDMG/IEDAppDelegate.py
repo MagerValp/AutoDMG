@@ -63,3 +63,7 @@ class IEDAppDelegate(NSObject):
     def applicationWillTerminate_(self, sender):
         LogDebug(u"applicationWillTerminate:")
         return
+    
+    @IBAction
+    def showHelp_(self, sender):
+        NSWorkspace.sharedWorkspace().openURL_(NSURL.URLWithString_(defaults.stringForKey_(u"HelpURL")))
