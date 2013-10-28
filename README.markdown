@@ -3,17 +3,24 @@ AutoDMG
 
 AutoDMG takes an OS X installer and builds a system image, suitable for deployment with DeployStudio or Absolute Manage.
 
-![autodmg-small](https://f.cloud.github.com/assets/404393/1382153/ba0aff5a-3b2a-11e3-8ed7-3e574a40e173.png)
+![Autodmg-0.8-Log](https://f.cloud.github.com/assets/404393/1420666/6dde1438-3fe3-11e3-8fed-b78aa74784a4.png)
+
 
 Download
 --------
 
-[AutoDMG 0.7](https://github.com/MagerValp/AutoDMG/releases/tag/v0.7) (Pre-release, works, but not ready for production)
+[AutoDMG 0.8](https://github.com/MagerValp/AutoDMG/releases/tag/v0.8) (Pre-release, still not ready for production)
 
 
 Version History
 ---------------
 
+* 0.8
+    * Major rewrite of workflow logic.
+    * Added log window.
+    * Fixed update caching.
+    * Fixed cleanup of leftover sockets in /tmp.
+    * Made main window resizable.
 * 0.7
     * Added software updates.
 * 0.6
