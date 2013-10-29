@@ -43,7 +43,7 @@ class IEDAppDelegate(NSObject):
         if updateProfileInterval != 0:
             lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
             if lastCheck.timeIntervalSinceNow() < (-60 * 60 * 24 * updateProfileInterval):
-                self.checkForProfileUpdates(self)
+                self.checkForProfileUpdates_(self)
     
     @IBAction
     def checkForProfileUpdates_(self, sender):
