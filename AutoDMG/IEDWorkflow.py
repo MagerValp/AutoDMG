@@ -151,8 +151,8 @@ class IEDWorkflow(NSObject):
             self.baseSystemMountedFromPath = baseSystemPath
             self.dmgHelper.attach_selector_(baseSystemPath, self.handleSourceMountResult_)
         else:
-            self.sourceFailed_text_(u"Invalid installer",
-                                    u"Couldn't find system version in InstallESD.")
+            self.delegate.sourceFailed_text_(u"Invalid installer",
+                                             u"Couldn't find system version in InstallESD.")
     
     def checkVersion_(self, mountPoint):
         LogDebug(u"checkVersion:%@", mountPoint)
