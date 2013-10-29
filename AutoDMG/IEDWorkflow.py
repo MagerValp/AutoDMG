@@ -44,6 +44,7 @@ class IEDWorkflow(NSObject):
         self.installerMountPoint = None
         self.additionalPackages = list()
         self.attachedPackageDMGs = dict()
+        self.lastUpdateMessage = None
         
         return self
     
@@ -481,7 +482,10 @@ class IEDWorkflow(NSObject):
             self.delegate.buildSetProgress_(currentProgress)
         
         elif action == u"update_message":
-            LogMessage(IEDLogLevelInfo, msg[u"message"])
+            if self.lastUpdateMessage != msg[u"message"]:
+                # Only log update messages when they change.
+                LogMessage(IEDLogLevelInfo, msg[u"message"])
+            self.lastUpdateMessage = msg[u"message"]
             self.delegate.buildSetProgressMessage_(msg[u"message"])
         
         elif action == u"select_phase":
