@@ -21,11 +21,13 @@ class IEDController(NSObject):
     
     mainWindow = IBOutlet()
     
-    sourceView = IBOutlet()
+    sourceBox = IBOutlet()
+    sourceImage = IBOutlet()
     sourceLabel = IBOutlet()
     
     updateController = IBOutlet()
     addPkgController = IBOutlet()
+    logController = IBOutlet()
     
     buildButton = IBOutlet()
     
@@ -45,7 +47,9 @@ class IEDController(NSObject):
         
         # We're a delegate for the drag and drop target, protocol:
         #   (void)acceptInstaller:(NSString *)path
-        self.sourceView.setDelegate_(self)
+        self.sourceBox.setDelegate_(self)
+        self.sourceImage.setDelegate_(self)
+        self.sourceLabel.setDelegate_(self)
         
         # We're a delegate for the update controller, protocol:
         #   (void)updateControllerChanged
@@ -73,12 +77,18 @@ class IEDController(NSObject):
     
     def disableMainWindowControls(self):
         self.enabled = False
+        self.sourceBox.stopAcceptingDrag()
+        self.sourceImage.stopAcceptingDrag()
+        self.sourceLabel.stopAcceptingDrag()
         self.updateController.disableControls()
         self.addPkgController.disableControls()
         self.buildButton.setEnabled_(False)
     
     def enableMainWindowControls(self):
         self.enabled = True
+        self.sourceBox.startAcceptingDrag()
+        self.sourceImage.startAcceptingDrag()
+        self.sourceLabel.startAcceptingDrag()
         self.updateController.enableControls()
         self.addPkgController.enableControls()
         self.updateBuildButton()
@@ -107,14 +117,14 @@ class IEDController(NSObject):
     # Workflow delegate methods.
     
     def ejectingSource(self):
-        self.sourceView.setAlphaValue_(0.5)
-        self.sourceLabel.setStringValue_(u"Ejecting…")
+        self.sourceImage.setAlphaValue_(0.5)
+        self.sourceLabel.setStringValue_(u"\u00a0\u00a0Ejecting…")
     
     def examiningSource_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
         icon.setSize_(NSMakeSize(256.0, 256.0))
-        self.sourceView.setImage_(icon)
-        self.sourceView.setAlphaValue_(1.0)
+        self.sourceImage.setImage_(icon)
+        self.sourceImage.setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"Examining…")
     
     def sourceSucceeded_(self, info):
@@ -127,8 +137,8 @@ class IEDController(NSObject):
     
     def sourceFailed_text_(self, message, text):
         self.displayAlert_text_(message, text)
-        self.sourceView.setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
-        self.sourceView.setAlphaValue_(1.0)
+        self.sourceImage.setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
+        self.sourceImage.setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"")
     
     
@@ -211,7 +221,14 @@ class IEDController(NSObject):
             NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs_([fileURL])
     
     def buildFailed_details_(self, message, details):
-        self.displayAlert_text_(message, details)
+        alert = NSAlert.alloc().init()
+        alert.setMessageText_(message)
+        alert.setInformativeText_(details)
+        alert.addButtonWithTitle_(u"OK")
+        alert.addButtonWithTitle_(u"View Log")
+        button = alert.runModal()
+        if button == NSAlertSecondButtonReturn:
+            self.logController.displayLogWindow_(self)
     
     def buildStopped(self):
         self.buildProgressWindow.orderOut_(self)

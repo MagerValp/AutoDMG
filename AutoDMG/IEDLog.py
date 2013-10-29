@@ -54,7 +54,6 @@ class IEDLog(NSObject):
     def awakeFromNib(self):
         global defaults
         self.levelSelector.selectItemAtIndex_(defaults.integerForKey_(u"LogLevel"))
-        self.logWindowVisible = False
         self.logTableView.setDataSource_(self)
     
     # Helper methods.
@@ -77,24 +76,15 @@ class IEDLog(NSObject):
         if defaults.integerForKey_(u"LogLevel") >= level:
             self.visibleLogLines.append(logLine)
             self.logTableView.reloadData()
+            self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
     
     
     
-    # Act on user toggling log window.
+    # Act on user showing log window.
     
     @IBAction
-    def toggleLogWindow_(self, sender):
-        if self.logWindowVisible:
-            self.logWindow.orderOut_(self)
-            self.logWindowVisible = False
-        else:
-            self.logWindow.makeKeyAndOrderFront_(self)
-            self.logWindowVisible = True
-    
-    # NSWindowDelegate methods.
-    
-    def windowWillClose_(self, sender):
-        self.logWindowVisible = False
+    def displayLogWindow_(self, sender):
+        self.logWindow.makeKeyAndOrderFront_(self)
     
     
     
@@ -115,7 +105,7 @@ class IEDLog(NSObject):
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"log", u"txt"])
         formatter = NSDateFormatter.alloc().init()
-        formatter.setDateFormat_(u"yyyy-MM-dd HH.mm.ss")
+        formatter.setDateFormat_(u"yyyy-MM-dd HH.mm")
         dateStr = formatter.stringFromDate_(NSDate.date())
         panel.setNameFieldStringValue_(u"AutoDMG %s" % dateStr)
         result = panel.runModal()
@@ -139,7 +129,7 @@ class IEDLog(NSObject):
             NSAlert.alertWithError_(error).runModal()
             return
         formatter = NSDateFormatter.alloc().init()
-        formatter.setDateFormat_(u"yy-MM-dd HH:mm")
+        formatter.setDateFormat_(u"yyyy-MM-dd HH:mm:ss")
         for logLine in self.logLines:
             textLine = NSString.stringWithFormat_(u"%@ %@: %@\n",
                                                   formatter.stringFromDate_(logLine.date()),

@@ -44,6 +44,7 @@ class IEDWorkflow(NSObject):
         self.installerMountPoint = None
         self.additionalPackages = list()
         self.attachedPackageDMGs = dict()
+        self.lastUpdateMessage = None
         
         return self
     
@@ -151,8 +152,8 @@ class IEDWorkflow(NSObject):
             self.baseSystemMountedFromPath = baseSystemPath
             self.dmgHelper.attach_selector_(baseSystemPath, self.handleSourceMountResult_)
         else:
-            self.sourceFailed_text_(u"Invalid installer",
-                                    u"Couldn't find system version in InstallESD.")
+            self.delegate.sourceFailed_text_(u"Invalid installer",
+                                             u"Couldn't find system version in InstallESD.")
     
     def checkVersion_(self, mountPoint):
         LogDebug(u"checkVersion:%@", mountPoint)
@@ -481,7 +482,10 @@ class IEDWorkflow(NSObject):
             self.delegate.buildSetProgress_(currentProgress)
         
         elif action == u"update_message":
-            LogMessage(IEDLogLevelInfo, msg[u"message"])
+            if self.lastUpdateMessage != msg[u"message"]:
+                # Only log update messages when they change.
+                LogMessage(IEDLogLevelInfo, msg[u"message"])
+            self.lastUpdateMessage = msg[u"message"]
             self.delegate.buildSetProgressMessage_(msg[u"message"])
         
         elif action == u"select_phase":
