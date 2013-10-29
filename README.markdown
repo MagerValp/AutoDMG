@@ -6,45 +6,26 @@ AutoDMG takes an OS X installer and builds a system image, suitable for deployme
 ![Autodmg-0.8-Log](https://f.cloud.github.com/assets/404393/1420666/6dde1438-3fe3-11e3-8fed-b78aa74784a4.png)
 
 
+Support
+-------
+
+Documentation and help is in the [AutoDMG wiki](https://github.com/MagerValp/AutoDMG/wiki).
+
+If you have questions or need help, you can join us in [##osx-server](http://webchat.freenode.net/?channels=##osx-server).
+
+
 Download
 --------
 
-[AutoDMG 0.8](https://github.com/MagerValp/AutoDMG/releases/tag/v0.8) (Pre-release, still not ready for production)
+The latest release can be found on the [release page](https://github.com/MagerValp/AutoDMG/releases).
 
-
-Version History
----------------
-
-* 0.8
-    * Major rewrite of workflow logic.
-    * Added log window.
-    * Fixed update caching.
-    * Fixed cleanup of leftover sockets in /tmp.
-    * Made main window resizable.
-* 0.7
-    * Added software updates.
-* 0.6
-    * Renamed to AutoDMG.
-    * New GUI and support for additional package installations.
-* 0.5.1
-    * Fixed extra package installation (thanks Greg Neagle).
-* 0.5
-    * Split asr imagescan into a separate task.
-    * Added support for installing extra packages, but no GUI yet.
-* 0.4
-    * Moved DMG handling into app.
-    * Added OS version check.
-* 0.3
-	* Working progress bar.
-	* Tested on 10.8.5 and 10.9 GM.
-* 0.2/0.1
-	* First prototypes, not fit for public consumption.
+**AutoDMG is still in beta, please check the [issue tracker](https://github.com/MagerValp/AutoDMG/issues) for any known bugs before building.**
 
 
 License
 -------
 
-    Copyright 2013 Per Olofsson
+    Copyright 2013 Per Olofsson, University of Gothenburg
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
