@@ -17,9 +17,16 @@ from IEDLog import *
 
 def awakeFromNib(self):
     self.registerForDraggedTypes_([NSFilenamesPboardType])
+    self.startAcceptingDrag()
 
 def setDelegate_(self, _delegate):
     self._delegate = _delegate
+
+def startAcceptingDrag(self):
+    self.dragEnabled = True
+
+def stopAcceptingDrag(self):
+    self.dragEnabled = False
 
 def checkSource_(self, sender):
     pboard = sender.draggingPasteboard()
@@ -31,10 +38,10 @@ def checkSource_(self, sender):
     return None
 
 def draggingEntered_(self, sender):
-    if self.checkSource_(sender):
-        self.dragOperation = NSDragOperationCopy
-    else:
-        self.dragOperation = NSDragOperationNone
+    self.dragOperation = NSDragOperationNone
+    if self.dragEnabled:
+        if self.checkSource_(sender):
+            self.dragOperation = NSDragOperationCopy
     return self.dragOperation
 
 def draggingUpdated_(self, sender):
@@ -54,6 +61,8 @@ class IEDBoxSourceSelector(NSBox):
 classAddMethods(IEDBoxSourceSelector, [
     awakeFromNib,
     setDelegate_,
+    startAcceptingDrag,
+    stopAcceptingDrag,
     checkSource_,
     draggingEntered_,
     draggingUpdated_,
@@ -65,6 +74,8 @@ class IEDImageViewSourceSelector(NSImageView):
 classAddMethods(IEDImageViewSourceSelector, [
     awakeFromNib,
     setDelegate_,
+    startAcceptingDrag,
+    stopAcceptingDrag,
     checkSource_,
     draggingEntered_,
     draggingUpdated_,
@@ -76,6 +87,8 @@ class IEDTextFieldSourceSelector(NSTextField):
 classAddMethods(IEDTextFieldSourceSelector, [
     awakeFromNib,
     setDelegate_,
+    startAcceptingDrag,
+    stopAcceptingDrag,
     checkSource_,
     draggingEntered_,
     draggingUpdated_,

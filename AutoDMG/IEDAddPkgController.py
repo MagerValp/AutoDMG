@@ -19,6 +19,7 @@ from IEDPackage import *
 
 class IEDAddPkgController(NSObject):
     
+    addPkgLabel = IBOutlet()
     tableView = IBOutlet()
     removeButton = IBOutlet()
     
@@ -37,14 +38,19 @@ class IEDAddPkgController(NSObject):
     def awakeFromNib(self):
         self.tableView.setDataSource_(self)
         self.tableView.registerForDraggedTypes_([NSFilenamesPboardType, IEDAddPkgController.movedRowsType])
+        self.dragEnabled = True
     
     # Helper methods.
     
     def disableControls(self):
+        self.dragEnabled = False
+        self.addPkgLabel.setTextColor_(NSColor.disabledControlTextColor())
         self.tableView.setEnabled_(False)
         self.removeButton.setEnabled_(False)
     
     def enableControls(self):
+        self.dragEnabled = True
+        self.addPkgLabel.setTextColor_(NSColor.controlTextColor())
         self.tableView.setEnabled_(True)
         self.removeButton.setEnabled_(True)
     
@@ -93,6 +99,8 @@ class IEDAddPkgController(NSObject):
             return self.packages[row].name()
     
     def tableView_validateDrop_proposedRow_proposedDropOperation_(self, tableView, info, row, operation):
+        if not self.dragEnabled:
+            return NSDragOperationNone
         if info.draggingSource() == tableView:
             return NSDragOperationMove
         pboard = info.draggingPasteboard()
@@ -110,6 +118,8 @@ class IEDAddPkgController(NSObject):
         return NSDragOperationCopy
     
     def tableView_acceptDrop_row_dropOperation_(self, tableView, info, row, operation):
+        if not self.dragEnabled:
+            return False
         pboard = info.draggingPasteboard()
         # If the source is the tableView, we're reordering packages within the
         # table and the pboard contains the source row indices.

@@ -77,12 +77,18 @@ class IEDController(NSObject):
     
     def disableMainWindowControls(self):
         self.enabled = False
+        self.sourceBox.stopAcceptingDrag()
+        self.sourceImage.stopAcceptingDrag()
+        self.sourceLabel.stopAcceptingDrag()
         self.updateController.disableControls()
         self.addPkgController.disableControls()
         self.buildButton.setEnabled_(False)
     
     def enableMainWindowControls(self):
         self.enabled = True
+        self.sourceBox.startAcceptingDrag()
+        self.sourceImage.startAcceptingDrag()
+        self.sourceLabel.startAcceptingDrag()
         self.updateController.enableControls()
         self.addPkgController.enableControls()
         self.updateBuildButton()
