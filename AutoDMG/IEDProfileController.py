@@ -47,9 +47,10 @@ class IEDProfileController(NSObject):
         
         try:
             profile = self.profiles[u"%s-%s" % (version, build)]
+            LogNotice(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
         except KeyError:
             profile = None
-        LogNotice(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
+            LogNotice(u"No update profile for %@ %@", version, build)
         return profile
     
     def updateUsersProfilesIfNewer_(self, plist):
