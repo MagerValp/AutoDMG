@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>PublicationDate</key>
-	<date>2013-10-28T18:25:00Z</date>
+	<date>2013-10-29T18:15:00Z</date>
 	<key>Profiles</key>
 	<dict>
 		<key>10.8.5-12F37</key>
@@ -20,10 +20,6 @@
 			<string>ARD-3.7</string>
 			<string>iTunes</string>
 			<string>AirPortUtility</string>
-		</array>
-		<key>10.9-13A598</key>
-		<array>
-			<string>iTunes</string>
 		</array>
 		<key>10.9-13A603</key>
 		<array>
