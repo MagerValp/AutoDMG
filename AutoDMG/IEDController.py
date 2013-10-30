@@ -43,7 +43,6 @@ class IEDController(NSObject):
         # Initialize UI.
         self.buildProgressBar.setMaxValue_(100.0)
         self.buildProgressMessage.setStringValue_(u"")
-        self.sourceLabel.setStringValue_(u"")
         
         # We're a delegate for the drag and drop target, protocol:
         #   (void)acceptInstaller:(NSString *)path
@@ -126,6 +125,7 @@ class IEDController(NSObject):
     def ejectingSource(self):
         self.sourceImage.setAlphaValue_(0.5)
         self.sourceLabel.setStringValue_(u"Ejecting")
+        self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
     def examiningSource_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
@@ -133,12 +133,14 @@ class IEDController(NSObject):
         self.sourceImage.setImage_(icon)
         self.sourceImage.setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"Examining")
+        self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
     def sourceSucceeded_(self, info):
         self.installerName = info[u"name"]
         self.installerVersion = info[u"version"]
         self.installerBuild = info[u"build"]
         self.sourceLabel.setStringValue_(u"%s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
+        self.sourceLabel.setTextColor_(NSColor.controlTextColor())
         self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
         self.enableMainWindowControls()
         self.busy = False
@@ -147,7 +149,8 @@ class IEDController(NSObject):
         self.displayAlert_text_(message, text)
         self.sourceImage.setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
         self.sourceImage.setAlphaValue_(1.0)
-        self.sourceLabel.setStringValue_(u"")
+        self.sourceLabel.setStringValue_(u"Drop OS X Installer Here")
+        self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
         self.enableMainWindowControls()
         self.busy = False
     
