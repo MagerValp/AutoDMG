@@ -55,6 +55,12 @@ class IEDLog(NSObject):
         global defaults
         self.levelSelector.selectItemAtIndex_(defaults.integerForKey_(u"LogLevel"))
         self.logTableView.setDataSource_(self)
+        nc = NSNotificationCenter.defaultCenter()
+        nc.addObserver_selector_name_object_(self,
+                                             self.logViewScrolled_,
+                                             NSViewBoundsDidChangeNotification,
+                                             self.logTableView.enclosingScrollView().contentView())
+        self.logAtBottom = True
     
     # Helper methods.
     
@@ -76,7 +82,8 @@ class IEDLog(NSObject):
         if defaults.integerForKey_(u"LogLevel") >= level:
             self.visibleLogLines.append(logLine)
             self.logTableView.reloadData()
-            self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
+            if self.logAtBottom:
+                self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
     
     
     
@@ -84,9 +91,24 @@ class IEDLog(NSObject):
     
     @IBAction
     def displayLogWindow_(self, sender):
+        self.logAtBottom = True
+        self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
         self.logWindow.makeKeyAndOrderFront_(self)
     
     
+    
+    # Act on notification for log being scrolled by user.
+    
+    def logViewScrolled_(self, notification):
+        tableViewHeight = self.logTableView.bounds().size.height
+        scrollView = self.logTableView.enclosingScrollView()
+        scrollRect = scrollView.documentVisibleRect()
+        scrollPos = scrollRect.origin.y + scrollRect.size.height
+        
+        if scrollPos >= tableViewHeight:
+            self.logAtBottom = True
+        else:
+            self.logAtBottom = False
     
     # Act on user filtering log.
     
