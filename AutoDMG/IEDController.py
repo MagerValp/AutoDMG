@@ -60,11 +60,17 @@ class IEDController(NSObject):
         
         # Enabled state for main window.
         self.enabled = True
+        
+        # When busy is true quitting gets a confirmation prompt.
+        self.busy = False
     
-    def applicationShouldTerminate_(self, sender):
-        LogDebug(u"applicationShouldTerminate:")
+    # Methods to communicate with app delegate.
+    
+    def cleanup(self):
         self.workflow.cleanup()
-        return NSTerminateNow
+    
+    def isBusy(self):
+        return self.busy
     
     # Helper methods.
     
@@ -112,6 +118,7 @@ class IEDController(NSObject):
     
     def acceptSource_(self, path):
         self.disableMainWindowControls()
+        self.busy = True
         self.workflow.setSource_(path)
     
     # Workflow delegate methods.
@@ -134,6 +141,7 @@ class IEDController(NSObject):
         self.sourceLabel.setStringValue_(u"%s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
         self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
         self.enableMainWindowControls()
+        self.busy = False
     
     def sourceFailed_text_(self, message, text):
         self.displayAlert_text_(message, text)
@@ -141,6 +149,7 @@ class IEDController(NSObject):
         self.sourceImage.setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"")
         self.enableMainWindowControls()
+        self.busy = False
     
     
     
@@ -196,6 +205,7 @@ class IEDController(NSObject):
         self.buildProgressMessage.setStringValue_(u"")
         self.buildProgressWindow.makeKeyAndOrderFront_(self)
         self.disableMainWindowControls()
+        self.busy = True
     
     def buildSetTotalWeight_(self, totalWeight):
         self.buildProgressBar.setMaxValue_(totalWeight)
@@ -234,6 +244,7 @@ class IEDController(NSObject):
     def buildStopped(self):
         self.buildProgressWindow.orderOut_(self)
         self.enableMainWindowControls()
+        self.busy = False
     
 
 
