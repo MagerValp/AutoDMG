@@ -5,7 +5,7 @@
 	<key>HelpURL</key>
 	<string>https://github.com/MagerValp/AutoDMG/wiki</string>
 	<key>UpdateProfilesURL</key>
-	<string>https://raw.github.com/MagerValp/AutoDMG/master/AutoDMG/UpdateProfiles.plist</string>
+	<string>https://raw.github.com/MagerValp/AutoDMGUpdateProfiles/master/UpdateProfiles.plist</string>
 	<key>LastUpdateProfileCheck</key>
 	<date>1970-01-01T00:00:00Z</date>
 	<key>UpdateProfileInterval</key>
