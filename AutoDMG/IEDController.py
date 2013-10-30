@@ -118,14 +118,14 @@ class IEDController(NSObject):
     
     def ejectingSource(self):
         self.sourceImage.setAlphaValue_(0.5)
-        self.sourceLabel.setStringValue_(u"\u00a0\u00a0Ejecting…")
+        self.sourceLabel.setStringValue_(u"Ejecting")
     
     def examiningSource_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
         icon.setSize_(NSMakeSize(256.0, 256.0))
         self.sourceImage.setImage_(icon)
         self.sourceImage.setAlphaValue_(1.0)
-        self.sourceLabel.setStringValue_(u"Examining…")
+        self.sourceLabel.setStringValue_(u"Examining")
     
     def sourceSucceeded_(self, info):
         self.installerName = info[u"name"]
@@ -140,6 +140,7 @@ class IEDController(NSObject):
         self.sourceImage.setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
         self.sourceImage.setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"")
+        self.enableMainWindowControls()
     
     
     
