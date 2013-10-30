@@ -49,6 +49,7 @@ class IEDLog(NSObject):
         if self is None:
             return None
         IEDLog._instance = self
+        self.logAtBottom = True
         return self
     
     def awakeFromNib(self):
@@ -60,7 +61,6 @@ class IEDLog(NSObject):
                                              self.logViewScrolled_,
                                              NSViewBoundsDidChangeNotification,
                                              self.logTableView.enclosingScrollView().contentView())
-        self.logAtBottom = True
     
     # Helper methods.
     
