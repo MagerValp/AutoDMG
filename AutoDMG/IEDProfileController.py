@@ -12,6 +12,7 @@ from Foundation import *
 from objc import IBOutlet
 
 import os.path
+from collections import defaultdict
 from IEDLog import *
 
 
@@ -47,10 +48,60 @@ class IEDProfileController(NSObject):
         
         try:
             profile = self.profiles[u"%s-%s" % (version, build)]
+            LogNotice(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
         except KeyError:
             profile = None
-        LogNotice(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
+            LogNotice(u"No update profile for %@ %@", version, build)
         return profile
+    
+    def whyNoProfileForVersion_build_(self, whyVersion, whyBuild):
+        """Given a version and build that doesn't have a profile, try to
+        provide a helpful explanation as to why that might be."""
+        
+        # Check if it has been deprecated.
+        try:
+            replacement = self.deprecatedInstallerBuilds[whyBuild]
+            version, _, build = replacement.partition(u"-")
+            return u"Installer deprecated by %s %s" % (version, build)
+        except KeyError:
+            pass
+        
+        whyVersionTuple = tuple(int(x) for x in whyVersion.split(u"."))
+        whyMajor = whyVersionTuple[1]
+        whyPoint = whyVersionTuple[2] if len(whyVersionTuple) > 2 else None
+        
+        buildsForVersion = defaultdict(set)
+        supportedMajorVersions = set()
+        supportedPointReleases = defaultdict(set)
+        for versionBuild in self.profiles.keys():
+            version , _, build = versionBuild.partition(u"-")
+            buildsForVersion[version].add(build)
+            versionTuple = tuple(int(x) for x in version.split(u"."))
+            major = versionTuple[1]
+            supportedMajorVersions.add(major)
+            point = versionTuple[2] if len(versionTuple) > 2 else None
+            supportedPointReleases[major].add(point)
+        
+        if whyMajor not in supportedMajorVersions:
+            return "10.%d is not supported" % whyMajor
+        elif whyVersion in buildsForVersion:
+            return u"Unknown build %s" % whyBuild
+        else:
+            # It's a supported OS X version, but we don't have a profile for
+            # this point release. Try to figure out if that's because it's too
+            # old or too new.
+            pointReleases = supportedPointReleases[whyMajor]
+            oldestSupportedPointRelease = sorted(pointReleases)[0]
+            newestSupportedPointRelease = sorted(pointReleases)[-1]
+            if whyPoint < oldestSupportedPointRelease:
+                return u"Deprecated installer"
+            elif whyPoint > newestSupportedPointRelease:
+                # If it's newer than any known release, just assume that we're
+                # behind on updates and that all is well.
+                return None
+            else:
+                # Well this is awkward.
+                return u"Deprecated installer"
     
     def updateUsersProfilesIfNewer_(self, plist):
         """Update the user's update profiles if plist is newer. Returns
@@ -61,10 +112,11 @@ class IEDProfileController(NSObject):
         
         # If the bundle's plist is newer, update the user's.
         if (not userUpdateProfiles) or (userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0):
+            LogDebug(u"Saving updated UpdateProfiles.plist")
             self.saveUsersProfiles_(plist)
-            userUpdateProfiles = plist
-        
-        return userUpdateProfiles
+            return plist
+        else:
+            return userUpdateProfiles
     
     def saveUsersProfiles_(self, plist):
         """Save UpdateProfiles.plist to application support."""
@@ -86,7 +138,13 @@ class IEDProfileController(NSObject):
         self.updatePaths = dict()
         for name, update in plist[u"Updates"].iteritems():
             self.updatePaths[update[u"sha1"]] = os.path.basename(update[u"url"])
-        self.delegate.profilesUpdated()
+        self.deprecatedInstallerBuilds = dict()
+        if u"DeprecatedInstallers" in plist:
+            for replacement, builds in plist[u"DeprecatedInstallers"].iteritems():
+                for build in builds:
+                    self.deprecatedInstallerBuilds[build] = replacement
+        if self.delegate:
+            self.delegate.profilesUpdated()
     
     # FIXME: use a delegate protocol instead.
     def updateFromURL_withTarget_selector_(self, url, target, selector):

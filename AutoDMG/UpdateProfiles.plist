@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>PublicationDate</key>
-	<date>2013-10-29T18:15:00Z</date>
+	<date>2013-10-30T00:25:00Z</date>
 	<key>Profiles</key>
 	<dict>
 		<key>10.8.5-12F37</key>
@@ -83,6 +83,32 @@
 			<key>url</key>
 			<string>https://secure-appldnld.apple.com/iTunes11/091-9744.20131022.N34FF/iTunes11.1.2.dmg</string>
 		</dict>
+	</dict>
+	<key>DeprecatedInstallers</key>
+	<dict>
+		<key>10.8.5-12F45</key>
+		<array>
+			<string>12A269</string>
+			<string>12A269</string>
+			<string>12B19</string>
+			<string>12B2100</string>
+			<string>12B2517</string>
+			<string>12C2034</string>
+			<string>12C2037</string>
+			<string>12C3103</string>
+			<string>12C60</string>
+			<string>12D78</string>
+			<string>12D78</string>
+			<string>12E3067</string>
+			<string>12E4022</string>
+			<string>12E55</string>
+		</array>
+		<key>10.9-13A603</key>
+		<array>
+			<string>13A598</string>
+			<!--<string>13A2093</string>-->
+			<!--<string>13A3017</string>-->
+		</array>
 	</dict>
 </dict>
 </plist>

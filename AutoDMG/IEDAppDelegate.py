@@ -58,11 +58,22 @@ class IEDAppDelegate(NSObject):
     
     def applicationShouldTerminate_(self, sender):
         LogDebug(u"applicationShouldTerminate:")
-        return self.mainWindowController.applicationShouldTerminate_(sender)
+        if self.mainWindowController.isBusy():
+            alert = NSAlert.alloc().init()
+            alert.setAlertStyle_(NSCriticalAlertStyle)
+            alert.setMessageText_(u"Application busy")
+            alert.setInformativeText_(u"Quitting now could leave the " \
+                                      u"system in an unpredictable state.")
+            alert.addButtonWithTitle_(u"Quit")
+            alert.addButtonWithTitle_(u"Stay")
+            button = alert.runModal()
+            if button == NSAlertSecondButtonReturn:
+                return NSTerminateCancel
+        return NSTerminateNow
     
     def applicationWillTerminate_(self, sender):
         LogDebug(u"applicationWillTerminate:")
-        return
+        self.mainWindowController.cleanup()
     
     @IBAction
     def showHelp_(self, sender):
