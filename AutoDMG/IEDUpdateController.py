@@ -30,6 +30,7 @@ class IEDUpdateController(NSObject):
     
     applyUpdatesCheckbox = IBOutlet()
     updateTable = IBOutlet()
+    updateTableImage = IBOutlet()
     updateTableLabel = IBOutlet()
     downloadButton = IBOutlet()
     
@@ -50,6 +51,7 @@ class IEDUpdateController(NSObject):
         self.delegate = None
         self.version = None
         self.build = None
+        self.profileWarning = None
         
         return self
     
@@ -60,6 +62,10 @@ class IEDUpdateController(NSObject):
         self.cachedImage = NSImage.imageNamed_(u"Package")
         self.uncachedImage = NSImage.imageNamed_(u"Package blue arrow")
         
+        self.updatesAllOKImage = NSImage.imageNamed_(u"Checkmark")
+        self.updatesToDownloadImage = NSImage.imageNamed_(u"Download")
+        self.updatesWarningImage = NSImage.imageNamed_(u"Exclamation")
+        self.updateTableImage.setImage_(None)
         self.updateTableLabel.setStringValue_(u"")
         self.updateTable.setDataSource_(self)
     
@@ -76,9 +82,16 @@ class IEDUpdateController(NSObject):
         self.downloadButton.setEnabled_(len(self.downloads) > 0)
     
     def showRemainingDownloads(self):
+        if self.profileWarning:
+            self.updateTableImage.setImage_(self.updatesWarningImage)
+            self.updateTableLabel.setStringValue_(self.profileWarning)
+            self.updateTableLabel.setTextColor_(NSColor.controlTextColor())
+            return
+        
         if len(self.downloads) == 0:
             self.updateTableLabel.setStringValue_(u"All updates downloaded")
             self.updateTableLabel.setTextColor_(NSColor.disabledControlTextColor())
+            self.updateTableImage.setImage_(self.updatesAllOKImage)
         else:
             sizeStr = IEDFormatBytes(self.downloadTotalSize)
             plurals = u"s" if len(self.downloads) >= 2 else u""
@@ -86,6 +99,7 @@ class IEDUpdateController(NSObject):
             self.updateTableLabel.setStringValue_(downloadLabel)
             self.updateTableLabel.setEnabled_(True)
             self.updateTableLabel.setTextColor_(NSColor.controlTextColor())
+            self.updateTableImage.setImage_(self.updatesToDownloadImage)
     
     def countDownloads(self):
         self.downloads = list()
@@ -126,9 +140,13 @@ class IEDUpdateController(NSObject):
     def loadProfileForVersion_build_(self, version, build):
         self.version = version
         self.build = build
-        profile = self.profileController.profileForVersion_Build_(version, build)
         self.updates = list()
-        if profile:
+        profile = self.profileController.profileForVersion_Build_(version, build)
+        if profile is None:
+            # No update profile for this build, try to figure out why.
+            self.profileWarning = self.profileController.whyNoProfileForVersion_build_(version, build)
+        else:
+            self.profileWarning = None
             for update in profile:
                 package = IEDPackage.alloc().init()
                 package.setName_(update[u"name"])
