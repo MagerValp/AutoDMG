@@ -43,6 +43,7 @@ class ProgressWatcher(NSObject):
         if mode == u"asr":
             progressHandler = u"notifyAsrProgressData:"
             self.asrProgressActive = False
+            self.asrPhase = 0
         elif mode == u"ied":
             progressHandler = u"notifyIEDProgressData:"
             self.outputBuffer = u""
@@ -75,6 +76,8 @@ class ProgressWatcher(NSObject):
             if string == u"Block checksum: ":
                 self.asrPercent = 0.0
                 self.asrProgressActive = True
+                self.asrPhase += 1
+                self.postNotification_({u"action": u"select_phase", u"phase": u"asr%d" % self.asrPhase})
             elif self.asrProgressActive:
                 while string and self.asrProgressActive:
                     if string.startswith(u"."):

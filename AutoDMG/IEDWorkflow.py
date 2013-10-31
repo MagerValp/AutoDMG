@@ -236,9 +236,9 @@ class IEDWorkflow(NSObject):
         
         # Perform installation.
         installerPhases = [
-            {u"title": u"Starting install", u"weight": 1 * 1024 * 1024},
-            {u"title": u"Creating disk image", u"weight": 100 * 1024 * 1024},
-            {u"title": u"Installing OS", u"weight": 4 * 1024 * 1024 * 1024},
+            {u"title": u"Starting install",    u"weight":        1 * 1024 * 1024},
+            {u"title": u"Creating disk image", u"weight":      100 * 1024 * 1024},
+            {u"title": u"Installing OS",       u"weight": 4 * 1024 * 1024 * 1024},
         ]
         for package in self.additionalPackages:
             installerPhases.append({
@@ -248,7 +248,7 @@ class IEDWorkflow(NSObject):
             })
         installerPhases.extend([
             # hdiutil convert.
-            {u"title": u"Finalizing disk image", u"weight": 500 * 1024 * 1024},
+            {u"title": u"Finalizing disk image", u"weight": 650 * 1024 * 1024},
         ])
         self.tasks.append({
             u"method": self.taskInstall,
@@ -259,7 +259,18 @@ class IEDWorkflow(NSObject):
         self.tasks.append({
             u"method": self.taskFinalize,
             u"phases": [
-                {u"title": u"Finalizing disk image", u"weight": 100 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":          1 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":   5 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight": 300 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":  10 * 1024 * 1024},
+            ],
+        })
+        
+        # Finish build.
+        self.tasks.append({
+            u"method": self.taskFinish,
+            u"phases": [
+                {u"title": u"Finishing", u"weight": 1 * 1024 * 1024},
             ],
         })
         
@@ -464,6 +475,16 @@ class IEDWorkflow(NSObject):
         subprocess.Popen(args)
     
     
+    
+    # Task: Finish
+    #
+    #    1. Just a dummy task to keep the progress bar from finishing
+    #       prematurely.
+    
+    def taskFinish(self):
+        LogNotice(u"Finish")
+        self.delegate.buildSetProgress_(self.totalWeight)
+        self.nextTask()
     
     # SocketListener delegate methods.
     
