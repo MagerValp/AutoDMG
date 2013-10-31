@@ -35,7 +35,6 @@ class IEDController(NSObject):
     buildProgressPhase = IBOutlet()
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
-    buildProgressStopButton = IBOutlet()
     
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
