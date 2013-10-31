@@ -116,7 +116,9 @@ class IEDLog(NSObject):
     @IBAction
     def setLevel_(self, sender):
         self.visibleLogLines = [x for x in self.logLines if x.level() <= self.levelSelector.indexOfSelectedItem()]
+        self.logAtBottom = True
         self.logTableView.reloadData()
+        self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
     
     
     
