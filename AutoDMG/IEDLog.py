@@ -193,7 +193,12 @@ def LogMessage(level, message):
     
     for line in message.split(u"\n"):
         _log.addMessage_level_(prefix + line, level)
-        if defaults.integerForKey_(u"LogLevel") >= level:
+        if defaults.boolForKey_(u"DebugToSyslog"):
+            syslogLevel = IEDLogLevelDebug
+        else:
+            syslogLevel = IEDLogLevelInfo
+        
+        if syslogLevel >= level:
             NSLog(u"%@", prefix + line)
 
 def LogDebug(*args):

@@ -724,43 +724,37 @@
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="M8Q-a7-rvP">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="163" y="199" width="420" height="77"/>
+            <rect key="contentRect" x="163" y="199" width="445" height="107"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <value key="minSize" type="size" width="420" height="77"/>
             <view key="contentView" id="Tj1-NS-du2">
-                <rect key="frame" x="0.0" y="0.0" width="420" height="77"/>
+                <rect key="frame" x="0.0" y="0.0" width="445" height="107"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="EeQ-bq-zQm">
-                        <rect key="frame" x="109" y="32" width="64" height="17"/>
+                        <rect key="frame" x="18" y="63" width="177" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Log level:" id="rhd-Qu-MKT">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Check for profile updates:" id="rhd-Qu-MKT">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
                     <popUpButton verticalHuggingPriority="750" id="xsM-tS-GPh">
-                        <rect key="frame" x="177" y="27" width="103" height="26"/>
+                        <rect key="frame" x="199" y="57" width="103" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="Info" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="2Iw-c2-obK" id="Eix-Y0-pl6">
+                        <popUpButtonCell key="cell" type="push" title="Daily" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="y2b-SV-6aZ" id="Eix-Y0-pl6">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" title="OtherViews" id="alJ-Aa-glz">
                                 <items>
-                                    <menuItem title="Emergency" id="G6h-BS-iXd"/>
-                                    <menuItem title="Alert" id="y2b-SV-6aZ"/>
-                                    <menuItem title="Critical" id="PvX-XN-KNa"/>
-                                    <menuItem title="Error" id="uNK-lD-5B7"/>
-                                    <menuItem title="Warning" id="YmQ-fV-JEJ"/>
-                                    <menuItem title="Notice" id="4oD-q2-LDJ"/>
-                                    <menuItem title="Info" state="on" id="2Iw-c2-obK"/>
-                                    <menuItem title="Debug" id="NYa-rv-boJ"/>
+                                    <menuItem title="Manually" id="G6h-BS-iXd"/>
+                                    <menuItem title="Daily" state="on" id="y2b-SV-6aZ"/>
                                 </items>
                             </menu>
                         </popUpButtonCell>
                         <connections>
-                            <binding destination="TEB-LV-8aU" name="selectedIndex" keyPath="values.LogLevel" id="Anc-Sf-bGn">
+                            <binding destination="TEB-LV-8aU" name="selectedIndex" keyPath="values.UpdateProfileInterval" id="rge-aD-46U">
                                 <dictionary key="options">
                                     <bool key="NSRaisesForNotApplicableKeys" value="NO"/>
                                     <bool key="NSConditionallySetsEnabled" value="NO"/>
@@ -769,6 +763,26 @@
                             </binding>
                         </connections>
                     </popUpButton>
+                    <button id="r3L-O4-WOj">
+                        <rect key="frame" x="199" y="19" width="228" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Send debug output to syslog" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="4aE-VY-xJC">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="TEB-LV-8aU" name="value" keyPath="values.DebugToSyslog" id="oSh-OH-HAa"/>
+                        </connections>
+                    </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="KwW-Rf-KEw">
+                        <rect key="frame" x="18" y="20" width="177" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Logging:" id="Cz7-6t-16b">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
             </view>
         </window>
