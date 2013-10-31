@@ -15,11 +15,9 @@ import grp
 import traceback
 
 from IEDLog import *
+from IEDUtil import *
 from IEDSocketListener import *
 from IEDDMGHelper import *
-
-
-VERSIONPLIST_PATH = u"System/Library/CoreServices/SystemVersion.plist"
 
 
 class IEDWorkflow(NSObject):
@@ -145,7 +143,7 @@ class IEDWorkflow(NSObject):
         
         baseSystemPath = os.path.join(mountPoint, u"BaseSystem.dmg")
         
-        if os.path.exists(os.path.join(mountPoint, VERSIONPLIST_PATH)):
+        if os.path.exists(os.path.join(mountPoint, IEDUtil.VERSIONPLIST_PATH)):
             # FIXME: check Packages/OSInstall.mpkg
             self.checkVersion_(mountPoint)
         elif os.path.exists(baseSystemPath):
@@ -159,12 +157,9 @@ class IEDWorkflow(NSObject):
         LogDebug(u"checkVersion:%@", mountPoint)
         
         # InstallESD.dmg for 10.7/10.8, BaseSystem.dmg for 10.9.
-        plist = NSDictionary.dictionaryWithContentsOfFile_(os.path.join(mountPoint, VERSIONPLIST_PATH))
+        name, version, build = IEDUtil.readSystemVersion(mountPoint)
         if self.baseSystemMountedFromPath:
             self.dmgHelper.detach_selector_(self.baseSystemMountedFromPath, self.handleDetachResult_)
-        name = plist[u"ProductName"]
-        version = plist[u"ProductUserVisibleVersion"]
-        build = plist[u"ProductBuildVersion"]
         installerVersion = tuple(int(x) for x in version.split(u"."))
         runningVersion = tuple(int(x) for x in platform.mac_ver()[0].split(u"."))
         if installerVersion[:2] == runningVersion[:2]:
