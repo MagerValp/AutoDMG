@@ -22,6 +22,7 @@ from Foundation import *
 class ProgressWatcher(NSObject):
     
     re_installerlog = re.compile(r'^.+? installer\[[0-9a-f:]+\] (<(?P<level>[^>]+)>:)?(?P<message>.*)$')
+    re_number = re.compile(r'^\d+$')
     
     def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -72,33 +73,23 @@ class ProgressWatcher(NSObject):
     def notifyAsrProgressData_(self, notification):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
         if data.length():
-            string = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
-            if string == u"Block checksum: ":
-                self.asrPercent = 0.0
+            progressStr = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
+            if progressStr.startswith(u"\x0a"):
+                progressStr = progressStr[1:]
+                self.asrProgressActive = False
+            if progressStr == u"Block checksum: ":
+                self.asrPercent = 0
                 self.asrProgressActive = True
                 self.asrPhase += 1
                 self.postNotification_({u"action": u"select_phase", u"phase": u"asr%d" % self.asrPhase})
-            elif self.asrProgressActive:
-                while string and self.asrProgressActive:
-                    if string.startswith(u"."):
-                        while string.startswith(u"."):
-                            string = string[1:]
-                            self.asrPercent += 2.0
-                        continue
-                    elif string[0].isdigit():
-                        num = u""
-                        while string and string[0].isdigit():
-                            num += string[0]
-                            string = string[1:]
-                        self.asrPercent = float(num)
-                        continue
-                    elif string[0] == u"\x0a":
-                        self.asrProgressActive = False
-                        string = string[1:]
-                    else:
-                        NSLog(u"unrecognized progress data: %@", string)
-                        string = u""
-                self.postNotification_({u"action": u"update_progress", u"percent": self.asrPercent})
+            elif progressStr == u".":
+                self.asrPercent += 2
+            elif self.re_number.match(progressStr):
+                self.asrPercent = int(progressStr)
+            else:
+                self.asrProgressActive = False
+            self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
+            
             notification.object().readInBackgroundAndNotify()
     
     def notifyIEDProgressData_(self, notification):
