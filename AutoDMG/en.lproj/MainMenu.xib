@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="13A598" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4514" systemVersion="12F37" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1080" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4514"/>
@@ -280,7 +280,7 @@
                             </menuItem>
                             <menuItem title="Check For Updates…" keyEquivalent="u" id="pDM-i2-6nF">
                                 <connections>
-                                    <action selector="checkForProfileUpdates:" target="373" id="EjO-D1-4zY"/>
+                                    <action selector="checkForProfileUpdates:" target="3rI-qa-5R5" id="i7R-D0-WfH"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="143">
@@ -535,7 +535,6 @@
         <customObject id="373" userLabel="IEDAppDelegate" customClass="IEDAppDelegate">
             <connections>
                 <outlet property="mainWindowController" destination="Fjw-V3-78e" id="qQk-1j-IFa"/>
-                <outlet property="profileController" destination="ole-mw-OQ3" id="2iN-Kc-AYg"/>
             </connections>
         </customObject>
         <customObject id="Fjw-V3-78e" customClass="IEDController">
@@ -629,10 +628,16 @@
                     <button verticalHuggingPriority="750" id="DJ4-ZC-GhA">
                         <rect key="frame" x="330" y="13" width="89" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Stop" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0kb-tr-U5i">
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0kb-tr-U5i">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
                         </buttonCell>
+                        <connections>
+                            <action selector="cancelProfileUpdateCheck:" target="3rI-qa-5R5" id="2qL-Il-Mef"/>
+                        </connections>
                     </button>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="EZl-pU-FuB">
                         <rect key="frame" x="20" y="53" width="64" height="64"/>

@@ -128,6 +128,7 @@ class IEDProfileController(NSObject):
     def loadProfilesFromPlist_(self, plist):
         """Load UpdateProfiles from a plist dictionary."""
         
+        LogNotice(u"Loading update profiles with PublicationDate %@", plist[u"PublicationDate"])
         self.profiles = dict()
         for name, updates in plist[u"Profiles"].iteritems():
             profile = list()
@@ -146,62 +147,73 @@ class IEDProfileController(NSObject):
         if self.delegate:
             self.delegate.profilesUpdated()
     
-    # FIXME: use a delegate protocol instead.
-    def updateFromURL_withTarget_selector_(self, url, target, selector):
-        """Download the latest update profiles asynchronously and notify
-           target with the result."""
-        
-        self.profileUpdateWindow.makeKeyAndOrderFront_(self)
-        self.progressBar.startAnimation_(self)
-        self.performSelectorInBackground_withObject_(self.updateInBackground_, [url, target, selector])
     
-    # Continue in background thread.
-    def updateInBackground_(self, args):
-        url, target, selector = args
+    
+    # Update profiles.
+    
+    def updateFromURL_(self, url):
+        """Download the latest UpdateProfiles.plist."""
+        
+        LogDebug(u"updateFromURL:%@", url)
+        
+        # Show the progress window.
+        self.progressBar.setIndeterminate_(True)
+        self.progressBar.startAnimation_(self)
+        self.profileUpdateWindow.makeKeyAndOrderFront_(self)
+        
+        # Create a buffer for data.
+        self.profileUpdateData = NSMutableData.alloc().init()
+        # Start download.
         request = NSURLRequest.requestWithURL_(url)
-        data, response, error = NSURLConnection.sendSynchronousRequest_returningResponse_error_(request, None, None)
+        self.connection = NSURLConnection.connectionWithRequest_delegate_(request, self)
+        LogDebug(u"connection = %@", self.connection)
+        if not self.connection:
+            LogWarning(u"Connection to %@ failed", url)
+            self.profileUpdateWindow.orderOut_(self)
+            self.delegate.profileUpdateFailed_(error)
+    
+    def connection_didFailWithError_(self, connection, error):
+        LogError(u"Profile update failed: %@", error)
         self.profileUpdateWindow.orderOut_(self)
-        if not data:
-            message = u"Failed to download %s: %s" % (url.absoluteString(), error.localizedDescription())
-            self.failUpdate_withTarget_selector_(message, target, selector)
-            return
-        if response.statusCode() != 200:
-            self.failUpdate_withTarget_selector_(u"Update server responded with code %d.", response.statusCode(), target, selector)
-            return
-        plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(data,
+        self.delegate.profileUpdateFailed_(error)
+    
+    def connection_didReceiveResponse_(self, connection, response):
+        LogDebug(u"%@ status code %d", connection, response.statusCode())
+        if response.expectedContentLength() == NSURLResponseUnknownLength:
+            LogDebug(u"unknown response length")
+        else:
+            LogDebug(u"Downloading profile with %d bytes", response.expectedContentLength())
+            self.progressBar.setMaxValue_(float(response.expectedContentLength()))
+            self.progressBar.setDoubleValue_(float(response.expectedContentLength()))
+            self.progressBar.setIndeterminate_(False)
+    
+    def connection_didReceiveData_(self, connection, data):
+        self.profileUpdateData.appendData_(data)
+        self.progressBar.setDoubleValue_(float(self.profileUpdateData.length()))
+    
+    def connectionDidFinishLoading_(self, connection):
+        LogDebug(u"Downloaded profile with %d bytes", self.profileUpdateData.length())
+        # Hide the progress window.
+        self.profileUpdateWindow.orderOut_(self)
+        # Decode the plist.
+        plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(self.profileUpdateData,
                                                                                                       NSPropertyListImmutable,
                                                                                                       None,
                                                                                                       None)
         if not plist:
-            self.failUpdate_withTarget_selector_(u"Couldn't decode update data.", target, selector)
+            self.delegate.profileUpdateFailed_(error)
             return
         LogNotice(u"Downloaded update profiles with PublicationDate %@", plist[u"PublicationDate"])
+        # Update the user's profiles if it's newer.
         latestProfiles = self.updateUsersProfilesIfNewer_(plist)
+        # Load the latest profiles.
         self.loadProfilesFromPlist_(latestProfiles)
-        dateFormatter = NSDateFormatter.alloc().init()
-        timeZone = NSTimeZone.timeZoneWithName_(u"UTC")
-        dateFormatter.setTimeZone_(timeZone)
-        dateFormatter.setDateFormat_(u"yyyy-MM-dd HH:mm:ss")
-        dateString = dateFormatter.stringFromDate_(latestProfiles[u"PublicationDate"])
-        message = u"Using update profiles from %s UTC" % dateString
-        self.succeedUpdate_WithTarget_selector_(message, target, selector)
+        # Notify delegate.
+        self.delegate.profileUpdateSucceeded_(latestProfiles[u"PublicationDate"])
     
-    def failUpdate_withTarget_selector_(self, error, target, selector):
-        """Notify target of a failed update."""
-        
-        LogError(u"Profile update failed: %@", error)
-        if target:
-            target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                         {u"success": False,
-                                                                          u"error-message": error},
-                                                                         False)
-    
-    def succeedUpdate_WithTarget_selector_(self, message, target, selector):
-        """Notify target of a successful update."""
-        
-        if target:
-            target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
-                                                                         {u"success": True,
-                                                                          u"message": message},
-                                                                         False)
+    def cancelUpdateDownload(self):
+        LogInfo(u"User canceled profile update")
+        self.connection.cancel()
+        self.profileUpdateWindow.orderOut_(self)
+
 

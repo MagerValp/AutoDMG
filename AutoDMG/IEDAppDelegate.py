@@ -12,7 +12,6 @@ from AppKit import *
 from objc import IBAction, IBOutlet
 
 from IEDLog import *
-from IEDProfileController import *
 
 
 defaults = NSUserDefaults.standardUserDefaults()
@@ -21,7 +20,6 @@ defaults = NSUserDefaults.standardUserDefaults()
 class IEDAppDelegate(NSObject):
     
     mainWindowController = IBOutlet()
-    profileController = IBOutlet()
     
     def init(self):
         self = super(IEDAppDelegate, self).init()
@@ -43,18 +41,7 @@ class IEDAppDelegate(NSObject):
         if updateProfileInterval != 0:
             lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
             if lastCheck.timeIntervalSinceNow() < (-60 * 60 * 18 * updateProfileInterval):
-                self.checkForProfileUpdates_(self)
-    
-    @IBAction
-    def checkForProfileUpdates_(self, sender):
-        LogInfo(u"Checking for updates")
-        url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
-        self.profileController.updateFromURL_withTarget_selector_(url, self, self.profileUpdateDone_)
-        
-    def profileUpdateDone_(self, result):
-        LogDebug(u"profileUpdateDone:%@", result)
-        if result[u"success"]:
-            defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
+                self.mainWindowController.updateController.checkForProfileUpdates_(self)
     
     def applicationShouldTerminate_(self, sender):
         LogDebug(u"applicationShouldTerminate:")
