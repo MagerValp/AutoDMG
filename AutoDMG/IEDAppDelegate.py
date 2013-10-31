@@ -9,9 +9,11 @@
 
 from Foundation import *
 from AppKit import *
-from objc import IBAction, IBOutlet
+from objc import IBAction, IBOutlet, __version__ as pyObjCVersion
 
 from IEDLog import *
+from IEDUtil import *
+import platform
 
 
 defaults = NSUserDefaults.standardUserDefaults()
@@ -29,13 +31,24 @@ class IEDAppDelegate(NSObject):
         return self
     
     def initialize(self):
+        # Log version info on startup.
+        bundle = NSBundle.mainBundle()
+        version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
+        build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")
+        LogNotice(u"AutoDMG v%@ build %@", version, build)
+        name, version, build = IEDUtil.readSystemVersion(u"/")
+        LogNotice(u"%@ %@ %@", name, version, build)
+        LogNotice(u"%@ %@ (%@)", platform.python_implementation(),
+                                 platform.python_version(),
+                                 platform.python_compiler())
+        LogNotice(u"PyObjC %@", pyObjCVersion)
+        
+        # Initialize user defaults before application starts.
         defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
         defaultsDict = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
         defaults.registerDefaults_(defaultsDict)
     
     def applicationDidFinishLaunching_(self, sender):
-        LogDebug(u"applicationDidFinishLaunching:")
-        
         updateProfileInterval = defaults.integerForKey_(u"UpdateProfileInterval")
         LogInfo(u"UpdateProfileInterval = %d", updateProfileInterval)
         if updateProfileInterval != 0:
