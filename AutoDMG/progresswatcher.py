@@ -22,7 +22,7 @@ from Foundation import *
 class ProgressWatcher(NSObject):
     
     re_installerlog = re.compile(r'^.+? installer\[[0-9a-f:]+\] (<(?P<level>[^>]+)>:)?(?P<message>.*)$')
-    re_number = re.compile(r'^\d+$')
+    re_number = re.compile(r'^(\d+)')
     
     def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -74,21 +74,29 @@ class ProgressWatcher(NSObject):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
         if data.length():
             progressStr = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
-            if progressStr.startswith(u"\x0a"):
-                progressStr = progressStr[1:]
-                self.asrProgressActive = False
-            if progressStr == u"Block checksum: ":
-                self.asrPercent = 0
-                self.asrProgressActive = True
-                self.asrPhase += 1
-                self.postNotification_({u"action": u"select_phase", u"phase": u"asr%d" % self.asrPhase})
-            elif progressStr == u".":
-                self.asrPercent += 2
-            elif self.re_number.match(progressStr):
-                self.asrPercent = int(progressStr)
-            else:
-                self.asrProgressActive = False
-            self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
+            print repr(progressStr)
+            while progressStr:
+                if progressStr.startswith(u"\x0a"):
+                    progressStr = progressStr[1:]
+                    self.asrProgressActive = False
+                elif progressStr.startswith(u"Block checksum: "):
+                    progressStr = progressStr[16:]
+                    self.asrPercent = 0
+                    self.asrProgressActive = True
+                    self.asrPhase += 1
+                    self.postNotification_({u"action": u"select_phase", u"phase": u"asr%d" % self.asrPhase})
+                elif progressStr.startswith(u".") and self.asrProgressActive:
+                    progressStr = progressStr[1:]
+                    self.asrPercent += 2
+                    self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
+                else:
+                    m = self.re_number.match(progressStr)
+                    if m and self.asrProgressActive:
+                        progressStr = progressStr[len(m.group(0)):]
+                        self.asrPercent = int(m.group(0))
+                        self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
+                    else:
+                        break
             
             notification.object().readInBackgroundAndNotify()
     
