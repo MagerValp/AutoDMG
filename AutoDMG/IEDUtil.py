@@ -17,7 +17,7 @@ class IEDUtil(NSObject):
     VERSIONPLIST_PATH = u"System/Library/CoreServices/SystemVersion.plist"
     
     @classmethod
-    def readSystemVersion(cls, rootPath):
+    def readSystemVersion_(cls, rootPath):
         plist = NSDictionary.dictionaryWithContentsOfFile_(os.path.join(rootPath, cls.VERSIONPLIST_PATH))
         name = plist[u"ProductName"]
         version = plist[u"ProductUserVisibleVersion"]

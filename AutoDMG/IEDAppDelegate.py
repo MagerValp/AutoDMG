@@ -36,7 +36,7 @@ class IEDAppDelegate(NSObject):
         version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
         build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")
         LogNotice(u"AutoDMG v%@ build %@", version, build)
-        name, version, build = IEDUtil.readSystemVersion(u"/")
+        name, version, build = IEDUtil.readSystemVersion_(u"/")
         LogNotice(u"%@ %@ %@", name, version, build)
         LogNotice(u"%@ %@ (%@)", platform.python_implementation(),
                                  platform.python_version(),

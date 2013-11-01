@@ -157,7 +157,7 @@ class IEDWorkflow(NSObject):
         LogDebug(u"checkVersion:%@", mountPoint)
         
         # InstallESD.dmg for 10.7/10.8, BaseSystem.dmg for 10.9.
-        name, version, build = IEDUtil.readSystemVersion(mountPoint)
+        name, version, build = IEDUtil.readSystemVersion_(mountPoint)
         if self.baseSystemMountedFromPath:
             self.dmgHelper.detach_selector_(self.baseSystemMountedFromPath, self.handleDetachResult_)
         installerVersion = tuple(int(x) for x in version.split(u"."))
