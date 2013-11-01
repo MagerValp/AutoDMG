@@ -22,6 +22,7 @@ defaults = NSUserDefaults.standardUserDefaults()
 class IEDAppDelegate(NSObject):
     
     mainWindowController = IBOutlet()
+    appVersionController = IBOutlet()
     
     def init(self):
         self = super(IEDAppDelegate, self).init()
@@ -48,11 +49,16 @@ class IEDAppDelegate(NSObject):
     
     def applicationDidFinishLaunching_(self, sender):
         updateProfileInterval = defaults.integerForKey_(u"UpdateProfileInterval")
-        LogInfo(u"UpdateProfileInterval = %d", updateProfileInterval)
-        if updateProfileInterval != 0:
+        if updateProfileInterval:
             lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
-            if lastCheck.timeIntervalSinceNow() < (-60 * 60 * 18 * updateProfileInterval):
+            if lastCheck.timeIntervalSinceNow() < -60 * 60 * 18:
                 self.mainWindowController.updateController.checkForProfileUpdates_(self)
+        
+        appVersionCheckInterval = defaults.integerForKey_(u"AppVersionCheckInterval")
+        if appVersionCheckInterval:
+            lastCheck = defaults.objectForKey_(u"LastAppVersionCheck")
+            if lastCheck.timeIntervalSinceNow() < -60 * 60 * 18:
+                self.appVersionController.checkForAppUpdateSilently_(True)
     
     def applicationShouldTerminate_(self, sender):
         LogDebug(u"applicationShouldTerminate:")

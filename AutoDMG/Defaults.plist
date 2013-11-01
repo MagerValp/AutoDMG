@@ -14,5 +14,13 @@
 	<integer>1</integer>
 	<key>LogLevel</key>
 	<integer>6</integer>
+	<key>AppVersionURL</key>
+	<string>https://raw.github.com/MagerValp/AutoDMG/master/LatestVersion.plist</string>
+	<key>LastAppVersionCheck</key>
+	<date>1970-01-01T00:00:00Z</date>
+	<key>AppVersionCheckInterval</key>
+	<integer>1</integer>
+	<key>NotifiedAppVersion</key>
+	<string>none</string>
 </dict>
 </plist>

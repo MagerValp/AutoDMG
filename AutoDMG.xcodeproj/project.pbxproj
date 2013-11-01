@@ -31,6 +31,7 @@
 		669DBBF718069EEC001F909B /* IEDSocketListener.py in Resources */ = {isa = PBXBuildFile; fileRef = 669DBBF618069EEC001F909B /* IEDSocketListener.py */; };
 		66B29338182137310076C397 /* Download.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B29336182137310076C397 /* Download.png */; };
 		66B29339182137310076C397 /* Download@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B29337182137310076C397 /* Download@2x.png */; };
+		66CBF810182316FC0002E18F /* IEDAppVersionController.py in Resources */ = {isa = PBXBuildFile; fileRef = 66CBF80F182316FC0002E18F /* IEDAppVersionController.py */; };
 		66D24F2618171E680042F227 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 66D24F2518171E680042F227 /* Defaults.plist */; };
 		66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CC17EB1586009B8350 /* Cocoa.framework */; };
 		66EA72CF17EB1586009B8350 /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CE17EB1586009B8350 /* Python.framework */; };
@@ -72,6 +73,7 @@
 		669DBBF618069EEC001F909B /* IEDSocketListener.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDSocketListener.py; sourceTree = "<group>"; };
 		66B29336182137310076C397 /* Download.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Download.png; sourceTree = "<group>"; };
 		66B29337182137310076C397 /* Download@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Download@2x.png"; sourceTree = "<group>"; };
+		66CBF80F182316FC0002E18F /* IEDAppVersionController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDAppVersionController.py; sourceTree = "<group>"; };
 		66D24F2518171E680042F227 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		66EA72C917EB1586009B8350 /* AutoDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EA72CC17EB1586009B8350 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -210,6 +212,7 @@
 				055DBD281822AAA10008DA0E /* IEDUtil.py */,
 				669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */,
 				05FD2080181A5BCE00302827 /* IEDLog.py */,
+				66CBF80F182316FC0002E18F /* IEDAppVersionController.py */,
 				6654DBF0181E55A0001861BA /* IEDLogLine.py */,
 				66320B401819C208006D3DA7 /* IEDWorkflow.py */,
 				05429D7C1816BED500CD61E6 /* IEDAddPkgController.py */,
@@ -313,6 +316,7 @@
 				66320B411819C208006D3DA7 /* IEDWorkflow.py in Resources */,
 				66B29338182137310076C397 /* Download.png in Resources */,
 				66EA72ED17EB1E09009B8350 /* Installer Placeholder.png in Resources */,
+				66CBF810182316FC0002E18F /* IEDAppVersionController.py in Resources */,
 				05429D781816715300CD61E6 /* Package.png in Resources */,
 				05429D7D1816BED500CD61E6 /* IEDAddPkgController.py in Resources */,
 				667F176B181BB6570076EF63 /* IEDPackage.py in Resources */,

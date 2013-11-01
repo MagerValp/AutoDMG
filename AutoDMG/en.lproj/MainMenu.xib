@@ -278,9 +278,15 @@
                                     <action selector="makeKeyAndOrderFront:" target="M8Q-a7-rvP" id="nbB-de-JGf"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Check For Updates…" keyEquivalent="u" id="pDM-i2-6nF">
+                            <menuItem title="Update Profiles…" keyEquivalent="u" id="pDM-i2-6nF">
                                 <connections>
                                     <action selector="checkForProfileUpdates:" target="3rI-qa-5R5" id="i7R-D0-WfH"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Check For AutoDMG Releases…" id="UCF-sI-h7p">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="checkForAppUpdate:" target="W5T-eg-PpK" id="WZ1-IK-EyB"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="143">
@@ -534,6 +540,7 @@
         </menu>
         <customObject id="373" userLabel="IEDAppDelegate" customClass="IEDAppDelegate">
             <connections>
+                <outlet property="appVersionController" destination="W5T-eg-PpK" id="bwb-3e-vLn"/>
                 <outlet property="mainWindowController" destination="Fjw-V3-78e" id="qQk-1j-IFa"/>
             </connections>
         </customObject>
@@ -729,15 +736,15 @@ Gw
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="M8Q-a7-rvP">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="163" y="199" width="445" height="107"/>
+            <rect key="contentRect" x="163" y="199" width="445" height="137"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <value key="minSize" type="size" width="420" height="77"/>
             <view key="contentView" id="Tj1-NS-du2">
-                <rect key="frame" x="0.0" y="0.0" width="445" height="107"/>
+                <rect key="frame" x="0.0" y="0.0" width="445" height="137"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="EeQ-bq-zQm">
-                        <rect key="frame" x="18" y="63" width="177" height="17"/>
+                        <rect key="frame" x="17" y="93" width="189" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Check for profile updates:" id="rhd-Qu-MKT">
                             <font key="font" metaFont="system"/>
@@ -746,7 +753,7 @@ Gw
                         </textFieldCell>
                     </textField>
                     <popUpButton verticalHuggingPriority="750" id="xsM-tS-GPh">
-                        <rect key="frame" x="199" y="57" width="103" height="26"/>
+                        <rect key="frame" x="210" y="87" width="103" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Daily" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="y2b-SV-6aZ" id="Eix-Y0-pl6">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -769,7 +776,7 @@ Gw
                         </connections>
                     </popUpButton>
                     <button id="r3L-O4-WOj">
-                        <rect key="frame" x="199" y="19" width="228" height="18"/>
+                        <rect key="frame" x="210" y="19" width="217" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Send debug output to syslog" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="4aE-VY-xJC">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -780,7 +787,7 @@ Gw
                         </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="KwW-Rf-KEw">
-                        <rect key="frame" x="18" y="20" width="177" height="17"/>
+                        <rect key="frame" x="17" y="20" width="189" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Logging:" id="Cz7-6t-16b">
                             <font key="font" metaFont="system"/>
@@ -788,6 +795,38 @@ Gw
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Agd-or-SaA">
+                        <rect key="frame" x="17" y="67" width="189" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Check for AutoDMG releases:" id="Y16-og-8Sw">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <popUpButton verticalHuggingPriority="750" id="n3n-Rx-smB">
+                        <rect key="frame" x="210" y="61" width="103" height="26"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <popUpButtonCell key="cell" type="push" title="Daily" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Qdi-QQ-VXk" id="UhA-8f-388">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" title="OtherViews" id="K7c-82-z9o">
+                                <items>
+                                    <menuItem title="Manually" id="ow5-4a-HHD"/>
+                                    <menuItem title="Daily" state="on" id="Qdi-QQ-VXk"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <binding destination="TEB-LV-8aU" name="selectedIndex" keyPath="values.AppVersionCheckInterval" id="Ro7-nc-SgJ">
+                                <dictionary key="options">
+                                    <bool key="NSRaisesForNotApplicableKeys" value="NO"/>
+                                    <bool key="NSConditionallySetsEnabled" value="NO"/>
+                                    <bool key="NSAllowsEditingMultipleValuesSelection" value="NO"/>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </popUpButton>
                 </subviews>
             </view>
         </window>
@@ -934,6 +973,7 @@ Gw
                 <outlet property="logWindow" destination="5oF-En-fug" id="BPe-qe-9XH"/>
             </connections>
         </customObject>
+        <customObject id="W5T-eg-PpK" customClass="IEDAppVersionController"/>
     </objects>
     <resources>
         <image name="AutoDMG" width="512" height="512"/>
