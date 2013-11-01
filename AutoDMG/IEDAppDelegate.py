@@ -32,9 +32,7 @@ class IEDAppDelegate(NSObject):
     
     def initialize(self):
         # Log version info on startup.
-        bundle = NSBundle.mainBundle()
-        version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
-        build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")
+        version, build = IEDUtil.getAppVersion()
         LogNotice(u"AutoDMG v%@ build %@", version, build)
         name, version, build = IEDUtil.readSystemVersion_(u"/")
         LogNotice(u"%@ %@ %@", name, version, build)

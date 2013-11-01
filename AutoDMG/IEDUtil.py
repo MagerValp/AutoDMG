@@ -23,3 +23,10 @@ class IEDUtil(NSObject):
         version = plist[u"ProductUserVisibleVersion"]
         build = plist[u"ProductBuildVersion"]
         return (name, version, build)
+    
+    @classmethod
+    def getAppVersion(cls):
+        bundle = NSBundle.mainBundle()
+        version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
+        build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")
+        return (version, build)
