@@ -13,13 +13,13 @@ Documentation and help is in the [AutoDMG wiki](https://github.com/MagerValp/Aut
 
 If you have questions or need help, you can join us in [##osx-server](http://webchat.freenode.net/?channels=##osx-server).
 
+If you find a bug, please report it in the [issue tracker](https://github.com/MagerValp/AutoDMG/issues).
+
 
 Download
 --------
 
 The latest release can be found on the [release page](https://github.com/MagerValp/AutoDMG/releases).
-
-**AutoDMG is still in beta, please check the [issue tracker](https://github.com/MagerValp/AutoDMG/issues) for any known bugs before building.**
 
 
 License
