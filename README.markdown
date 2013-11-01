@@ -3,7 +3,7 @@ AutoDMG
 
 AutoDMG takes an OS X installer and builds a system image, suitable for deployment with DeployStudio or Absolute Manage.
 
-![Autodmg-0.8-Log](https://f.cloud.github.com/assets/404393/1420666/6dde1438-3fe3-11e3-8fed-b78aa74784a4.png)
+![Autodmg 1.0](http://magervalp.github.io/images/AutoDMG-1.0.png)
 
 
 Support
