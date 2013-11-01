@@ -9,10 +9,11 @@
 
 from Foundation import *
 from AppKit import *
-from objc import IBAction, IBOutlet
+from objc import IBAction, IBOutlet, __version__ as pyObjCVersion
 
 from IEDLog import *
-from IEDProfileController import *
+from IEDUtil import *
+import platform
 
 
 defaults = NSUserDefaults.standardUserDefaults()
@@ -21,7 +22,7 @@ defaults = NSUserDefaults.standardUserDefaults()
 class IEDAppDelegate(NSObject):
     
     mainWindowController = IBOutlet()
-    profileController = IBOutlet()
+    appVersionController = IBOutlet()
     
     def init(self):
         self = super(IEDAppDelegate, self).init()
@@ -31,30 +32,33 @@ class IEDAppDelegate(NSObject):
         return self
     
     def initialize(self):
+        # Log version info on startup.
+        version, build = IEDUtil.getAppVersion()
+        LogNotice(u"AutoDMG v%@ build %@", version, build)
+        name, version, build = IEDUtil.readSystemVersion_(u"/")
+        LogNotice(u"%@ %@ %@", name, version, build)
+        LogNotice(u"%@ %@ (%@)", platform.python_implementation(),
+                                 platform.python_version(),
+                                 platform.python_compiler())
+        LogNotice(u"PyObjC %@", pyObjCVersion)
+        
+        # Initialize user defaults before application starts.
         defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
         defaultsDict = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
         defaults.registerDefaults_(defaultsDict)
     
     def applicationDidFinishLaunching_(self, sender):
-        LogDebug(u"applicationDidFinishLaunching:")
-        
         updateProfileInterval = defaults.integerForKey_(u"UpdateProfileInterval")
-        LogInfo(u"UpdateProfileInterval = %d", updateProfileInterval)
-        if updateProfileInterval != 0:
+        if updateProfileInterval:
             lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
-            if lastCheck.timeIntervalSinceNow() < (-60 * 60 * 24 * updateProfileInterval):
-                self.checkForProfileUpdates_(self)
-    
-    @IBAction
-    def checkForProfileUpdates_(self, sender):
-        LogInfo(u"Checking for updates")
-        url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
-        self.profileController.updateFromURL_withTarget_selector_(url, self, self.profileUpdateDone_)
+            if lastCheck.timeIntervalSinceNow() < -60 * 60 * 18:
+                self.mainWindowController.updateController.checkForProfileUpdates_(self)
         
-    def profileUpdateDone_(self, result):
-        LogDebug(u"profileUpdateDone:%@", result)
-        if result[u"success"]:
-            defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
+        appVersionCheckInterval = defaults.integerForKey_(u"AppVersionCheckInterval")
+        if appVersionCheckInterval:
+            lastCheck = defaults.objectForKey_(u"LastAppVersionCheck")
+            if lastCheck.timeIntervalSinceNow() < -60 * 60 * 18:
+                self.appVersionController.checkForAppUpdateSilently_(True)
     
     def applicationShouldTerminate_(self, sender):
         LogDebug(u"applicationShouldTerminate:")

@@ -161,7 +161,7 @@ class IEDUpdateCache(NSObject):
         self.delegate.downloadFailed_withError_(self.package, error.localizedDescription())
     
     def connection_didReceiveResponse_(self, connection, response):
-        LogInfo(u"%@ status code %d", self.package.name(), response.statusCode())
+        LogDebug(u"%@ status code %d", self.package.name(), response.statusCode())
     
     def connection_didReceiveData_(self, connection, data):
         try:

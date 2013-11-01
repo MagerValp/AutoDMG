@@ -15,11 +15,9 @@ import grp
 import traceback
 
 from IEDLog import *
+from IEDUtil import *
 from IEDSocketListener import *
 from IEDDMGHelper import *
-
-
-VERSIONPLIST_PATH = u"System/Library/CoreServices/SystemVersion.plist"
 
 
 class IEDWorkflow(NSObject):
@@ -145,7 +143,7 @@ class IEDWorkflow(NSObject):
         
         baseSystemPath = os.path.join(mountPoint, u"BaseSystem.dmg")
         
-        if os.path.exists(os.path.join(mountPoint, VERSIONPLIST_PATH)):
+        if os.path.exists(os.path.join(mountPoint, IEDUtil.VERSIONPLIST_PATH)):
             # FIXME: check Packages/OSInstall.mpkg
             self.checkVersion_(mountPoint)
         elif os.path.exists(baseSystemPath):
@@ -159,12 +157,9 @@ class IEDWorkflow(NSObject):
         LogDebug(u"checkVersion:%@", mountPoint)
         
         # InstallESD.dmg for 10.7/10.8, BaseSystem.dmg for 10.9.
-        plist = NSDictionary.dictionaryWithContentsOfFile_(os.path.join(mountPoint, VERSIONPLIST_PATH))
+        name, version, build = IEDUtil.readSystemVersion_(mountPoint)
         if self.baseSystemMountedFromPath:
             self.dmgHelper.detach_selector_(self.baseSystemMountedFromPath, self.handleDetachResult_)
-        name = plist[u"ProductName"]
-        version = plist[u"ProductUserVisibleVersion"]
-        build = plist[u"ProductBuildVersion"]
         installerVersion = tuple(int(x) for x in version.split(u"."))
         runningVersion = tuple(int(x) for x in platform.mac_ver()[0].split(u"."))
         if installerVersion[:2] == runningVersion[:2]:
@@ -241,9 +236,9 @@ class IEDWorkflow(NSObject):
         
         # Perform installation.
         installerPhases = [
-            {u"title": u"Starting install", u"weight": 1 * 1024 * 1024},
-            {u"title": u"Creating disk image", u"weight": 100 * 1024 * 1024},
-            {u"title": u"Installing OS", u"weight": 4 * 1024 * 1024 * 1024},
+            {u"title": u"Starting install",    u"weight":        1 * 1024 * 1024},
+            {u"title": u"Creating disk image", u"weight":      100 * 1024 * 1024},
+            {u"title": u"Installing OS",       u"weight": 4 * 1024 * 1024 * 1024},
         ]
         for package in self.additionalPackages:
             installerPhases.append({
@@ -253,7 +248,7 @@ class IEDWorkflow(NSObject):
             })
         installerPhases.extend([
             # hdiutil convert.
-            {u"title": u"Finalizing disk image", u"weight": 500 * 1024 * 1024},
+            {u"title": u"Finalizing disk image", u"weight": 650 * 1024 * 1024},
         ])
         self.tasks.append({
             u"method": self.taskInstall,
@@ -264,7 +259,18 @@ class IEDWorkflow(NSObject):
         self.tasks.append({
             u"method": self.taskFinalize,
             u"phases": [
-                {u"title": u"Finalizing disk image", u"weight": 100 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":          1 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":   5 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight": 300 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":  10 * 1024 * 1024},
+            ],
+        })
+        
+        # Finish build.
+        self.tasks.append({
+            u"method": self.taskFinish,
+            u"phases": [
+                {u"title": u"Finishing", u"weight": 1 * 1024 * 1024},
             ],
         })
         
@@ -469,6 +475,16 @@ class IEDWorkflow(NSObject):
         subprocess.Popen(args)
     
     
+    
+    # Task: Finish
+    #
+    #    1. Just a dummy task to keep the progress bar from finishing
+    #       prematurely.
+    
+    def taskFinish(self):
+        LogNotice(u"Finish")
+        self.delegate.buildSetProgress_(self.totalWeight)
+        self.nextTask()
     
     # SocketListener delegate methods.
     

@@ -128,7 +128,31 @@ class IEDUpdateController(NSObject):
     
     
     
+    # Act on profile update requested.
+    
+    @IBAction
+    def checkForProfileUpdates_(self, sender):
+        LogInfo(u"Checking for updates")
+        defaults = NSUserDefaults.standardUserDefaults()
+        url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
+        self.profileController.updateFromURL_(url)
+    
+    @IBAction
+    def cancelProfileUpdateCheck_(self, sender):
+        self.profileController.cancelUpdateDownload()
+    
     # IEDProfileController delegate methods.
+    
+    def profileUpdateFailed_(self, error):
+        alert = NSAlert.alloc().init()
+        alert.setMessageText_(error.localizedDescription())
+        alert.setInformativeText_(error.userInfo()[NSErrorFailingURLStringKey])
+        alert.runModal()
+    
+    def profileUpdateSucceeded_(self, publicationDate):
+        LogDebug(u"profileUpdateSucceeded:%@", publicationDate)
+        defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
     
     def profilesUpdated(self):
         self.cache.pruneAndCreateSymlinks(self.profileController.updatePaths)

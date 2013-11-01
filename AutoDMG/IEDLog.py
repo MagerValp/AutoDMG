@@ -81,9 +81,10 @@ class IEDLog(NSObject):
         self.logLines.append(logLine)
         if defaults.integerForKey_(u"LogLevel") >= level:
             self.visibleLogLines.append(logLine)
-            self.logTableView.reloadData()
-            if self.logAtBottom:
-                self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
+            if self.logTableView:
+                self.logTableView.reloadData()
+                if self.logAtBottom:
+                    self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
     
     
     
@@ -115,7 +116,9 @@ class IEDLog(NSObject):
     @IBAction
     def setLevel_(self, sender):
         self.visibleLogLines = [x for x in self.logLines if x.level() <= self.levelSelector.indexOfSelectedItem()]
+        self.logAtBottom = True
         self.logTableView.reloadData()
+        self.logTableView.scrollRowToVisible_(len(self.visibleLogLines) - 1)
     
     
     
@@ -193,7 +196,12 @@ def LogMessage(level, message):
     
     for line in message.split(u"\n"):
         _log.addMessage_level_(prefix + line, level)
-        if defaults.integerForKey_(u"LogLevel") >= level:
+        if defaults.boolForKey_(u"DebugToSyslog"):
+            syslogLevel = IEDLogLevelDebug
+        else:
+            syslogLevel = IEDLogLevelInfo
+        
+        if syslogLevel >= level:
             NSLog(u"%@", prefix + line)
 
 def LogDebug(*args):

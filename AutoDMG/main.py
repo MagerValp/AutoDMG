@@ -21,6 +21,8 @@ import IEDAppDelegate
 import IEDController
 import IEDSourceSelector
 import IEDAddPkgController
+import IEDAppVersionController
+
 
 # pass control to AppKit
 AppHelper.runEventLoop()

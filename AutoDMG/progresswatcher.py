@@ -22,6 +22,7 @@ from Foundation import *
 class ProgressWatcher(NSObject):
     
     re_installerlog = re.compile(r'^.+? installer\[[0-9a-f:]+\] (<(?P<level>[^>]+)>:)?(?P<message>.*)$')
+    re_number = re.compile(r'^(\d+)')
     
     def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -43,6 +44,7 @@ class ProgressWatcher(NSObject):
         if mode == u"asr":
             progressHandler = u"notifyAsrProgressData:"
             self.asrProgressActive = False
+            self.asrPhase = 0
         elif mode == u"ied":
             progressHandler = u"notifyIEDProgressData:"
             self.outputBuffer = u""
@@ -71,31 +73,31 @@ class ProgressWatcher(NSObject):
     def notifyAsrProgressData_(self, notification):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
         if data.length():
-            string = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
-            if string == u"Block checksum: ":
-                self.asrPercent = 0.0
-                self.asrProgressActive = True
-            elif self.asrProgressActive:
-                while string and self.asrProgressActive:
-                    if string.startswith(u"."):
-                        while string.startswith(u"."):
-                            string = string[1:]
-                            self.asrPercent += 2.0
-                        continue
-                    elif string[0].isdigit():
-                        num = u""
-                        while string and string[0].isdigit():
-                            num += string[0]
-                            string = string[1:]
-                        self.asrPercent = float(num)
-                        continue
-                    elif string[0] == u"\x0a":
-                        self.asrProgressActive = False
-                        string = string[1:]
+            progressStr = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
+            print repr(progressStr)
+            while progressStr:
+                if progressStr.startswith(u"\x0a"):
+                    progressStr = progressStr[1:]
+                    self.asrProgressActive = False
+                elif progressStr.startswith(u"Block checksum: "):
+                    progressStr = progressStr[16:]
+                    self.asrPercent = 0
+                    self.asrProgressActive = True
+                    self.asrPhase += 1
+                    self.postNotification_({u"action": u"select_phase", u"phase": u"asr%d" % self.asrPhase})
+                elif progressStr.startswith(u".") and self.asrProgressActive:
+                    progressStr = progressStr[1:]
+                    self.asrPercent += 2
+                    self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
+                else:
+                    m = self.re_number.match(progressStr)
+                    if m and self.asrProgressActive:
+                        progressStr = progressStr[len(m.group(0)):]
+                        self.asrPercent = int(m.group(0))
+                        self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
                     else:
-                        NSLog(u"unrecognized progress data: %@", string)
-                        string = u""
-                self.postNotification_({u"action": u"update_progress", u"percent": self.asrPercent})
+                        break
+            
             notification.object().readInBackgroundAndNotify()
     
     def notifyIEDProgressData_(self, notification):

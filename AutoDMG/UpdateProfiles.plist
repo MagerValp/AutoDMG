@@ -3,17 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>PublicationDate</key>
-	<date>2013-10-30T00:25:00Z</date>
+	<date>2013-10-30T17:35:00Z</date>
 	<key>Profiles</key>
 	<dict>
-		<key>10.8.5-12F37</key>
-		<array>
-			<string>Supplemental-10.8.5</string>
-			<string>SafariML</string>
-			<string>ARD-3.7</string>
-			<string>iTunes</string>
-			<string>AirPortUtility</string>
-		</array>
 		<key>10.8.5-12F45</key>
 		<array>
 			<string>SafariML</string>
@@ -21,7 +13,22 @@
 			<string>iTunes</string>
 			<string>AirPortUtility</string>
 		</array>
+		<key>10.8.5-12F2015</key>
+		<array>
+			<string>SafariML</string>
+			<string>ARD-3.7</string>
+			<string>iTunes</string>
+			<string>AirPortUtility</string>
+		</array>
 		<key>10.9-13A603</key>
+		<array>
+			<string>iTunes</string>
+		</array>
+		<key>10.9-13A2093</key>
+		<array>
+			<string>iTunes</string>
+		</array>
+		<key>10.9-13A3017</key>
 		<array>
 			<string>iTunes</string>
 		</array>
@@ -102,12 +109,11 @@
 			<string>12E3067</string>
 			<string>12E4022</string>
 			<string>12E55</string>
+			<string>12F37</string>
 		</array>
 		<key>10.9-13A603</key>
 		<array>
 			<string>13A598</string>
-			<!--<string>13A2093</string>-->
-			<!--<string>13A3017</string>-->
 		</array>
 	</dict>
 </dict>

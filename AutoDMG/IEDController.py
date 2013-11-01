@@ -35,7 +35,6 @@ class IEDController(NSObject):
     buildProgressPhase = IBOutlet()
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
-    buildProgressStopButton = IBOutlet()
     
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
@@ -123,15 +122,15 @@ class IEDController(NSObject):
     # Workflow delegate methods.
     
     def ejectingSource(self):
-        self.sourceImage.setAlphaValue_(0.5)
+        self.sourceImage.animator().setAlphaValue_(0.5)
         self.sourceLabel.setStringValue_(u"Ejecting")
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
     def examiningSource_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
         icon.setSize_(NSMakeSize(256.0, 256.0))
-        self.sourceImage.setImage_(icon)
-        self.sourceImage.setAlphaValue_(1.0)
+        self.sourceImage.animator().setAlphaValue_(1.0)
+        self.sourceImage.animator().setImage_(icon)
         self.sourceLabel.setStringValue_(u"Examining")
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
@@ -147,8 +146,8 @@ class IEDController(NSObject):
     
     def sourceFailed_text_(self, message, text):
         self.displayAlert_text_(message, text)
-        self.sourceImage.setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
-        self.sourceImage.setAlphaValue_(1.0)
+        self.sourceImage.animator().setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
+        self.sourceImage.animator().setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"Drop OS X Installer Here")
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
         self.enableMainWindowControls()
