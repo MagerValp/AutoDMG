@@ -140,6 +140,10 @@ class IEDWorkflow(NSObject):
         
         mountPoint = result[u"mount-point"]
         
+        # Update the icon if we find an installer app.
+        for path in glob.glob(os.path.join(mountPoint, u"Install*.app")):
+            self.delegate.foundSourceForIcon_(path)
+        
         # Don't set this again since 10.9 mounts BaseSystem.dmg after InstallESD.dmg.
         if self.installerMountPoint is None:
             self.installerMountPoint = mountPoint

@@ -127,12 +127,15 @@ class IEDController(NSObject):
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
     def examiningSource_(self, path):
+        self.foundSourceForIcon_(path)
+        self.sourceLabel.setStringValue_(u"Examining")
+        self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
+    
+    def foundSourceForIcon_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
         icon.setSize_(NSMakeSize(256.0, 256.0))
         self.sourceImage.animator().setAlphaValue_(1.0)
         self.sourceImage.animator().setImage_(icon)
-        self.sourceLabel.setStringValue_(u"Examining")
-        self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
     def sourceSucceeded_(self, info):
         self.installerName = info[u"name"]
