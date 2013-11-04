@@ -95,6 +95,8 @@ dmgmounts+=("$sparsemount")
 # Install OS and packages.
 export COMMAND_LINE_INSTALL=1
 declare -i pkgnum=0
+# Start watching /var/log/install.log.
+echo "IED:WATCHLOG:START"
 for package; do
     echo "IED:PHASE:install $pkgnum:$package"
     let pkgnum++
@@ -131,6 +133,8 @@ for package; do
         fi
     fi
 done
+# Stop watching /var/log/install.log.
+echo "IED:WATCHLOG:STOP"
 
 # Finalize image.
 echo "IED:PHASE:asr"
