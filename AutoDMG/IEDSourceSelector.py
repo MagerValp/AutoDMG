@@ -33,7 +33,8 @@ def checkSource_(self, sender):
     filenames = pboard.propertyListForType_(NSFilenamesPboardType)
     if len(filenames) == 1:
         if os.path.exists(os.path.join(filenames[0],
-                          u"Contents/SharedSupport/InstallESD.dmg")):
+                          u"Contents/SharedSupport/InstallESD.dmg")) or \
+        os.path.basename(filenames[0]) == u"InstallESD.dmg":
             return filenames[0]
     return None
 
