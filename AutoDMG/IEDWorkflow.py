@@ -117,12 +117,15 @@ class IEDWorkflow(NSObject):
         if failedUnmounts:
             text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
             self.delegate.displayAlert_text_(u"Failed to eject dmgs", text)
+        if os.path.basename(self.newSourcePath) == u"InstallESD.dmg":
+            self.installESDPath = self.newSourcePath
+        else:
+            self.installESDPath = os.path.join(self.newSourcePath, u"Contents/SharedSupport/InstallESD.dmg")
         
         self.delegate.examiningSource_(self.newSourcePath)
         
         self.installerMountPoint = None
         self.baseSystemMountedFromPath = None
-        self.installESDPath = os.path.join(self.newSourcePath, u"Contents/SharedSupport/InstallESD.dmg")
         self.dmgHelper.attach_selector_(self.installESDPath, self.handleSourceMountResult_)
     
     # handleSourceMountResult: may be called twice, once for InstallESD.dmg
@@ -136,6 +139,10 @@ class IEDWorkflow(NSObject):
             return
         
         mountPoint = result[u"mount-point"]
+        
+        # Update the icon if we find an installer app.
+        for path in glob.glob(os.path.join(mountPoint, u"Install*.app")):
+            self.delegate.foundSourceForIcon_(path)
         
         # Don't set this again since 10.9 mounts BaseSystem.dmg after InstallESD.dmg.
         if self.installerMountPoint is None:
