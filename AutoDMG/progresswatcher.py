@@ -23,6 +23,7 @@ class ProgressWatcher(NSObject):
     
     re_installerlog = re.compile(r'^.+? installer\[[0-9a-f:]+\] (<(?P<level>[^>]+)>:)?(?P<message>.*)$')
     re_number = re.compile(r'^(\d+)')
+    re_watchlog = re.compile(r'^.+? (?P<sender>install(d|_monitor))(\[\d+\]): (?P<message>.*)$')
     
     def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -48,6 +49,10 @@ class ProgressWatcher(NSObject):
         elif mode == u"ied":
             progressHandler = u"notifyIEDProgressData:"
             self.outputBuffer = u""
+            self.watchLogHandle = None
+            self.watchLogBuffer = u""
+            self.lastSender = None
+        
         nc.addObserver_selector_name_object_(self,
                                              progressHandler,
                                              NSFileHandleReadCompletionNotification,
@@ -160,6 +165,8 @@ class ProgressWatcher(NSObject):
         elif string.startswith(u"FAILURE:"):
             message = string[8:]
             self.postNotification_({u"action": u"notify_failure", u"message": message})
+        elif string.startswith(u"WATCHLOG:"):
+            self.watchLog_(string[9:])
         else:
             NSLog(u"(Unknown IED progress %@)", string)
     
@@ -170,6 +177,71 @@ class ProgressWatcher(NSObject):
         elif string.startswith(u"PERCENT:"):
             progress = float(string[8:])
             self.postNotification_({u"action": u"update_progress", u"percent": progress})
+    
+    def watchLog_(self, cmd):
+        if cmd == u"START":
+            self.watchLogHandle = NSFileHandle.fileHandleForReadingAtPath_(u"/var/log/install.log")
+            self.watchLogHandle.seekToEndOfFile()
+            nc = NSNotificationCenter.defaultCenter()
+            nc.addObserver_selector_name_object_(self,
+                                                 self.notifyWatchLogData_,
+                                                 NSFileHandleReadCompletionNotification,
+                                                 self.watchLogHandle)
+            self.watchLogHandle.readInBackgroundAndNotify()
+        elif cmd == u"STOP":
+            if self.watchLogHandle:
+                self.watchLogHandle.close()
+            self.watchLogHandle = None
+        else:
+            NSLog(u"(Unknown watchLog command: %@)", repr(string))
+    
+    def notifyWatchLogData_(self, notification):
+        data = notification.userInfo()[NSFileHandleNotificationDataItem]
+        if data.length():
+            string = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
+            if string:
+                self.appendWatchLog_(string)
+            else:
+                NSLog(u"Couldn't decode %@ as UTF-8", data)
+            if self.watchLogHandle:
+                self.watchLogHandle.readInBackgroundAndNotify()
+        else:
+            # No data means EOF, so we wait for a second before we try to read
+            # again.
+            NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(1.0,
+                                                                                     self,
+                                                                                     self.readAndNotify_,
+                                                                                     self.watchLogHandle,
+                                                                                     False)
+    
+    def readAndNotify_(self, timer):
+        if self.watchLogHandle:
+            self.watchLogHandle.readInBackgroundAndNotify()
+    
+    def appendWatchLog_(self, string):
+        self.watchLogBuffer += string
+        while "\n" in self.watchLogBuffer:
+            line, newline, self.watchLogBuffer = self.watchLogBuffer.partition("\n")
+            self.parseWatchLog_(line)
+    
+    def parseWatchLog_(self, string):
+        # Multi-line messages start with a tab.
+        if string.startswith(u"\t") and self.lastSender:
+            message = u"%s: %s" % (self.lastSender, string[1:])
+            self.postNotification_({u"action": u"log_message",
+                                    u"log_level": 6,
+                                    u"message": message})
+        else:
+            m = self.re_watchlog.match(string)
+            if m:
+                # Keep track of last sender for multi-line messages.
+                self.lastSender = m.group(u"sender")
+                message = u"%s: %s" % (m.group(u"sender"), m.group(u"message"))
+                self.postNotification_({u"action": u"log_message",
+                                        u"log_level": 6,
+                                        u"message": message})
+            else:
+                self.lastSender = None
     
     def postNotification_(self, msgDict):
         msg, error = NSPropertyListSerialization.dataWithPropertyList_format_options_error_(msgDict,
