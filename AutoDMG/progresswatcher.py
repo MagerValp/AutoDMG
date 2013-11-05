@@ -79,7 +79,6 @@ class ProgressWatcher(NSObject):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
         if data.length():
             progressStr = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
-            print repr(progressStr)
             while progressStr:
                 if progressStr.startswith(u"\x0a"):
                     progressStr = progressStr[1:]
@@ -302,7 +301,7 @@ def main(argv):
     asrparser.add_argument(u"image", help=u"DMG to scan")
     asrparser.set_defaults(func=imagescan)
     
-    args = p.parse_args()
+    args = p.parse_args([x.decode(u"utf-8") for x in argv[1:]])
     args.func(args)
     
     return 0
