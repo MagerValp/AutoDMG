@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 #
 #  IEDSourceSelector.py
-#  InstallESDtoDMG
+#  AutoDMG
 #
 #  Created by Per Olofsson on 2013-09-19.
 #  Copyright (c) 2013 Per Olofsson, University of Gothenburg. All rights reserved.
