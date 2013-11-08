@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 #
 #  main.py
-#  InstallESDtoDMG
+#  AutoDMG
 #
 #  Created by Per Olofsson on 2013-09-19.
 #  Copyright Per Olofsson, University of Gothenburg 2013. All rights reserved.
