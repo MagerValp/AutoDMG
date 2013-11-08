@@ -72,11 +72,13 @@ class IEDUpdateController(NSObject):
     # Helper methods.
     
     def disableControls(self):
+        LogDebug(u"disableControls")
         self.applyUpdatesCheckbox.setEnabled_(False)
         self.updateTable.setEnabled_(False)
         self.downloadButton.setEnabled_(False)
     
     def enableControls(self):
+        LogDebug(u"enableControls")
         self.applyUpdatesCheckbox.setEnabled_(len(self.updates) > 0)
         self.updateTable.setEnabled_(len(self.updates) > 0)
         self.downloadButton.setEnabled_(len(self.downloads) > 0)
@@ -102,6 +104,7 @@ class IEDUpdateController(NSObject):
             self.updateTableImage.setImage_(self.updatesToDownloadImage)
     
     def countDownloads(self):
+        LogDebug(u"countDownloads")
         self.downloads = list()
         self.downloadTotalSize = 0
         for package in self.updates:
@@ -133,6 +136,7 @@ class IEDUpdateController(NSObject):
     @IBAction
     def checkForProfileUpdates_(self, sender):
         LogInfo(u"Checking for updates")
+        self.disableControls()
         defaults = NSUserDefaults.standardUserDefaults()
         url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
         self.profileController.updateFromURL_(url)
@@ -142,6 +146,9 @@ class IEDUpdateController(NSObject):
         self.profileController.cancelUpdateDownload()
     
     # IEDProfileController delegate methods.
+    
+    def profileUpdateAllDone(self):
+        self.enableControls()
     
     def profileUpdateFailed_(self, error):
         alert = NSAlert.alloc().init()
@@ -155,6 +162,7 @@ class IEDUpdateController(NSObject):
         defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
     
     def profilesUpdated(self):
+        LogDebug(u"profilesUpdated")
         self.cache.pruneAndCreateSymlinks(self.profileController.updatePaths)
         if self.version or self.build:
             self.loadProfileForVersion_build_(self.version, self.build)
@@ -162,6 +170,7 @@ class IEDUpdateController(NSObject):
     # Load update profile.
     
     def loadProfileForVersion_build_(self, version, build):
+        LogDebug(u"loadProfileForVersion:%@ build:%@", version, build)
         self.version = version
         self.build = build
         self.updates = list()
@@ -197,7 +206,7 @@ class IEDUpdateController(NSObject):
     
     @IBAction
     def downloadButtonClicked_(self, sender):
-        self.downloadButton.setEnabled_(False)
+        self.disableControls()
         self.downloadLabel.setStringValue_(u"")
         self.downloadProgressBar.setIndeterminate_(True)
         self.downloadWindow.makeKeyAndOrderFront_(self)

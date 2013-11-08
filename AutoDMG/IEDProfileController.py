@@ -176,6 +176,7 @@ class IEDProfileController(NSObject):
         LogError(u"Profile update failed: %@", error)
         self.profileUpdateWindow.orderOut_(self)
         self.delegate.profileUpdateFailed_(error)
+        self.delegate.profileUpdateAllDone()
     
     def connection_didReceiveResponse_(self, connection, response):
         LogDebug(u"%@ status code %d", connection, response.statusCode())
@@ -210,6 +211,7 @@ class IEDProfileController(NSObject):
         self.loadProfilesFromPlist_(latestProfiles)
         # Notify delegate.
         self.delegate.profileUpdateSucceeded_(latestProfiles[u"PublicationDate"])
+        self.delegate.profileUpdateAllDone()
     
     def cancelUpdateDownload(self):
         LogInfo(u"User canceled profile update")
