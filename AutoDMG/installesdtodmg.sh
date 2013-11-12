@@ -94,6 +94,7 @@ dmgmounts+=("$sparsemount")
 
 # Install OS and packages.
 export COMMAND_LINE_INSTALL=1
+export CM_BUILD=CM_BUILD
 declare -i pkgnum=0
 # Start watching /var/log/install.log.
 echo "IED:WATCHLOG:START"
