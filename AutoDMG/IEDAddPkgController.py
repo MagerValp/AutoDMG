@@ -123,11 +123,29 @@ class IEDAddPkgController(NSObject):
             return False
         pboard = info.draggingPasteboard()
         # If the source is the tableView, we're reordering packages within the
-        # table and the pboard contains the source row indices.
+        # table and the pboard contains the source row indexes.
         if info.draggingSource() == tableView:
-            indices = [int(i) for i in pboard.propertyListForType_(IEDAddPkgController.movedRowsType).split(u",")]
-            for i in indices:
-                self.packages[row], self.packages[i] = self.packages[i], self.packages[row]
+            indexes = [int(i) for i in pboard.propertyListForType_(IEDAddPkgController.movedRowsType).split(u",")]
+            # If the rows are dropped on top of another line, and the target
+            # row is below the first source row, move the target row one line
+            # down.
+            if (operation == NSTableViewDropOn) and (indexes[0] < row):
+                rowAdjust = 1
+            else:
+                rowAdjust = 0
+            # Move the dragged rows out from the package list into draggedRows.
+            draggedRows = list()
+            for i in sorted(indexes, reverse=True):
+                draggedRows.insert(0, (i, self.packages.pop(i)))
+            # Adjust the target row since we have removed items.
+            row -= len([x for x in draggedRows if x[0] < row])
+            row += rowAdjust
+            # Insert them at the new place.
+            for i, (index, item) in enumerate(draggedRows):
+                self.packages.insert(row + i, item)
+            # Select the newly moved lines.
+            selectedIndexes = NSIndexSet.indexSetWithIndexesInRange_(NSMakeRange(row, len(draggedRows)))
+            tableView.selectRowIndexes_byExtendingSelection_(selectedIndexes, False)
         else:
             # Otherwise it's a list of paths to add to the table.
             paths = [IEDUtil.resolvePath(path) for path in pboard.propertyListForType_(NSFilenamesPboardType)]
@@ -146,14 +164,14 @@ class IEDAddPkgController(NSObject):
         return True
     
     def tableView_writeRowsWithIndexes_toPasteboard_(self, tableView, rowIndexes, pboard):
-        # When reordering packages put a list of indices as a string onto the pboard.
-        indices = list()
+        # When reordering packages put a list of indexes as a string onto the pboard.
+        indexes = list()
         index = rowIndexes.firstIndex()
         while index != NSNotFound:
-            indices.append(index)
+            indexes.append(index)
             index = rowIndexes.indexGreaterThanIndex_(index)
         pboard.declareTypes_owner_([IEDAddPkgController.movedRowsType], self)
-        pboard.setPropertyList_forType_(u",".join(unicode(i) for i in indices), IEDAddPkgController.movedRowsType)
+        pboard.setPropertyList_forType_(u",".join(unicode(i) for i in indexes), IEDAddPkgController.movedRowsType)
         return True
 
 
