@@ -261,8 +261,6 @@ class IEDUpdateController(NSObject):
         alert.setMessageText_(u"Download failed")
         alert.setInformativeText_(message)
         alert.runModal()
-        self.downloadWindow.orderOut_(self)
-        self.showRemainingDownloads()
     
     
     

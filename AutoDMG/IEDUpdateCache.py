@@ -159,6 +159,7 @@ class IEDUpdateCache(NSObject):
         self.delegate.downloadStopped_(self.package)
         self.fileHandle.closeFile()
         self.delegate.downloadFailed_withError_(self.package, error.localizedDescription())
+        self.delegate.downloadAllDone()
     
     def connection_didReceiveResponse_(self, connection, response):
         LogDebug(u"%@ status code %d", self.package.name(), response.statusCode())
