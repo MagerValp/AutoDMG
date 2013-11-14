@@ -8,6 +8,7 @@
 #
 
 from Foundation import *
+from Carbon.File import *
 
 import os.path
 
@@ -30,3 +31,10 @@ class IEDUtil(NSObject):
         version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
         build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")
         return (version, build)
+    
+    @classmethod
+    def resolvePath(cls, path):
+        """Expand symlinks and resolve aliases."""
+        fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
+        return fsref.as_pathname().decode(u"utf-8")
+
