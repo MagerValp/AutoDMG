@@ -14,6 +14,7 @@ import os.path
 import subprocess
 
 from IEDLog import *
+from IEDUtil import *
 from IEDPackage import *
 
 
@@ -104,7 +105,7 @@ class IEDAddPkgController(NSObject):
         if info.draggingSource() == tableView:
             return NSDragOperationMove
         pboard = info.draggingPasteboard()
-        paths = pboard.propertyListForType_(NSFilenamesPboardType)
+        paths = [IEDUtil.resolvePath(path) for path in pboard.propertyListForType_(NSFilenamesPboardType)]
         if not paths:
             return NSDragOperationNone
         for path in paths:
@@ -129,7 +130,10 @@ class IEDAddPkgController(NSObject):
                 self.packages[row], self.packages[i] = self.packages[i], self.packages[row]
         else:
             # Otherwise it's a list of paths to add to the table.
-            paths = pboard.propertyListForType_(NSFilenamesPboardType)
+            paths = [IEDUtil.resolvePath(path) for path in pboard.propertyListForType_(NSFilenamesPboardType)]
+            # Remove duplicates from list.
+            seen = set()
+            paths = [x for x in paths if x not in seen and not seen.add(x)]
             for i, path in enumerate(paths):
                 package = IEDPackage.alloc().init()
                 package.setName_(os.path.basename(path))

@@ -13,6 +13,7 @@ from objc import IBAction, IBOutlet, classAddMethods
 
 import os.path
 from IEDLog import *
+from IEDUtil import *
 
 
 def awakeFromNib(self):
@@ -31,12 +32,13 @@ def stopAcceptingDrag(self):
 def checkSource_(self, sender):
     pboard = sender.draggingPasteboard()
     filenames = pboard.propertyListForType_(NSFilenamesPboardType)
-    if len(filenames) == 1:
-        if os.path.exists(os.path.join(filenames[0],
-                          u"Contents/SharedSupport/InstallESD.dmg")) or \
-        os.path.basename(filenames[0]) == u"InstallESD.dmg":
-            return filenames[0]
-    return None
+    if len(filenames) != 1:
+        return None
+    path = IEDUtil.resolvePath(filenames[0])
+    if os.path.exists(os.path.join(path,
+                      u"Contents/SharedSupport/InstallESD.dmg")) or \
+    os.path.basename(path) == u"InstallESD.dmg":
+        return path
 
 def draggingEntered_(self, sender):
     self.dragOperation = NSDragOperationNone
