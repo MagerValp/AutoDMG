@@ -2,100 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>PublicationDate</key>
-	<date>2013-10-30T17:35:00Z</date>
-	<key>Profiles</key>
-	<dict>
-		<key>10.8.5-12F45</key>
-		<array>
-			<string>SafariML</string>
-			<string>ARD-3.7</string>
-			<string>iTunes</string>
-			<string>AirPortUtility</string>
-		</array>
-		<key>10.8.5-12F2015</key>
-		<array>
-			<string>SafariML</string>
-			<string>ARD-3.7</string>
-			<string>iTunes</string>
-			<string>AirPortUtility</string>
-		</array>
-		<key>10.9-13A603</key>
-		<array>
-			<string>iTunes</string>
-		</array>
-		<key>10.9-13A2093</key>
-		<array>
-			<string>iTunes</string>
-		</array>
-		<key>10.9-13A3017</key>
-		<array>
-			<string>iTunes</string>
-		</array>
-	</dict>
-	<key>Updates</key>
-	<dict>
-		<key>ARD-3.7</key>
-		<dict>
-			<key>name</key>
-			<string>Apple Remote Desktop 3.7 Client</string>
-			<key>sha1</key>
-			<string>dc93c3f62309898e317fe0704ca737ad066f3d91</string>
-			<key>size</key>
-			<integer>5272002</integer>
-			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1697/en_US/RemoteDesktopClient3.7.dmg</string>
-		</dict>
-		<key>AirPortUtility</key>
-		<dict>
-			<key>name</key>
-			<string>AirPort Utility 6.3.1 for Mac</string>
-			<key>sha1</key>
-			<string>7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
-			<key>size</key>
-			<integer>22480138</integer>
-			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg</string>
-		</dict>
-		<key>SafariML</key>
-		<dict>
-			<key>name</key>
-			<string>Safari 6.1 for Mountain Lion</string>
-			<key>sha1</key>
-			<string>359d0955d92b92d7a1dba7a7ff818dd36573735d</string>
-			<key>size</key>
-			<integer>52895927</integer>
-			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/18/32/041-6651/147ugedbeiqpz43czixlgawayfoa7tjyjv/Safari6.1MountainLion.pkg</string>
-		</dict>
-		<key>Supplemental-10.8.5</key>
-		<dict>
-			<key>name</key>
-			<string>OS X Mountain Lion 10.8.5 Supplemental Update</string>
-			<key>sha1</key>
-			<string>18636c06f0db5b326752628fb7a2dfa3ce077ae1</string>
-			<key>size</key>
-			<integer>19648899</integer>
-			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1686/en_US/OSXUpd10.8.5Supp.dmg</string>
-		</dict>
-		<key>iTunes</key>
-		<dict>
-			<key>name</key>
-			<string>iTunes 11.1.2</string>
-			<key>sha1</key>
-			<string>63e61678caa50dd41720751f362897195ce732b1</string>
-			<key>size</key>
-			<integer>231491021</integer>
-			<key>url</key>
-			<string>https://secure-appldnld.apple.com/iTunes11/091-9744.20131022.N34FF/iTunes11.1.2.dmg</string>
-		</dict>
-	</dict>
 	<key>DeprecatedInstallers</key>
 	<dict>
 		<key>10.8.5-12F45</key>
 		<array>
-			<string>12A269</string>
 			<string>12A269</string>
 			<string>12B19</string>
 			<string>12B2100</string>
@@ -111,10 +21,118 @@
 			<string>12E55</string>
 			<string>12F37</string>
 		</array>
-		<key>10.9-13A603</key>
+		<key>10.9.1-13B42</key>
 		<array>
 			<string>13A598</string>
+			<string>13A603</string>
 		</array>
+		<key>10.9.1-13B3116</key>
+		<array>
+			<string>13A2093</string>
+			<string>13A3017</string>
+		</array>
+	</dict>
+	<key>Profiles</key>
+	<dict>
+		<key>10.8.5-12F2015</key>
+		<array>
+			<string>SafariML</string>
+			<string>RemoteDesktopClient</string>
+			<string>iTunes</string>
+			<string>AirPortUtility</string>
+		</array>
+		<key>10.8.5-12F45</key>
+		<array>
+			<string>SafariML</string>
+			<string>RemoteDesktopClient</string>
+			<string>iTunes</string>
+			<string>AirPortUtility</string>
+		</array>
+		<key>10.9.1-13B3116</key>
+		<array>
+			<string>RemoteDesktopClient</string>
+			<string>iBooks</string>
+			<string>BookKit</string>
+			<string>iTunes</string>
+		</array>
+		<key>10.9.1-13B42</key>
+		<array>
+			<string>RemoteDesktopClient</string>
+			<string>iBooks</string>
+			<string>BookKit</string>
+			<string>iTunes</string>
+		</array>
+	</dict>
+	<key>PublicationDate</key>
+	<date>2013-12-17T09:33:00Z</date>
+	<key>Updates</key>
+	<dict>
+		<key>AirPortUtility</key>
+		<dict>
+			<key>name</key>
+			<string>AirPort Utility 6.3.1 for Mac</string>
+			<key>sha1</key>
+			<string>7cb449454ef5c2cf478a2a5394f652a9705c9481</string>
+			<key>size</key>
+			<integer>22480138</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg</string>
+		</dict>
+		<key>BookKit</key>
+		<dict>
+			<key>name</key>
+			<string>BookKit Update</string>
+			<key>sha1</key>
+			<string>87700d3df21250be8aafda2d8b63b14b2cc3d1b1</string>
+			<key>size</key>
+			<integer>78492</integer>
+			<key>url</key>
+			<string>http://swcdn.apple.com/content/downloads/49/62/031-1878/hfuvnhh956akbythuxg2im9pdnm3c263sf/BookKitDelta.pkg</string>
+		</dict>
+		<key>RemoteDesktopClient</key>
+		<dict>
+			<key>name</key>
+			<string>Apple Remote Desktop 3.7.1 Client</string>
+			<key>sha1</key>
+			<string>afba982850808edbc5e41865a0bccccc5ff810de</string>
+			<key>size</key>
+			<integer>5272476</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1710/en_US/RemoteDesktopClient371.dmg</string>
+		</dict>
+		<key>SafariML</key>
+		<dict>
+			<key>name</key>
+			<string>Safari 6.1.1 for Mountain Lion</string>
+			<key>sha1</key>
+			<string>90f574872d92a9761392f2f702aa999e763958c8</string>
+			<key>size</key>
+			<integer>52928251</integer>
+			<key>url</key>
+			<string>http://swcdn.apple.com/content/downloads/14/11/031-0766/81xcvudgdeer5ik4dhdg13an0w8agy27vo/Safari6.1.1MountainLion.pkg</string>
+		</dict>
+		<key>iBooks</key>
+		<dict>
+			<key>name</key>
+			<string>iBooks Update</string>
+			<key>sha1</key>
+			<string>9b075180c00fe27f4a7471d7b16f80c6ca370e8f</string>
+			<key>size</key>
+			<integer>14599752</integer>
+			<key>url</key>
+			<string>http://swcdn.apple.com/content/downloads/49/62/031-1878/hfuvnhh956akbythuxg2im9pdnm3c263sf/iBooksDelta.pkg</string>
+		</dict>
+		<key>iTunes</key>
+		<dict>
+			<key>name</key>
+			<string>iTunes 11.1.3</string>
+			<key>sha1</key>
+			<string>8d5d4b7ef285b0c30343bf1ea70d382efdf90f57</string>
+			<key>size</key>
+			<integer>231443089</integer>
+			<key>url</key>
+			<string>https://secure-appldnld.apple.com/iTunes11/031-1545.20131105.Lki98/iTunes11.1.3.dmg</string>
+		</dict>
 	</dict>
 </dict>
 </plist>
