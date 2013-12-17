@@ -142,7 +142,6 @@ class IEDProfileController(NSObject):
         self.deprecatedInstallerBuilds = dict()
         try:
             for replacement, builds in plist[u"DeprecatedInstallers"].iteritems():
-                LogDebug(u"replacement, builds = %@, %@", replacement, builds)
                 for build in builds:
                     self.deprecatedInstallerBuilds[build] = replacement
         except KeyError:
