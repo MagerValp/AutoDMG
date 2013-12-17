@@ -78,12 +78,14 @@ class IEDAddPkgController(NSObject):
     
     @IBAction
     def removeButtonClicked_(self, sender):
-        row = self.tableView.selectedRow()
-        if row == -1:
-            return
-        self.packagePaths.remove(self.packages[row].path())
-        del self.packages[row]
+        indexes = self.tableView.selectedRowIndexes()
+        row = indexes.lastIndex()
+        while row != NSNotFound:
+            self.packagePaths.remove(self.packages[row].path())
+            del self.packages[row]
+            row = indexes.indexLessThanIndex_(row)
         self.tableView.reloadData()
+        self.tableView.deselectAll_(self)
     
     
     

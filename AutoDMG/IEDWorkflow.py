@@ -117,10 +117,9 @@ class IEDWorkflow(NSObject):
         if failedUnmounts:
             text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
             self.delegate.displayAlert_text_(u"Failed to eject dmgs", text)
-        if os.path.basename(self.newSourcePath) == u"InstallESD.dmg":
+        self.installESDPath = os.path.join(self.newSourcePath, u"Contents/SharedSupport/InstallESD.dmg")
+        if not os.path.exists(self.installESDPath):
             self.installESDPath = self.newSourcePath
-        else:
-            self.installESDPath = os.path.join(self.newSourcePath, u"Contents/SharedSupport/InstallESD.dmg")
         
         self.delegate.examiningSource_(self.newSourcePath)
         
@@ -423,13 +422,17 @@ class IEDWorkflow(NSObject):
         
         # The script is wrapped with progresswatcher.py which parses script
         # output and sends it back as notifications to IEDSocketListener.
+        try:
+            groupName = grp.getgrgid(os.getgid()).gr_name
+        except KeyError:
+            groupName = unicode(os.getgid())
         args = [
             NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
             u"--cd", NSBundle.mainBundle().resourcePath(),
             u"--socket", self.listenerPath,
             u"installesdtodmg",
             u"--user", NSUserName(),
-            u"--group", grp.getgrgid(os.getgid()).gr_name,
+            u"--group", groupName,
             u"--output", self.outputPath(),
         ] + self.packagesToInstall
         LogInfo(u"Launching install with arguments:")

@@ -71,10 +71,14 @@ class IEDAppVersionController(NSObject):
         self.defaults.setObject_forKey_(NSDate.date(), u"LastAppVersionCheck")
         
         # Get latest version and build.
-        latestVersion = plist[u"Version"]
+        latestDisplayVersion = plist[u"Version"]
+        if latestDisplayVersion.count(u".") == 1:
+            latestPaddedVersion = latestDisplayVersion + u".0"
+        else:
+            latestPaddedVersion = latestDisplayVersion
         latestBuild = plist[u"Build"]
-        latestVersionBuild = u"%s.%s" % (latestVersion, latestBuild)
-        LogNotice(u"Latest published version is AutoDMG v%@ build %@", latestVersion, latestBuild)
+        latestVersionBuild = u"%s.%s" % (latestPaddedVersion, latestBuild)
+        LogNotice(u"Latest published version is AutoDMG v%@ build %@", latestDisplayVersion, latestBuild)
         
         if self.checkSilently:
             # Check if we've already notified the user about this version.
@@ -82,19 +86,23 @@ class IEDAppVersionController(NSObject):
                 LogDebug(u"User has already been notified of this version.")
                 return
         
-        # Convert latest version into a tuple with (major, minor, build).
-        latestTuple = tuple(int(x) for x in latestVersionBuild.split(u"."))
+        # Convert latest version into a tuple with (major, minor, rev, build).
+        latestTuple = tuple(int(x.strip(u"ab")) for x in latestVersionBuild.split(u"."))
         
         # Get the current version and convert it to a tuple.
-        version, build = IEDUtil.getAppVersion()
-        versionBuild = u"%s.%s" % (version, build)
-        currentTuple = tuple(int(x) for x in versionBuild.split(u"."))
+        displayVersion, build = IEDUtil.getAppVersion()
+        if displayVersion.count(u".") == 1:
+            paddedVersion = displayVersion + u".0"
+        else:
+            paddedVersion = displayVersion
+        versionBuild = u"%s.%s" % (paddedVersion, build)
+        currentTuple = tuple(int(x.strip(u"ab")) for x in versionBuild.split(u"."))
         
         # Compare and notify
         if latestTuple > currentTuple:
             alert = NSAlert.alloc().init()
             alert.setMessageText_(u"A new version of AutoDMG is available")
-            alert.setInformativeText_(u"AutoDMG v%s build %s is available for download." % (latestVersion, latestBuild))
+            alert.setInformativeText_(u"AutoDMG v%s build %s is available for download." % (latestDisplayVersion, latestBuild))
             alert.addButtonWithTitle_(u"Download")
             alert.addButtonWithTitle_(u"Skip")
             alert.addButtonWithTitle_(u"Later")
@@ -107,6 +115,10 @@ class IEDAppVersionController(NSObject):
         elif not self.checkSilently:
             alert = NSAlert.alloc().init()
             alert.setMessageText_(u"AutoDMG is up to date")
-            alert.setInformativeText_(u"AutoDMG v%s build %s appears to be current." % (version, build))
+            if currentTuple > latestTuple:
+                verString = u"bleeding edge"
+            else:
+                verString = u"current"
+            alert.setInformativeText_(u"AutoDMG v%s build %s appears to be %s." % (displayVersion, build, verString))
             alert.runModal()
 
