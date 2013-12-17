@@ -140,10 +140,13 @@ class IEDProfileController(NSObject):
         for name, update in plist[u"Updates"].iteritems():
             self.updatePaths[update[u"sha1"]] = os.path.basename(update[u"url"])
         self.deprecatedInstallerBuilds = dict()
-        if u"DeprecatedInstallers" in plist:
+        try:
             for replacement, builds in plist[u"DeprecatedInstallers"].iteritems():
+                LogDebug(u"replacement, builds = %@, %@", replacement, builds)
                 for build in builds:
                     self.deprecatedInstallerBuilds[build] = replacement
+        except KeyError:
+            LogWarning(u"No deprecated installers")
         if self.delegate:
             self.delegate.profilesUpdated()
     
