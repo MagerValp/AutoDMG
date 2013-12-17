@@ -37,8 +37,11 @@ def checkSource_(self, sender):
     path = IEDUtil.resolvePath(filenames[0])
     if os.path.exists(os.path.join(path,
                       u"Contents/SharedSupport/InstallESD.dmg")) or \
-    os.path.basename(path) == u"InstallESD.dmg":
+    (os.path.basename(path).lower().startswith(u"installesd") and \
+     os.path.basename(path).lower().endswith(u".dmg")):
         return path
+    else:
+        return None
 
 def draggingEntered_(self, sender):
     self.dragOperation = NSDragOperationNone

@@ -117,10 +117,9 @@ class IEDWorkflow(NSObject):
         if failedUnmounts:
             text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
             self.delegate.displayAlert_text_(u"Failed to eject dmgs", text)
-        if os.path.basename(self.newSourcePath) == u"InstallESD.dmg":
+        self.installESDPath = os.path.join(self.newSourcePath, u"Contents/SharedSupport/InstallESD.dmg")
+        if not os.path.exists(self.installESDPath):
             self.installESDPath = self.newSourcePath
-        else:
-            self.installESDPath = os.path.join(self.newSourcePath, u"Contents/SharedSupport/InstallESD.dmg")
         
         self.delegate.examiningSource_(self.newSourcePath)
         
