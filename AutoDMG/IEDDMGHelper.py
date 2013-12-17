@@ -60,7 +60,7 @@ class IEDDMGHelper(NSObject):
         if p.returncode != 0:
             errstr = u"hdiutil attach failed with return code %d" % p.returncode
             if err:
-                errstr += u": %s" % err
+                errstr += u": %s" % err.decode(u"utf-8")
             self.tellDelegate_message_(selector, {u"success": False,
                                                   u"dmg-path": dmgPath,
                                                   u"error-message": errstr})
@@ -120,7 +120,7 @@ class IEDDMGHelper(NSObject):
             elif tries == maxtries - 1:
                 errstr = u"hdiutil detach failed with return code %d" % p.returncode
                 if err:
-                    errstr += u": %s" % err
+                    errstr += u": %s" % err.decode(u"utf-8")
                 target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
                                                                              {u"success": False,
                                                                               u"dmg-path": dmgPath,
