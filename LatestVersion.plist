@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>Version</key>
-	<string>1.2</string>
+	<string>1.2.1</string>
 	<key>Build</key>
-	<string>182</string>
+	<string>194</string>
 	<key>URL</key>
 	<string>https://github.com/MagerValp/AutoDMG/releases</string>
 </dict>
