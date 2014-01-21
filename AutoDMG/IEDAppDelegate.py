@@ -48,6 +48,9 @@ class IEDAppDelegate(NSObject):
         defaults.registerDefaults_(defaultsDict)
     
     def applicationDidFinishLaunching_(self, sender):
+        version, build = IEDUtil.getAppVersion()
+        if version.lower().endswith(u"b"):
+            NSApplication.sharedApplication().dockTile().setBadgeLabel_(u"beta")
         updateProfileInterval = defaults.integerForKey_(u"UpdateProfileInterval")
         if updateProfileInterval:
             lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
