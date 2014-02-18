@@ -6,6 +6,12 @@ AutoDMG takes an OS X installer and builds a system image, suitable for deployme
 ![Autodmg 1.0](http://magervalp.github.io/images/AutoDMG-1.0.png)
 
 
+System Requirements
+-------------------
+
+AutoDMG requires Mac OS X 10.8 or newer.
+
+
 Support
 -------
 
