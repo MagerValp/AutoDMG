@@ -9,6 +9,7 @@
 
 from Foundation import *
 from Carbon.File import *
+import MacOS
 
 import os.path
 
@@ -35,6 +36,9 @@ class IEDUtil(NSObject):
     @classmethod
     def resolvePath(cls, path):
         """Expand symlinks and resolve aliases."""
-        fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
-        return fsref.as_pathname().decode(u"utf-8")
+        try:
+            fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
+            return fsref.as_pathname().decode(u"utf-8")
+        except MacOS.Error as e:
+            return None
 
