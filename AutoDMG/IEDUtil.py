@@ -42,7 +42,22 @@ class IEDUtil(NSObject):
             return fsref.as_pathname().decode(u"utf-8")
         except MacOS.Error as e:
             return None
-
+    
+    @classmethod
+    def installESDPath_(cls, path):
+        u"""Resolve aliases and return path to InstallESD."""
+        path = cls.resolvePath(path)
+        if not path:
+            return None
+        if os.path.exists(os.path.join(path,
+                          u"Contents/SharedSupport/InstallESD.dmg")):
+            return path
+        if (os.path.basename(path).lower().startswith(u"installesd") and \
+            os.path.basename(path).lower().endswith(u".dmg")) and \
+           os.path.exists(path):
+            return path
+        else:
+            return None
     
     @classmethod
     def getPackageSize_(cls, path):

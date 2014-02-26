@@ -34,6 +34,7 @@
 		66B29339182137310076C397 /* Download@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B29337182137310076C397 /* Download@2x.png */; };
 		66CBF810182316FC0002E18F /* IEDAppVersionController.py in Resources */ = {isa = PBXBuildFile; fileRef = 66CBF80F182316FC0002E18F /* IEDAppVersionController.py */; };
 		66D24F2618171E680042F227 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 66D24F2518171E680042F227 /* Defaults.plist */; };
+		66E91A9B18B4206C006ABAB7 /* IEDCLIController.py in Resources */ = {isa = PBXBuildFile; fileRef = 66E91A9A18B4206C006ABAB7 /* IEDCLIController.py */; };
 		66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CC17EB1586009B8350 /* Cocoa.framework */; };
 		66EA72CF17EB1586009B8350 /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EA72CE17EB1586009B8350 /* Python.framework */; };
 		66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66EA72D717EB1586009B8350 /* InfoPlist.strings */; };
@@ -77,6 +78,7 @@
 		66B29337182137310076C397 /* Download@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Download@2x.png"; sourceTree = "<group>"; };
 		66CBF80F182316FC0002E18F /* IEDAppVersionController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDAppVersionController.py; sourceTree = "<group>"; };
 		66D24F2518171E680042F227 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
+		66E91A9A18B4206C006ABAB7 /* IEDCLIController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDCLIController.py; sourceTree = "<group>"; };
 		66EA72C917EB1586009B8350 /* AutoDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EA72CC17EB1586009B8350 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		66EA72CE17EB1586009B8350 /* Python.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python.framework; path = System/Library/Frameworks/Python.framework; sourceTree = SDKROOT; };
@@ -211,6 +213,7 @@
 				66EA72E017EB1587009B8350 /* main.py */,
 				66EA72E217EB1587009B8350 /* IEDAppDelegate.py */,
 				66EA72F017EB2ECB009B8350 /* IEDController.py */,
+				66E91A9A18B4206C006ABAB7 /* IEDCLIController.py */,
 				055DBD281822AAA10008DA0E /* IEDUtil.py */,
 				669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */,
 				664F6B0018BDD1C90071E951 /* IEDTemplate.py */,
@@ -314,6 +317,7 @@
 				66B29339182137310076C397 /* Download@2x.png in Resources */,
 				664F6B0118BDD1C90071E951 /* IEDTemplate.py in Resources */,
 				66EA72D917EB1586009B8350 /* InfoPlist.strings in Resources */,
+				66E91A9B18B4206C006ABAB7 /* IEDCLIController.py in Resources */,
 				665E928518159C1A00A8F683 /* IEDProfileController.py in Resources */,
 				66D24F2618171E680042F227 /* Defaults.plist in Resources */,
 				05429D791816715300CD61E6 /* Package@2x.png in Resources */,
