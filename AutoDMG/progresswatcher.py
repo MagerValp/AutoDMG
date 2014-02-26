@@ -261,13 +261,11 @@ class ProgressWatcher(NSObject):
     
 
 def run(args, sockPath, mode):
-    NSLog(u'Launching task "%@"', u'" "'.join(args))
     pw = ProgressWatcher.alloc().init()
     pw.watchTask_socket_mode_(args, sockPath, mode)
     runLoop = NSRunLoop.currentRunLoop()
     while pw.shouldKeepRunning():
         runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, NSDate.distantFuture())
-    NSLog(u"Task terminated, exiting")
 
 
 def installesdtodmg(args):
