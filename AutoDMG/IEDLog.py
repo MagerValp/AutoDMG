@@ -179,10 +179,24 @@ class IEDLog(NSObject):
             return self.visibleLogLines[row].message()
 
 
+logFile = None
+def FileLog(*args):
+    global logFile
+    print >>logFile, NSString.stringWithFormat_(*args).encode(u"utf-8")
+
+def LogToFile(f):
+    global logFile
+    global logFunction
+    logFile = f
+    logFunction = FileLog
+
+logFunction = NSLog
+
 _log = IEDLog.alloc().init()
 
 def LogMessage(level, message):
     global _log
+    global logFunction
     
     prefix = u""
     if level == IEDLogLevelDebug:
@@ -202,7 +216,7 @@ def LogMessage(level, message):
             syslogLevel = IEDLogLevelInfo
         
         if syslogLevel >= level:
-            NSLog(u"%@", prefix + line)
+            logFunction(u"%@", prefix + line)
 
 def LogDebug(*args):
     LogMessage(IEDLogLevelDebug, NSString.stringWithFormat_(*args))
