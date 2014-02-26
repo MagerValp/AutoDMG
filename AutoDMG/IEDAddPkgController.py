@@ -11,7 +11,6 @@ from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet
 import os.path
-import subprocess
 
 from IEDLog import *
 from IEDUtil import *
@@ -54,16 +53,6 @@ class IEDAddPkgController(NSObject):
         self.addPkgLabel.setTextColor_(NSColor.controlTextColor())
         self.tableView.setEnabled_(True)
         self.removeButton.setEnabled_(True)
-    
-    def getPackageSize_(self, path):
-        p = subprocess.Popen([u"/usr/bin/du", u"-sk", path],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        out, err = p.communicate()
-        if p.returncode != 0:
-            LogError(u"du failed with exit code %d", p.returncode)
-        else:
-            return int(out.split()[0]) * 1024
     
     
     
@@ -158,7 +147,7 @@ class IEDAddPkgController(NSObject):
                 package = IEDPackage.alloc().init()
                 package.setName_(os.path.basename(path))
                 package.setPath_(path)
-                package.setSize_(self.getPackageSize_(path))
+                package.setSize_(IEDUtil.getPackageSize_(path))
                 package.setImage_(NSWorkspace.sharedWorkspace().iconForFile_(path))
                 self.packages.insert(row + i, package)
                 self.packagePaths.add(path)

@@ -12,6 +12,7 @@ from Carbon.File import *
 import MacOS
 
 import os.path
+import subprocess
 
 
 class IEDUtil(NSObject):
@@ -42,3 +43,15 @@ class IEDUtil(NSObject):
         except MacOS.Error as e:
             return None
 
+    
+    @classmethod
+    def getPackageSize_(cls, path):
+        p = subprocess.Popen([u"/usr/bin/du", u"-sk", path],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            LogError(u"du failed with exit code %d", p.returncode)
+            return 0
+        else:
+            return int(out.split()[0]) * 1024
