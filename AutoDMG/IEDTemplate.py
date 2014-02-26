@@ -30,6 +30,8 @@ class IEDTemplate(NSObject):
         self.volumeName = u"Macintosh HD"
         self.packagesToInstall = None
         
+        self.loadedTemplates = set()
+        
         return self
     
     def initWithSourcePath_(self, path):
@@ -42,6 +44,11 @@ class IEDTemplate(NSObject):
         return self
     
     def loadTemplateAndReturnError_(self, path):
+        if path in self.loadedTemplates:
+            return u"%s included recursively" % path
+        else:
+            self.loadedTemplates.add(path)
+        
         plist = NSDictionary.dictionaryWithContentsOfFile_(path)
         if not plist:
             error = u"Couldn't read dictionary from plist at %s" % (path)
