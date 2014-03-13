@@ -67,14 +67,14 @@ class IEDCLIController(NSObject):
             templatePath = self.checkTemplate_(args.source)
         
         if not sourcePath and not templatePath:
-            self.failWithMessage_(u"No valid OS X installer or AutoDMG template found at %s" % args.source)
+            self.failWithMessage_(u"'%s' is not a valid OS X installer or AutoDMG template" % args.source)
             return 1
         
         if templatePath:
             template = IEDTemplate.alloc().init()
             error = template.loadTemplateAndReturnError_(templatePath)
             if error:
-                self.failWithMessage_(u"Couldn't load template from %s: %s" % (templatePath, error))
+                self.failWithMessage_(u"Couldn't load template from '%s': %s" % (templatePath, error))
                 return 1
         else:
             template = IEDTemplate.alloc().initWithSourcePath_(sourcePath)
