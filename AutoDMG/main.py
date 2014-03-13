@@ -76,7 +76,7 @@ def cli_main(argv):
         p.add_argument(u"-v", u"--verbose", action=u"store_true", help=u"Verbose output")
         p.add_argument(u"-L", u"--log-level",
                        type=int, choices=range(0, 8), default=6,
-                       help=u"Log level (0-7), default 6")
+                       metavar=u"LEVEL", help=u"Log level (0-7), default 6")
         p.add_argument(u"-l", u"--logfile", help=u"Log to file")
         sp = p.add_subparsers(title=u"subcommands", dest=u"subcommand")
         
