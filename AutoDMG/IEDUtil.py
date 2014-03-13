@@ -70,3 +70,14 @@ class IEDUtil(NSObject):
             return 0
         else:
             return int(out.split()[0]) * 1024
+    
+    @classmethod
+    def formatBytes_(cls, bytes):
+        bytes = float(bytes)
+        unitIndex = 0
+        while len(str(int(bytes))) > 3:
+            bytes /= 1000.0
+            unitIndex += 1
+        return u"%.1f %s" % (bytes, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+
+
