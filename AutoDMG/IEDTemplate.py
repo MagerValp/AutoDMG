@@ -109,8 +109,6 @@ class IEDTemplate(NSObject):
         self.volumeName = name
     
     def resolvePackages(self):
-        if self.applyUpdates:
-            LogWarning(u"Installing updates with a template isn't implemented")
         self.packagesToInstall = list()
         for path in self.additionalPackages:
             package = IEDPackage.alloc().init()
