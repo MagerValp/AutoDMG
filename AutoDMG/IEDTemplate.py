@@ -86,7 +86,6 @@ class IEDTemplate(NSObject):
     def setApplyUpdates_(self, shouldApplyUpdates):
         LogInfo(u"Setting apply updates to '%@'", shouldApplyUpdates)
         self.applyUpdates = shouldApplyUpdates
-        LogNotice(u"applyUpdates not implemented")
     
     def setAdditionalPackages_(self, packagePaths):
         for packagePath in packagePaths:
@@ -108,7 +107,6 @@ class IEDTemplate(NSObject):
     def setVolumeName_(self, name):
         LogInfo(u"Setting volume name to '%@'", name)
         self.volumeName = name
-        LogNotice(u"volumeName not implemented")
     
     def resolvePackages(self):
         if self.applyUpdates:

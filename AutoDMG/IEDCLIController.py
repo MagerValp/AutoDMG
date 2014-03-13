@@ -125,7 +125,7 @@ class IEDCLIController(NSObject):
         self.busy = True
         self.workflow.setPackagesToInstall_(template.packagesToInstall)
         self.workflow.setOutputPath_(template.outputPath)
-        #self.workflow.setVolumeName_(template.volumeName)
+        self.workflow.setVolumeName_(template.volumeName)
         self.workflow.start()
         self.waitBusy()
         if self.hasFailed:

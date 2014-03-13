@@ -39,6 +39,7 @@ class IEDWorkflow(NSObject):
         
         # State for the workflow.
         self._outputPath = None
+        self._volumeName = u"Macintosh HD"
         self.installerMountPoint = None
         self.additionalPackages = list()
         self.attachedPackageDMGs = dict()
@@ -204,6 +205,12 @@ class IEDWorkflow(NSObject):
     def setOutputPath_(self, path):
         self._outputPath = path
     
+    # Volume name.
+    
+    def volumeName(self):
+        return self._volumeName
+    def setVolumeName_(self, name):
+        self._volumeName = name
     
     
     # Start the workflow.
@@ -434,6 +441,7 @@ class IEDWorkflow(NSObject):
             u"--user", NSUserName(),
             u"--group", groupName,
             u"--output", self.outputPath(),
+            u"--volume-name", self.volumeName(),
         ] + self.packagesToInstall
         LogInfo(u"Launching install with arguments:")
         for arg in args:
