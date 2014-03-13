@@ -36,6 +36,7 @@ class IEDCLIController(NSObject):
         self.workflow = IEDWorkflow.alloc().initWithDelegate_(self)
         self.profileController = IEDProfileController.alloc().init()
         self.profileController.awakeFromNib()
+        self.profileController.setDelegate_(self)
         self.cache.pruneAndCreateSymlinks(self.profileController.updatePaths)
         
         self.busy = False
@@ -263,6 +264,27 @@ class IEDCLIController(NSObject):
     
     
     
+    # Update profiles.
+    
+    def cmdUpdate_(self, args):
+        """Update profiles"""
+        
+        self.profileController.updateFromURL_(args.url)
+        self.busy = True
+        self.waitBusy()
+        
+        if self.hasFailed:
+            return 1
+        
+        return 0
+    
+    def addargsUpdate_(self, argparser):
+        defaults = NSUserDefaults.standardUserDefaults()
+        url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
+        argparser.add_argument(u"-u", u"--url", default=url, help=u"Profile URL")
+    
+    
+    
     # Workflow delegate methods.
     
     def ejectingSource(self):
@@ -344,3 +366,22 @@ class IEDCLIController(NSObject):
     
     def downloadFailed_withError_(self, package, message):
         self.failWithMessage_(u"Download of %s failed: %s" % (package.name(), message))
+    
+    
+    
+    # IEDProfileController delegate methods.
+    
+    def profileUpdateAllDone(self):
+        self.busy = False
+    
+    def profileUpdateFailed_(self, error):
+        self.failWithMessage_(u"%@", error.localizedDescription())
+    
+    def profileUpdateSucceeded_(self, publicationDate):
+        LogDebug(u"profileUpdateSucceeded:%@", publicationDate)
+        defaults = NSUserDefaults.standardUserDefaults()
+        defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
+    
+    def profilesUpdated(self):
+        LogDebug(u"profilesUpdated")
+        self.cache.pruneAndCreateSymlinks(self.profileController.updatePaths)
