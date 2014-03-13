@@ -93,13 +93,13 @@ def cli_main(argv):
         
         # Log version info on startup.
         version, build = IEDUtil.getAppVersion()
-        LogNotice(u"AutoDMG v%@ build %@", version, build)
+        LogInfo(u"AutoDMG v%@ build %@", version, build)
         name, version, build = IEDUtil.readSystemVersion_(u"/")
-        LogNotice(u"%@ %@ %@", name, version, build)
-        LogNotice(u"%@ %@ (%@)", platform.python_implementation(),
+        LogInfo(u"%@ %@ %@", name, version, build)
+        LogInfo(u"%@ %@ (%@)", platform.python_implementation(),
                                  platform.python_version(),
                                  platform.python_compiler())
-        LogNotice(u"PyObjC %@", objc.__version__)
+        LogInfo(u"PyObjC %@", objc.__version__)
         
         return args.func(args)
         #from PyObjCTools import AppHelper
