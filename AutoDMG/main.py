@@ -17,6 +17,7 @@ import Foundation
 objc.setVerbose(1)
 
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+import IEDLog
 from IEDUtil import *
 import platform
 
@@ -34,6 +35,11 @@ import platform
 
 
 def gui_main():
+    IEDLog.IEDLogToController  = True
+    IEDLog.IEDLogToSyslog      = True
+    IEDLog.IEDLogToStdOut      = True
+    IEDLog.IEDLogToFile        = False
+    
     import AppKit
     from PyObjCTools import AppHelper
     
@@ -51,19 +57,26 @@ def gui_main():
 
 
 def cli_main(argv):
+    IEDLog.IEDLogToController  = False
+    IEDLog.IEDLogToSyslog      = True
+    IEDLog.IEDLogToStdOut      = True
+    IEDLog.IEDLogToFile        = False
+    
     from IEDCLIController import IEDCLIController
     clicontroller = IEDCLIController.alloc().init()
     
-    logFile = None
-    
     try:
         # Initialize user defaults before application starts.
+        defaults = NSUserDefaults.standardUserDefaults()
         defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
         defaultsDict = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
         defaults.registerDefaults_(defaultsDict)
         
         p = argparse.ArgumentParser()
         p.add_argument(u"-v", u"--verbose", action=u"store_true", help=u"Verbose output")
+        p.add_argument(u"-L", u"--log-level",
+                       type=int, choices=range(0, 8), default=6,
+                       help=u"Log level (0-7), default 6")
         p.add_argument(u"-l", u"--logfile", help=u"Log to file")
         sp = p.add_subparsers(title=u"subcommands", dest=u"subcommand")
         
@@ -76,20 +89,26 @@ def cli_main(argv):
             parser.set_defaults(func=verb_method)
         
         args = p.parse_args(argv)
-        #if args.verbose:
-        #    pass
+        
+        if args.verbose:
+            IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelInfo
+        else:
+            IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelNotice
+        
+        IEDLog.IEDLogFileLogLevel = args.log_level
         
         if args.logfile:
             if args.logfile == u"-":
-                # default is StdErr.
-                pass
+                # Redirect log to stdout instead.
+                IEDLog.IEDLogFileHandle = sys.stdout
+                IEDLog.IEDLogToStdOut = False
             else:
                 try:
-                    logFile = open(args.logfile, u"a", buffering=1)
+                    IEDLog.IEDLogFileHandle = open(args.logfile, u"a", buffering=1)
                 except OSError as e:
                     print >>sys.stderr, (u"Couldn't open %s for writing" % (args.logfile)).encode(u"utf-8")
                     return 1
-                LogToFile(logFile)
+            IEDLog.IEDLogToFile = True
         
         # Log version info on startup.
         version, build = IEDUtil.getAppVersion()

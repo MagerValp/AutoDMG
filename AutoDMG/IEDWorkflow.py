@@ -510,7 +510,7 @@ class IEDWorkflow(NSObject):
         elif action == u"update_message":
             if self.lastUpdateMessage != msg[u"message"]:
                 # Only log update messages when they change.
-                LogMessage(IEDLogLevelInfo, msg[u"message"])
+                LogInfo(u"%@", msg[u"message"])
             self.lastUpdateMessage = msg[u"message"]
             self.delegate.buildSetProgressMessage_(msg[u"message"])
         

@@ -51,7 +51,6 @@ class IEDCLIController(NSObject):
     
     def failWithMessage_(self, message):
         LogError(u"%@", message)
-        print >>sys.stderr, message.encode(u"utf-8")
         self.hasFailed = True
         self.busy = False
     
@@ -100,11 +99,11 @@ class IEDCLIController(NSObject):
         
         template.resolvePackages()
         
-        print (u"Installer: %s" % (template.sourcePath)).encode("utf-8")
-        print (u"Output Path: %s" % (template.outputPath)).encode("utf-8")
-        print (u"Volume Name: %s" % (template.volumeName)).encode("utf-8")
+        LogNotice(u"Installer: %@", template.sourcePath)
+        LogNotice(u"Output Path: %@", template.outputPath)
+        LogNotice(u"Volume Name: %@", template.volumeName)
         for package in template.packagesToInstall:
-            print (u"Installing Package: %s" % (package.name())).encode("utf-8")
+            LogNotice(u"Installing Package: %@", package.name())
         
         self.busy = True
         self.workflow.setSource_(template.sourcePath)
@@ -167,10 +166,10 @@ class IEDCLIController(NSObject):
     # Workflow delegate methods.
     
     def ejectingSource(self):
-        print u"Ejecting source…".encode("utf-8")
+        LogInfo("%@", u"Ejecting source…")
     
     def examiningSource_(self, path):
-        print u"Examining source…".encode("utf-8")
+        LogInfo("%@", u"Examining source…")
     
     def foundSourceForIcon_(self, path):
         pass
@@ -179,7 +178,7 @@ class IEDCLIController(NSObject):
         self.installerName = info[u"name"]
         self.installerVersion = info[u"version"]
         self.installerBuild = info[u"build"]
-        print (u"Found installer: %s %s %s" % (info[u"name"], info[u"version"], info[u"build"])).encode("utf-8")
+        LogNotice(u"Found installer: %s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
         #self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
         self.busy = False
     
@@ -196,18 +195,17 @@ class IEDCLIController(NSObject):
         self.progressMax = totalWeight
     
     def buildSetPhase_(self, phase):
-        print (u"phase: %s" % phase).encode(u"utf-8")
         LogNotice(u"phase: %@", phase)
     
     def buildSetProgress_(self, progress):
         percent = 100.0 * progress / self.progressMax
         if abs(percent - self.lastProgress) >= 0.1:
-            LogNotice(u"progress: %.1f%%", percent)
+            LogInfo(u"progress: %.1f%%", percent)
         self.lastProgress = percent
     
     def buildSetProgressMessage_(self, message):
         if message != self.lastMessage:
-            LogNotice(u"message: %@", message)
+            LogInfo(u"message: %@", message)
             self.lastMessage = message
     
     def buildSucceeded(self):
