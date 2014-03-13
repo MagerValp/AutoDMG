@@ -12,7 +12,7 @@ from AppKit import *
 
 import sys
 import os.path
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUpdateCache import *
 from IEDWorkflow import *
 from IEDTemplate import *

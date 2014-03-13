@@ -13,7 +13,7 @@ from objc import IBOutlet
 
 import os.path
 from collections import defaultdict
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 class IEDProfileController(NSObject):

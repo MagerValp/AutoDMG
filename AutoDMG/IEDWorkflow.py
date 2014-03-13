@@ -14,7 +14,7 @@ import glob
 import grp
 import traceback
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 from IEDSocketListener import *
 from IEDDMGHelper import *

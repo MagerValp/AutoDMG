@@ -11,7 +11,7 @@ from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet, __version__ as pyObjCVersion
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 import platform
 

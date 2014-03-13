@@ -16,7 +16,7 @@ import Foundation
 
 objc.setVerbose(1)
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 import platform
 

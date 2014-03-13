@@ -12,7 +12,7 @@ import os
 import socket
 import glob
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 IEDSL_MAX_MSG_SIZE = 4096

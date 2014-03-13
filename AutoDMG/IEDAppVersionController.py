@@ -10,7 +10,7 @@
 from Foundation import *
 from objc import IBAction, IBOutlet
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 
 

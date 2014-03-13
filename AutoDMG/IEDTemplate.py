@@ -11,7 +11,7 @@ import objc
 from Foundation import *
 
 import os.path
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 from IEDPackage import *
 
