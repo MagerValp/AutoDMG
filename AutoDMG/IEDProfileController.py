@@ -48,7 +48,7 @@ class IEDProfileController(NSObject):
         
         try:
             profile = self.profiles[u"%s-%s" % (version, build)]
-            LogNotice(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
+            LogInfo(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
         except KeyError:
             profile = None
             LogNotice(u"No update profile for %@ %@", version, build)
@@ -128,7 +128,7 @@ class IEDProfileController(NSObject):
     def loadProfilesFromPlist_(self, plist):
         """Load UpdateProfiles from a plist dictionary."""
         
-        LogNotice(u"Loading update profiles with PublicationDate %@", plist[u"PublicationDate"])
+        LogInfo(u"Loading update profiles with PublicationDate %@", plist[u"PublicationDate"])
         self.profiles = dict()
         for name, updates in plist[u"Profiles"].iteritems():
             profile = list()
