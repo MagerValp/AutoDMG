@@ -11,7 +11,8 @@ from Foundation import *
 from AppKit import *
 
 import sys
-import os.path
+import os
+import getpass
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUpdateCache import *
 from IEDProfileController import *
@@ -165,6 +166,13 @@ class IEDCLIController(NSObject):
             else:
                 self.failWithMessage_(u"%s already exists" % template.outputPath)
                 return 1
+        
+        # If we're not running as root get the password for authentication.
+        if os.getuid() != 0:
+            username = getpass.getuser()
+            password = getpass.getpass(u"Password for %s: " % username)
+            self.workflow.setAuthUsername_(username)
+            self.workflow.setAuthPassword_(password)
         
         # Start the workflow.
         self.busy = True

@@ -44,6 +44,8 @@ class IEDWorkflow(NSObject):
         self.additionalPackages = list()
         self.attachedPackageDMGs = dict()
         self.lastUpdateMessage = None
+        self._authUsername = None
+        self._authPassword = None
         
         return self
     
@@ -211,6 +213,17 @@ class IEDWorkflow(NSObject):
         return self._volumeName
     def setVolumeName_(self, name):
         self._volumeName = name
+    
+    # Username and password.
+    
+    def authUsername(self):
+        return self._authUsername
+    def setAuthUsername_(self, authUsername):
+        self._authUsername = authUsername
+    def authPassword(self):
+        return self._authPassword
+    def setAuthPassword_(self, authPassword):
+        self._authPassword = authPassword
     
     
     # Start the workflow.
@@ -456,18 +469,26 @@ class IEDWorkflow(NSObject):
         shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
         def escape(s):
             return s.replace(u"\\", u"\\\\").replace(u'"', u'\\"')
-        applescript = u"\n".join([u'set arg%d to "%s"' % (i, escape(arg)) for i, arg in enumerate(args)] + \
-                                 [u'do shell script %s with administrator privileges' % shellscript])
+        scriptLines = list(u'set arg%d to "%s"' % (i, escape(arg)) for i, arg in enumerate(args))
+        if self.authPassword() is not None:
+            scriptLines.append(u'do shell script %s user name "%s" password "%s" '
+                               u'with administrator privileges' % (shellscript,
+                                                                   escape(self.authUsername()),
+                                                                   escape(self.authPassword())))
+        else:
+            scriptLines.append(u'do shell script %s with administrator privileges' % shellscript)
+        applescript = u"\n".join(scriptLines)
         trampoline = NSAppleScript.alloc().initWithSource_(applescript)
         evt, error = trampoline.executeAndReturnError_(None)
         if evt is None:
             self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, error, False)
     
     def handleLaunchScriptError_(self, error):
-        if error[NSAppleScriptErrorNumber] == -128:
+        if error.get(NSAppleScriptErrorNumber) == -128:
             self.stop()
         else:
-            self.fail_details_(u"Build failed", error[NSAppleScriptErrorMessage])
+            self.fail_details_(u"Build failed", error.get(NSAppleScriptErrorMessage,
+                                                          u"Unknown AppleScript error"))
     
     
     

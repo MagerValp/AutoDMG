@@ -78,6 +78,7 @@ def cli_main(argv):
                        type=int, choices=range(0, 8), default=6,
                        metavar=u"LEVEL", help=u"Log level (0-7), default 6")
         p.add_argument(u"-l", u"--logfile", help=u"Log to file")
+        p.add_argument(u"-r", u"--root", action=u"store_true", help=u"Allow running as root")
         sp = p.add_subparsers(title=u"subcommands", dest=u"subcommand")
         
         # Populate subparser for each verb.
@@ -109,6 +110,20 @@ def cli_main(argv):
                     print >>sys.stderr, (u"Couldn't open %s for writing" % (args.logfile)).encode(u"utf-8")
                     return 1
             IEDLog.IEDLogToFile = True
+        
+        # Check if we're running with root.
+        if os.getuid() == 0:
+            if args.root:
+                fm = NSFileManager.defaultManager()
+                url, error = fm.URLForDirectory_inDomain_appropriateForURL_create_error_(NSApplicationSupportDirectory,
+                                                                                         NSUserDomainMask,
+                                                                                         None,
+                                                                                         False,
+                                                                                         None)
+                LogWarning(u"Running as root, using %@", os.path.join(url.path(), u"AutoDMG"))
+            else:
+                LogError(u"Running as root isn't recommended (use -r to override)")
+                return 1
         
         # Log version info on startup.
         version, build = IEDUtil.getAppVersion()
