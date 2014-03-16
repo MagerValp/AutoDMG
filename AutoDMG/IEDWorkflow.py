@@ -46,6 +46,7 @@ class IEDWorkflow(NSObject):
         self.lastUpdateMessage = None
         self._authUsername = None
         self._authPassword = None
+        self._volumeSize = None
         
         return self
     
@@ -224,6 +225,13 @@ class IEDWorkflow(NSObject):
         return self._authPassword
     def setAuthPassword_(self, authPassword):
         self._authPassword = authPassword
+    
+    # DMG size.
+    
+    def volumeSize(self):
+        return self._volumeSize
+    def setVolumeSize_(self, size):
+        self._volumeSize = size
     
     
     # Start the workflow.
@@ -422,9 +430,33 @@ class IEDWorkflow(NSObject):
             else:
                 self.packagesToInstall.append(package.path())
         
+        # Calculate disk image size requirements.
+        sizeRequirement = 0
         LogInfo(u"%d packages to install:", len(self.packagesToInstall))
         for path in self.packagesToInstall:
             LogInfo(u"    %@", path)
+            installedSize = IEDUtil.getInstalledPkgSize_(path)
+            if installedSize is None:
+                self.delegate.buildFailed_details_(u"Failed to determine installed size",
+                                                   u"Unable to determine installation size requirements for %s" % package.path())
+                self.stop()
+                return
+            sizeRequirement += installedSize
+        sizeReqStr = IEDUtil.formatBytes_(sizeRequirement)
+        LogInfo(u"Workflow requires a %@ disk image", sizeReqStr)
+        
+        if self.volumeSize() is None:
+            # Calculate DMG size.
+            self.setVolumeSize_(int((float(sizeRequirement) * 1.1) / (1000.0 * 1000.0 * 1000.0) + 1.5))
+        else:
+            # Make sure user specified image size is large enough.
+            if sizeRequirement > self.volumeSize() * 1000 * 1000 * 1000:
+                details = u"Workflow requires %s and disk image is %d GB" % (sizeReqStr, self.volumeSize())
+                self.delegate.buildFailed_details_(u"Disk image too small for workflow",
+                                                   details)
+                self.stop()
+                return
+        LogInfo(u"Using a %d GB disk image", self.volumeSize())
         
         # Task done.
         self.nextTask()
@@ -455,6 +487,7 @@ class IEDWorkflow(NSObject):
             u"--group", groupName,
             u"--output", self.outputPath(),
             u"--volume-name", self.volumeName(),
+            u"--size", unicode(self.volumeSize()),
         ] + self.packagesToInstall
         LogInfo(u"Launching install with arguments:")
         for arg in args:

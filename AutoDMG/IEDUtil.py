@@ -80,5 +80,30 @@ class IEDUtil(NSObject):
             bytes /= 1000.0
             unitIndex += 1
         return u"%.1f %s" % (bytes, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+    
+    @classmethod
+    def getInstalledPkgSize_(cls, pkgPath):
+        p = subprocess.Popen([u"/usr/sbin/installer",
+                             u"-pkginfo",
+                             u"-verbose",
+                             u"-plist",
+                             u"-pkg",
+                             pkgPath],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            LogError(u"installer -pkginfo -pkg '%@' failed with exit code %d", pkgPath, p.returncode)
+            return None
+        outData = NSData.dataWithBytes_length_(out, len(out))
+        plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
+                                                                                                      NSPropertyListImmutable,
+                                                                                                      None,
+                                                                                                      None)
+        if not plist:
+            LogError(u"Error decoding plist: %@", error)
+            return None
+        LogDebug(u"%@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"])* 1024))
+        return int(plist[u"Size"]) * 1024
 
 
