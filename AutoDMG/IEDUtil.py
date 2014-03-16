@@ -13,6 +13,7 @@ import MacOS
 
 import os.path
 import subprocess
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 class IEDUtil(NSObject):
