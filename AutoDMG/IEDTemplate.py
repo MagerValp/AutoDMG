@@ -28,6 +28,7 @@ class IEDTemplate(NSObject):
         self.applyUpdates = False
         self.additionalPackages = NSMutableArray.alloc().init()
         self.volumeName = u"Macintosh HD"
+        self.volumeSize = None
         self.packagesToInstall = None
         
         self.loadedTemplates = set()
@@ -73,6 +74,8 @@ class IEDTemplate(NSObject):
                 self.setOutputPath_(plist[u"OutputPath"])
             elif key == u"VolumeName":
                 self.setVolumeName_(plist[u"VolumeName"])
+            elif key == u"VolumeSize":
+                self.setVolumeSize_(plist[u"VolumeSize"])
             
             else:
                 LogWarning(u"Unknown key '%@' in template", key)
@@ -107,6 +110,10 @@ class IEDTemplate(NSObject):
     def setVolumeName_(self, name):
         LogInfo(u"Setting volume name to '%@'", name)
         self.volumeName = name
+    
+    def setVolumeSize_(self, size):
+        LogInfo(u"Setting volume size to '%d'", size)
+        self.volumeSize = size
     
     def resolvePackages(self):
         self.packagesToInstall = list()

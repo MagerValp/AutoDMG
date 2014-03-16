@@ -179,6 +179,7 @@ class IEDCLIController(NSObject):
         self.workflow.setPackagesToInstall_(updates + template.packagesToInstall)
         self.workflow.setOutputPath_(template.outputPath)
         self.workflow.setVolumeName_(template.volumeName)
+        self.workflow.setVolumeSize_(template.volumeSize)
         self.workflow.start()
         self.waitBusy()
         if self.hasFailed:
