@@ -33,7 +33,7 @@ class IEDAppDelegate(NSObject):
     
     def initialize(self):
         # Log version info on startup.
-        version, build = IEDUtil.getAppVersion()
+        version, build = IEDUtil.getAppVersion_()
         LogInfo(u"AutoDMG v%@ build %@", version, build)
         name, version, build = IEDUtil.readSystemVersion_(u"/")
         LogInfo(u"%@ %@ %@", name, version, build)
@@ -48,7 +48,7 @@ class IEDAppDelegate(NSObject):
         defaults.registerDefaults_(defaultsDict)
     
     def applicationDidFinishLaunching_(self, sender):
-        version, build = IEDUtil.getAppVersion()
+        version, build = IEDUtil.getAppVersion_()
         if version.lower().endswith(u"b"):
             NSApplication.sharedApplication().dockTile().setBadgeLabel_(u"beta")
         updateProfileInterval = defaults.integerForKey_(u"UpdateProfileInterval")

@@ -84,7 +84,7 @@ class IEDTemplate(NSObject):
     
     def setSourcePath_(self, path):
         LogInfo(u"Setting source path to '%@'", path)
-        self.sourcePath = IEDUtil.resolvePath(os.path.expanduser(path))
+        self.sourcePath = IEDUtil.resolvePath_(os.path.expanduser(path))
     
     def setApplyUpdates_(self, shouldApplyUpdates):
         LogInfo(u"Setting apply updates to '%@'", shouldApplyUpdates)
@@ -92,13 +92,13 @@ class IEDTemplate(NSObject):
     
     def setAdditionalPackages_(self, packagePaths):
         for packagePath in packagePaths:
-            path = IEDUtil.resolvePath(os.path.expanduser(packagePath))
+            path = IEDUtil.resolvePath_(os.path.expanduser(packagePath))
             if not path:
                 LogError(u"Package '%@' not found", packagePath)
                 return False
             if path not in self.additionalPackages:
                 LogInfo(u"Adding '%@' to additional packages", path)
-                self.additionalPackages.append(IEDUtil.resolvePath(path))
+                self.additionalPackages.append(IEDUtil.resolvePath_(path))
             else:
                 LogInfo(u"Skipping duplicate package '%@'", path)
         return True

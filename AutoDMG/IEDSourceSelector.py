@@ -34,7 +34,7 @@ def checkSource_(self, sender):
     filenames = pboard.propertyListForType_(NSFilenamesPboardType)
     if len(filenames) != 1:
         return None
-    path = IEDUtil.resolvePath(filenames[0])
+    path = IEDUtil.resolvePath_(filenames[0])
     if os.path.exists(os.path.join(path,
                       u"Contents/SharedSupport/InstallESD.dmg")) or \
     (os.path.basename(path).lower().startswith(u"installesd") and \

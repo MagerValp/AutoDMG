@@ -188,7 +188,7 @@ class IEDCLIController(NSObject):
         return 0
     
     def checkTemplate_(self, path):
-        path = IEDUtil.resolvePath(path)
+        path = IEDUtil.resolvePath_(path)
         if not path:
             return None
         if not os.path.exists(path):

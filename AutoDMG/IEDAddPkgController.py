@@ -96,7 +96,7 @@ class IEDAddPkgController(NSObject):
         if info.draggingSource() == tableView:
             return NSDragOperationMove
         pboard = info.draggingPasteboard()
-        paths = [IEDUtil.resolvePath(path) for path in pboard.propertyListForType_(NSFilenamesPboardType)]
+        paths = [IEDUtil.resolvePath_(path) for path in pboard.propertyListForType_(NSFilenamesPboardType)]
         if not paths:
             return NSDragOperationNone
         for path in paths:
@@ -139,7 +139,7 @@ class IEDAddPkgController(NSObject):
             tableView.selectRowIndexes_byExtendingSelection_(selectedIndexes, False)
         else:
             # Otherwise it's a list of paths to add to the table.
-            paths = [IEDUtil.resolvePath(path) for path in pboard.propertyListForType_(NSFilenamesPboardType)]
+            paths = [IEDUtil.resolvePath_(path) for path in pboard.propertyListForType_(NSFilenamesPboardType)]
             # Remove duplicates from list.
             seen = set()
             paths = [x for x in paths if x not in seen and not seen.add(x)]

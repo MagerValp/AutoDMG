@@ -29,14 +29,14 @@ class IEDUtil(NSObject):
         return (name, version, build)
     
     @classmethod
-    def getAppVersion(cls):
+    def getAppVersion_(cls):
         bundle = NSBundle.mainBundle()
         version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
         build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")
         return (version, build)
     
     @classmethod
-    def resolvePath(cls, path):
+    def resolvePath_(cls, path):
         """Expand symlinks and resolve aliases."""
         try:
             fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
@@ -47,7 +47,7 @@ class IEDUtil(NSObject):
     @classmethod
     def installESDPath_(cls, path):
         u"""Resolve aliases and return path to InstallESD."""
-        path = cls.resolvePath(path)
+        path = cls.resolvePath_(path)
         if not path:
             return None
         if os.path.exists(os.path.join(path,
