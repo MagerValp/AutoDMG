@@ -126,7 +126,7 @@ def cli_main(argv):
                 return 1
         
         # Log version info on startup.
-        version, build = IEDUtil.getAppVersion_()
+        version, build = IEDUtil.getAppVersion()
         LogInfo(u"AutoDMG v%@ build %@", version, build)
         name, version, build = IEDUtil.readSystemVersion_(u"/")
         LogInfo(u"%@ %@ %@", name, version, build)

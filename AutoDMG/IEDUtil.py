@@ -29,7 +29,7 @@ class IEDUtil(NSObject):
         return (name, version, build)
     
     @classmethod
-    def getAppVersion_(cls):
+    def getAppVersion(cls):
         bundle = NSBundle.mainBundle()
         version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
         build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")

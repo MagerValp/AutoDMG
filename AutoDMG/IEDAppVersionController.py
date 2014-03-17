@@ -90,7 +90,7 @@ class IEDAppVersionController(NSObject):
         latestTuple = tuple(int(x.strip(u"ab")) for x in latestVersionBuild.split(u"."))
         
         # Get the current version and convert it to a tuple.
-        displayVersion, build = IEDUtil.getAppVersion_()
+        displayVersion, build = IEDUtil.getAppVersion()
         if displayVersion.count(u".") == 1:
             paddedVersion = displayVersion + u".0"
         else:
