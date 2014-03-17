@@ -14,6 +14,8 @@ from objc import IBAction, IBOutlet
 
 from IEDLogLine import *
 import inspect
+import syslog
+import sys
 
 
 IEDLogLevelEmergency = 0
@@ -25,8 +27,34 @@ IEDLogLevelNotice    = 5
 IEDLogLevelInfo      = 6
 IEDLogLevelDebug     = 7
 
+# Control which output channels are active.
+IEDLogToController  = True
+IEDLogToSyslog      = True
+IEDLogToStdOut      = False
+IEDLogToFile        = False
+
+# Default log levels.
+IEDLogStdOutLogLevel    = IEDLogLevelNotice
+IEDLogFileLogLevel      = IEDLogLevelInfo
+
+# File handle for log file.
+IEDLogFileHandle = None
+
 
 defaults = NSUserDefaults.standardUserDefaults()
+
+
+def IEDLogLevelName(level):
+    return (
+        u"Emergency",
+        u"Alert",
+        u"Critical",
+        u"Error",
+        u"Warning",
+        u"Notice",
+        u"Info",
+        u"Debug",
+    )[level]
 
 
 class IEDLog(NSObject):
@@ -64,17 +92,6 @@ class IEDLog(NSObject):
     
     # Helper methods.
     
-    def levelName_(self, level):
-        return (
-            u"Emergency",
-            u"Alert",
-            u"Critical",
-            u"Error",
-            u"Warning",
-            u"Notice",
-            u"Info",
-            u"Debug",
-        )[level]
     
     def addMessage_level_(self, message, level):
         logLine = IEDLogLine.alloc().initWithMessage_level_(message, level)
@@ -158,7 +175,7 @@ class IEDLog(NSObject):
         for logLine in self.logLines:
             textLine = NSString.stringWithFormat_(u"%@ %@: %@\n",
                                                   formatter.stringFromDate_(logLine.date()),
-                                                  self.levelName_(logLine.level()),
+                                                  IEDLogLevelName(logLine.level()),
                                                   logLine.message())
             fh.writeData_(textLine.dataUsingEncoding_(NSUTF8StringEncoding))
         fh.closeFile()
@@ -174,16 +191,48 @@ class IEDLog(NSObject):
         if column.identifier() == u"date":
             return self.visibleLogLines[row].date()
         elif column.identifier() == u"level":
-            return self.levelName_(self.visibleLogLines[row].level())
+            return IEDLogLevelName(self.visibleLogLines[row].level())
         elif column.identifier() == u"message":
             return self.visibleLogLines[row].message()
 
 
+timestampFormatter = NSDateFormatter.alloc().init()
+timestampFormatter.setDateStyle_(NSDateFormatterLongStyle)
+timestampFormatter.setTimeStyle_(NSDateFormatterLongStyle)
+
+def timestamp(dt=None):
+    global timestampFormatter
+    if dt is None:
+        dt = NSDate.date()
+    return timestampFormatter.stringFromDate_(dt)
+
+
+def LogToSyslog(level, message):
+    syslog.syslog(level, message.encode("utf-8"))
+
+
+def LogToStdOut(level, message):
+    print >>sys.stdout, message.encode(u"utf-8")
+
+
+def LogToFile(level, message):
+    global IEDLogFileHandle
+    if IEDLogFileHandle is not None:
+        print >>IEDLogFileHandle, \
+            NSString.stringWithFormat_(u"%@  %@",
+            timestamp(),
+            message).encode(u"utf-8")
+    else:
+        NSLog(u"IEDLogFileHandle not open")
+
+
+# Keep (singleton) instance of IEDLog.
 _log = IEDLog.alloc().init()
 
 def LogMessage(level, message):
     global _log
     
+    # Prefix debug messages with the module name and line number.
     prefix = u""
     if level == IEDLogLevelDebug:
         for caller in inspect.stack()[1:]:
@@ -194,15 +243,31 @@ def LogMessage(level, message):
             prefix = u"(%s:%d) " % (modname, lineno)
             break
     
+    # Control syslog verbosity with DebugToSyslog bool.
+    if defaults.boolForKey_(u"DebugToSyslog"):
+        syslogLevel = IEDLogLevelDebug
+    else:
+        syslogLevel = IEDLogLevelInfo
+    
+    # Log each line as a separate message.
     for line in message.split(u"\n"):
-        _log.addMessage_level_(prefix + line, level)
-        if defaults.boolForKey_(u"DebugToSyslog"):
-            syslogLevel = IEDLogLevelDebug
-        else:
-            syslogLevel = IEDLogLevelInfo
         
-        if syslogLevel >= level:
-            NSLog(u"%@", prefix + line)
+        # Prepend prefix.
+        prefixedLine = prefix + line
+        
+        # Dispatch line to each active channel.
+        
+        if IEDLogToController:
+            _log.addMessage_level_(prefixedLine, level)
+        
+        if IEDLogToSyslog and (level <= syslogLevel):
+            LogToSyslog(level, prefixedLine)
+        
+        if IEDLogToStdOut and (level <= IEDLogStdOutLogLevel):
+            LogToStdOut(level, prefixedLine)
+        
+        if IEDLogToFile and (level <= IEDLogFileLogLevel):
+            LogToFile(level, prefixedLine)
 
 def LogDebug(*args):
     LogMessage(IEDLogLevelDebug, NSString.stringWithFormat_(*args))

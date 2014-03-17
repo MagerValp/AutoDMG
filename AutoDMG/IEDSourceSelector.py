@@ -12,7 +12,7 @@ from AppKit import *
 from objc import IBAction, IBOutlet, classAddMethods
 
 import os.path
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 
 

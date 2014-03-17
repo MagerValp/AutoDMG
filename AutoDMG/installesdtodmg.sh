@@ -66,13 +66,15 @@ if [[ $(id -u) -ne 0 ]]; then
 fi
 
 if [[ $# -lt 4 ]]; then
-    echo "IED:FAILURE:Usage: $(basename "$0") user group output.dmg OSInstall.mpkg [package...]"
+    echo "IED:FAILURE:Usage: $(basename "$0") user group output.dmg volname size OSInstall.mpkg [package...]"
     exit 100
 fi
 user="$1"
 group="$2"
 compresseddmg="$3"
-shift 3
+volname="$4"
+size="$5"
+shift 5
 
 # Get a work directory and check free space.
 tempdir=$(mktemp -d -t installesdtodmg)
@@ -88,7 +90,7 @@ fi
 echo "IED:PHASE:sparseimage"
 echo "IED:MSG:Creating disk image"
 sparsedmg="$tempdir/os.sparseimage"
-hdiutil create -size 32g -type SPARSE -fs HFS+J -volname "Macintosh HD" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
+hdiutil create -size "${size}g" -type SPARSE -fs HFS+J -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
 sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
 dmgmounts+=("$sparsemount")
 

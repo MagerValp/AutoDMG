@@ -261,19 +261,17 @@ class ProgressWatcher(NSObject):
     
 
 def run(args, sockPath, mode):
-    NSLog(u'Launching task "%@"', u'" "'.join(args))
     pw = ProgressWatcher.alloc().init()
     pw.watchTask_socket_mode_(args, sockPath, mode)
     runLoop = NSRunLoop.currentRunLoop()
     while pw.shouldKeepRunning():
         runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, NSDate.distantFuture())
-    NSLog(u"Task terminated, exiting")
 
 
 def installesdtodmg(args):
     if args.cd:
         os.chdir(args.cd)
-    pwargs = [u"./installesdtodmg.sh", args.user, args.group, args.output] + args.packages
+    pwargs = [u"./installesdtodmg.sh", args.user, args.group, args.output, args.volume_name, args.size] + args.packages
     run(pwargs, args.socket, u"ied")
 
 
@@ -294,6 +292,8 @@ def main(argv):
     iedparser.add_argument(u"-u", u"--user", help=u"Change owner of DMG", required=True)
     iedparser.add_argument(u"-g", u"--group", help=u"Change group of DMG", required=True)
     iedparser.add_argument(u"-o", u"--output", help=u"Set output path", required=True)
+    iedparser.add_argument(u"-n", u"--volume-name", default=u"Macintosh HD", help=u"Set installed system's volume name.")
+    iedparser.add_argument(u"-s", u"--size", default=u"32", help=u"Disk image size in GB.")
     iedparser.add_argument(u"packages", help=u"Packages to install", nargs=u"+")
     iedparser.set_defaults(func=installesdtodmg)
     

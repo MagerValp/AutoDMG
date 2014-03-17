@@ -12,7 +12,7 @@ import subprocess
 import plistlib
 import time
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 class IEDDMGHelper(NSObject):

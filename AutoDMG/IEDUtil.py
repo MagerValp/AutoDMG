@@ -9,8 +9,11 @@
 
 from Foundation import *
 from Carbon.File import *
+import MacOS
 
 import os.path
+import subprocess
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 class IEDUtil(NSObject):
@@ -35,6 +38,72 @@ class IEDUtil(NSObject):
     @classmethod
     def resolvePath(cls, path):
         """Expand symlinks and resolve aliases."""
-        fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
-        return fsref.as_pathname().decode(u"utf-8")
+        try:
+            fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
+            return fsref.as_pathname().decode(u"utf-8")
+        except MacOS.Error as e:
+            return None
+    
+    @classmethod
+    def installESDPath_(cls, path):
+        u"""Resolve aliases and return path to InstallESD."""
+        path = cls.resolvePath(path)
+        if not path:
+            return None
+        if os.path.exists(os.path.join(path,
+                          u"Contents/SharedSupport/InstallESD.dmg")):
+            return path
+        if (os.path.basename(path).lower().startswith(u"installesd") and \
+            os.path.basename(path).lower().endswith(u".dmg")) and \
+           os.path.exists(path):
+            return path
+        else:
+            return None
+    
+    @classmethod
+    def getPackageSize_(cls, path):
+        p = subprocess.Popen([u"/usr/bin/du", u"-sk", path],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            LogError(u"du failed with exit code %d", p.returncode)
+            return 0
+        else:
+            return int(out.split()[0]) * 1024
+    
+    @classmethod
+    def formatBytes_(cls, bytes):
+        bytes = float(bytes)
+        unitIndex = 0
+        while len(str(int(bytes))) > 3:
+            bytes /= 1000.0
+            unitIndex += 1
+        return u"%.1f %s" % (bytes, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+    
+    @classmethod
+    def getInstalledPkgSize_(cls, pkgPath):
+        p = subprocess.Popen([u"/usr/sbin/installer",
+                             u"-pkginfo",
+                             u"-verbose",
+                             u"-plist",
+                             u"-pkg",
+                             pkgPath],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            LogError(u"installer -pkginfo -pkg '%@' failed with exit code %d", pkgPath, p.returncode)
+            return None
+        outData = NSData.dataWithBytes_length_(out, len(out))
+        plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
+                                                                                                      NSPropertyListImmutable,
+                                                                                                      None,
+                                                                                                      None)
+        if not plist:
+            LogError(u"Error decoding plist: %@", error)
+            return None
+        LogDebug(u"%@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"])* 1024))
+        return int(plist[u"Size"]) * 1024
+
 

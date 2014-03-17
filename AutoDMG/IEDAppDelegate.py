@@ -11,7 +11,7 @@ from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet, __version__ as pyObjCVersion
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 import platform
 
@@ -34,13 +34,13 @@ class IEDAppDelegate(NSObject):
     def initialize(self):
         # Log version info on startup.
         version, build = IEDUtil.getAppVersion()
-        LogNotice(u"AutoDMG v%@ build %@", version, build)
+        LogInfo(u"AutoDMG v%@ build %@", version, build)
         name, version, build = IEDUtil.readSystemVersion_(u"/")
-        LogNotice(u"%@ %@ %@", name, version, build)
-        LogNotice(u"%@ %@ (%@)", platform.python_implementation(),
+        LogInfo(u"%@ %@ %@", name, version, build)
+        LogInfo(u"%@ %@ (%@)", platform.python_implementation(),
                                  platform.python_version(),
                                  platform.python_compiler())
-        LogNotice(u"PyObjC %@", pyObjCVersion)
+        LogInfo(u"PyObjC %@", pyObjCVersion)
         
         # Initialize user defaults before application starts.
         defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")

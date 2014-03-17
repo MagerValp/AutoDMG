@@ -13,15 +13,7 @@ from objc import IBAction, IBOutlet
 from IEDProfileController import *
 from IEDUpdateCache import *
 from IEDPackage import *
-
-
-def IEDFormatBytes(bytes):
-    bytes = float(bytes)
-    unitIndex = 0
-    while len(str(int(bytes))) > 3:
-        bytes /= 1000.0
-        unitIndex += 1
-    return u"%.1f %s" % (bytes, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+from IEDUtil import *
 
 
 class IEDUpdateController(NSObject):
@@ -95,7 +87,7 @@ class IEDUpdateController(NSObject):
             self.updateTableLabel.setTextColor_(NSColor.disabledControlTextColor())
             self.updateTableImage.setImage_(self.updatesAllOKImage)
         else:
-            sizeStr = IEDFormatBytes(self.downloadTotalSize)
+            sizeStr = IEDUtil.formatBytes_(self.downloadTotalSize)
             plurals = u"s" if len(self.downloads) >= 2 else u""
             downloadLabel = u"%d update%s to download (%s)" % (len(self.downloads), plurals, sizeStr)
             self.updateTableLabel.setStringValue_(downloadLabel)
@@ -236,7 +228,7 @@ class IEDUpdateController(NSObject):
         self.downloadProgressBar.setDoubleValue_(0.0)
         self.downloadProgressBar.setMaxValue_(package.size())
         self.downloadCounter += 1
-        self.downloadLabel.setStringValue_(u"%s (%s)" % (package.name(), IEDFormatBytes(package.size())))
+        self.downloadLabel.setStringValue_(u"%s (%s)" % (package.name(), IEDUtil.formatBytes_(package.size())))
     
     def downloadStarted_(self, package):
         LogDebug(u"downloadStarted:")

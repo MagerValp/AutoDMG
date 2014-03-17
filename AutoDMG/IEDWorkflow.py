@@ -14,7 +14,7 @@ import glob
 import grp
 import traceback
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 from IEDSocketListener import *
 from IEDDMGHelper import *
@@ -39,10 +39,14 @@ class IEDWorkflow(NSObject):
         
         # State for the workflow.
         self._outputPath = None
+        self._volumeName = u"Macintosh HD"
         self.installerMountPoint = None
         self.additionalPackages = list()
         self.attachedPackageDMGs = dict()
         self.lastUpdateMessage = None
+        self._authUsername = None
+        self._authPassword = None
+        self._volumeSize = None
         
         return self
     
@@ -204,6 +208,30 @@ class IEDWorkflow(NSObject):
     def setOutputPath_(self, path):
         self._outputPath = path
     
+    # Volume name.
+    
+    def volumeName(self):
+        return self._volumeName
+    def setVolumeName_(self, name):
+        self._volumeName = name
+    
+    # Username and password.
+    
+    def authUsername(self):
+        return self._authUsername
+    def setAuthUsername_(self, authUsername):
+        self._authUsername = authUsername
+    def authPassword(self):
+        return self._authPassword
+    def setAuthPassword_(self, authPassword):
+        self._authPassword = authPassword
+    
+    # DMG size.
+    
+    def volumeSize(self):
+        return self._volumeSize
+    def setVolumeSize_(self, size):
+        self._volumeSize = size
     
     
     # Start the workflow.
@@ -402,9 +430,33 @@ class IEDWorkflow(NSObject):
             else:
                 self.packagesToInstall.append(package.path())
         
+        # Calculate disk image size requirements.
+        sizeRequirement = 0
         LogInfo(u"%d packages to install:", len(self.packagesToInstall))
         for path in self.packagesToInstall:
             LogInfo(u"    %@", path)
+            installedSize = IEDUtil.getInstalledPkgSize_(path)
+            if installedSize is None:
+                self.delegate.buildFailed_details_(u"Failed to determine installed size",
+                                                   u"Unable to determine installation size requirements for %s" % package.path())
+                self.stop()
+                return
+            sizeRequirement += installedSize
+        sizeReqStr = IEDUtil.formatBytes_(sizeRequirement)
+        LogInfo(u"Workflow requires a %@ disk image", sizeReqStr)
+        
+        if self.volumeSize() is None:
+            # Calculate DMG size.
+            self.setVolumeSize_(int((float(sizeRequirement) * 1.1) / (1000.0 * 1000.0 * 1000.0) + 1.5))
+        else:
+            # Make sure user specified image size is large enough.
+            if sizeRequirement > self.volumeSize() * 1000 * 1000 * 1000:
+                details = u"Workflow requires %s and disk image is %d GB" % (sizeReqStr, self.volumeSize())
+                self.delegate.buildFailed_details_(u"Disk image too small for workflow",
+                                                   details)
+                self.stop()
+                return
+        LogInfo(u"Using a %d GB disk image", self.volumeSize())
         
         # Task done.
         self.nextTask()
@@ -434,6 +486,8 @@ class IEDWorkflow(NSObject):
             u"--user", NSUserName(),
             u"--group", groupName,
             u"--output", self.outputPath(),
+            u"--volume-name", self.volumeName(),
+            u"--size", unicode(self.volumeSize()),
         ] + self.packagesToInstall
         LogInfo(u"Launching install with arguments:")
         for arg in args:
@@ -448,18 +502,26 @@ class IEDWorkflow(NSObject):
         shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
         def escape(s):
             return s.replace(u"\\", u"\\\\").replace(u'"', u'\\"')
-        applescript = u"\n".join([u'set arg%d to "%s"' % (i, escape(arg)) for i, arg in enumerate(args)] + \
-                                 [u'do shell script %s with administrator privileges' % shellscript])
+        scriptLines = list(u'set arg%d to "%s"' % (i, escape(arg)) for i, arg in enumerate(args))
+        if self.authPassword() is not None:
+            scriptLines.append(u'do shell script %s user name "%s" password "%s" '
+                               u'with administrator privileges' % (shellscript,
+                                                                   escape(self.authUsername()),
+                                                                   escape(self.authPassword())))
+        else:
+            scriptLines.append(u'do shell script %s with administrator privileges' % shellscript)
+        applescript = u"\n".join(scriptLines)
         trampoline = NSAppleScript.alloc().initWithSource_(applescript)
         evt, error = trampoline.executeAndReturnError_(None)
         if evt is None:
             self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, error, False)
     
     def handleLaunchScriptError_(self, error):
-        if error[NSAppleScriptErrorNumber] == -128:
+        if error.get(NSAppleScriptErrorNumber) == -128:
             self.stop()
         else:
-            self.fail_details_(u"Build failed", error[NSAppleScriptErrorMessage])
+            self.fail_details_(u"Build failed", error.get(NSAppleScriptErrorMessage,
+                                                          u"Unknown AppleScript error"))
     
     
     
@@ -510,7 +572,7 @@ class IEDWorkflow(NSObject):
         elif action == u"update_message":
             if self.lastUpdateMessage != msg[u"message"]:
                 # Only log update messages when they change.
-                LogMessage(IEDLogLevelInfo, msg[u"message"])
+                LogInfo(u"%@", msg[u"message"])
             self.lastUpdateMessage = msg[u"message"]
             self.delegate.buildSetProgressMessage_(msg[u"message"])
         

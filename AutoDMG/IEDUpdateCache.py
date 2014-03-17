@@ -11,7 +11,7 @@ from Foundation import *
 import os
 import hashlib
 
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 class IEDUpdateCache(NSObject):

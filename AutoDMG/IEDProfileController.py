@@ -13,7 +13,7 @@ from objc import IBOutlet
 
 import os.path
 from collections import defaultdict
-from IEDLog import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 class IEDProfileController(NSObject):
@@ -43,12 +43,15 @@ class IEDProfileController(NSObject):
         # Load the profiles.
         self.loadProfilesFromPlist_(latestProfiles)
     
+    def setDelegate_(self, delegate):
+        self.delegate = delegate
+    
     def profileForVersion_Build_(self, version, build):
         """Return the update profile for a certain OS X version and build."""
         
         try:
             profile = self.profiles[u"%s-%s" % (version, build)]
-            LogNotice(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
+            LogInfo(u"Update profile for %@ %@: %@", version, build, u", ".join(u[u"name"] for u in profile))
         except KeyError:
             profile = None
             LogNotice(u"No update profile for %@ %@", version, build)
@@ -128,7 +131,7 @@ class IEDProfileController(NSObject):
     def loadProfilesFromPlist_(self, plist):
         """Load UpdateProfiles from a plist dictionary."""
         
-        LogNotice(u"Loading update profiles with PublicationDate %@", plist[u"PublicationDate"])
+        LogInfo(u"Loading update profiles with PublicationDate %@", plist[u"PublicationDate"])
         self.profiles = dict()
         for name, updates in plist[u"Profiles"].iteritems():
             profile = list()
@@ -158,10 +161,11 @@ class IEDProfileController(NSObject):
         
         LogDebug(u"updateFromURL:%@", url)
         
-        # Show the progress window.
-        self.progressBar.setIndeterminate_(True)
-        self.progressBar.startAnimation_(self)
-        self.profileUpdateWindow.makeKeyAndOrderFront_(self)
+        if self.profileUpdateWindow:
+            # Show the progress window.
+            self.progressBar.setIndeterminate_(True)
+            self.progressBar.startAnimation_(self)
+            self.profileUpdateWindow.makeKeyAndOrderFront_(self)
         
         # Create a buffer for data.
         self.profileUpdateData = NSMutableData.alloc().init()
@@ -171,12 +175,14 @@ class IEDProfileController(NSObject):
         LogDebug(u"connection = %@", self.connection)
         if not self.connection:
             LogWarning(u"Connection to %@ failed", url)
-            self.profileUpdateWindow.orderOut_(self)
+            if self.profileUpdateWindow:
+                self.profileUpdateWindow.orderOut_(self)
             self.delegate.profileUpdateFailed_(error)
     
     def connection_didFailWithError_(self, connection, error):
         LogError(u"Profile update failed: %@", error)
-        self.profileUpdateWindow.orderOut_(self)
+        if self.profileUpdateWindow:
+            self.profileUpdateWindow.orderOut_(self)
         self.delegate.profileUpdateFailed_(error)
         self.delegate.profileUpdateAllDone()
     
@@ -186,18 +192,21 @@ class IEDProfileController(NSObject):
             LogDebug(u"unknown response length")
         else:
             LogDebug(u"Downloading profile with %d bytes", response.expectedContentLength())
-            self.progressBar.setMaxValue_(float(response.expectedContentLength()))
-            self.progressBar.setDoubleValue_(float(response.expectedContentLength()))
-            self.progressBar.setIndeterminate_(False)
+            if self.profileUpdateWindow:
+                self.progressBar.setMaxValue_(float(response.expectedContentLength()))
+                self.progressBar.setDoubleValue_(float(response.expectedContentLength()))
+                self.progressBar.setIndeterminate_(False)
     
     def connection_didReceiveData_(self, connection, data):
         self.profileUpdateData.appendData_(data)
-        self.progressBar.setDoubleValue_(float(self.profileUpdateData.length()))
+        if self.profileUpdateWindow:
+            self.progressBar.setDoubleValue_(float(self.profileUpdateData.length()))
     
     def connectionDidFinishLoading_(self, connection):
         LogDebug(u"Downloaded profile with %d bytes", self.profileUpdateData.length())
-        # Hide the progress window.
-        self.profileUpdateWindow.orderOut_(self)
+        if self.profileUpdateWindow:
+            # Hide the progress window.
+            self.profileUpdateWindow.orderOut_(self)
         # Decode the plist.
         plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(self.profileUpdateData,
                                                                                                       NSPropertyListImmutable,
