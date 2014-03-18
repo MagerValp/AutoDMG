@@ -13,6 +13,7 @@ import platform
 import glob
 import grp
 import traceback
+import time
 
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
@@ -311,7 +312,7 @@ class IEDWorkflow(NSObject):
         # Calculate total weight of all phases.
         self.totalWeight = 0
         for task in self.tasks:
-            LogInfo(u"Task %@ with %d phases:", task[u"method"], len(task[u"phases"]))
+            LogInfo(u"Task %@ with %d phases:", task[u"method"].__name__, len(task[u"phases"]))
             for phase in task[u"phases"]:
                 LogInfo(u"    Phase '%@' with weight %.1f", phase[u"title"], phase[u"weight"] / 1048576.0)
                 self.totalWeight += phase[u"weight"]
@@ -328,7 +329,7 @@ class IEDWorkflow(NSObject):
     # Task and phase logic.
     
     def nextTask(self):
-        LogDebug(u"nextTask")
+        LogDebug(u"nextTask, currentTask == %@", self.currentTask)
         
         if self.currentTask:
             if self.currentTask[u"phases"]:
@@ -346,10 +347,15 @@ class IEDWorkflow(NSObject):
             self.stop()
     
     def nextPhase(self):
-        LogDebug(u"nextPhase")
+        LogDebug(u"nextPhase, currentPhase == %@", self.currentPhase)
         
         if self.currentPhase:
             self.progress += self.currentPhase[u"weight"]
+            LogInfo(u"Phase %@ with weight %ld finished after %.3f seconds",
+                    self.currentPhase[u"title"],
+                    self.currentPhase[u"weight"],
+                    time.time() - self.phaseStartTime)
+        self.phaseStartTime = time.time()
         try:
             self.currentPhase = self.currentTask[u"phases"].pop(0)
         except IndexError:
