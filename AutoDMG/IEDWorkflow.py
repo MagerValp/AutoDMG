@@ -297,7 +297,7 @@ class IEDWorkflow(NSObject):
                 {u"title": u"Finalizing disk image", u"weight":   2 * 1024 * 1024},
                 {u"title": u"Finalizing disk image", u"weight":   1 * 1024 * 1024},
                 {u"title": u"Finalizing disk image", u"weight": 150 * 1024 * 1024},
-                {u"title": u"Finalizing disk image", u"weight":  17 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":  17 * 1024 * 1024, u"optional": True},
             ],
         })
         
@@ -333,9 +333,11 @@ class IEDWorkflow(NSObject):
         
         if self.currentTask:
             if self.currentTask[u"phases"]:
-                details = NSString.stringWithFormat_(u"Phases remaining: %@", self.currentTask[u"phases"])
-                self.fail_details_(u"Task finished prematurely", details)
-                return
+                for phase in self.currentTask[u"phases"]:
+                    if phase.get(u"optional", False) == False:
+                        details = NSString.stringWithFormat_(u"Phases remaining: %@", self.currentTask[u"phases"])
+                        self.fail_details_(u"Task finished prematurely", details)
+                        return
         if self.tasks:
             self.currentTask = self.tasks.pop(0)
             LogNotice(u"Starting task with %d phases", len(self.currentTask[u"phases"]))
