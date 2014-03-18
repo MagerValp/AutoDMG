@@ -264,14 +264,14 @@ class IEDWorkflow(NSObject):
         self.tasks.append({
             u"method": self.taskPrepare,
             u"phases": [
-                {u"title": u"Preparing", u"weight": 1 * 1024 * 1024},
+                {u"title": u"Preparing", u"weight": 34 * 1024 * 1024},
             ],
         })
         
         # Perform installation.
         installerPhases = [
-            {u"title": u"Starting install",    u"weight":        1 * 1024 * 1024},
-            {u"title": u"Creating disk image", u"weight":      100 * 1024 * 1024},
+            {u"title": u"Starting install",    u"weight":       21 * 1024 * 1024},
+            {u"title": u"Creating disk image", u"weight":       21 * 1024 * 1024},
             {u"title": u"Installing OS",       u"weight": 4 * 1024 * 1024 * 1024},
         ]
         for package in self.additionalPackages:
@@ -282,7 +282,7 @@ class IEDWorkflow(NSObject):
             })
         installerPhases.extend([
             # hdiutil convert.
-            {u"title": u"Finalizing disk image", u"weight": 650 * 1024 * 1024},
+            {u"title": u"Finalizing disk image", u"weight": 313 * 1024 * 1024},
         ])
         self.tasks.append({
             u"method": self.taskInstall,
@@ -293,10 +293,10 @@ class IEDWorkflow(NSObject):
         self.tasks.append({
             u"method": self.taskFinalize,
             u"phases": [
-                {u"title": u"Finalizing disk image", u"weight":          1 * 1024},
-                {u"title": u"Finalizing disk image", u"weight":   5 * 1024 * 1024},
-                {u"title": u"Finalizing disk image", u"weight": 300 * 1024 * 1024},
-                {u"title": u"Finalizing disk image", u"weight":  10 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":   2 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":   1 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight": 150 * 1024 * 1024},
+                {u"title": u"Finalizing disk image", u"weight":  17 * 1024 * 1024},
             ],
         })
         
