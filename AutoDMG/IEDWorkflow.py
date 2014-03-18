@@ -452,8 +452,9 @@ class IEDWorkflow(NSObject):
         LogInfo(u"Workflow requires a %@ disk image", sizeReqStr)
         
         if self.volumeSize() is None:
-            # Calculate DMG size.
-            self.setVolumeSize_(int((float(sizeRequirement) * 1.1) / (1000.0 * 1000.0 * 1000.0) + 1.5))
+            # Calculate DMG size. Multiply package requirements by 1.1, round
+            # to the nearest GB, and add 3.
+            self.setVolumeSize_(int((float(sizeRequirement) * 1.1) / (1000.0 * 1000.0 * 1000.0) + 3.5))
         else:
             # Make sure user specified image size is large enough.
             if sizeRequirement > self.volumeSize() * 1000 * 1000 * 1000:
