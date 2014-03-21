@@ -56,6 +56,11 @@ class IEDTemplate(NSObject):
             LogDebug(u"%@", error)
             return error
         
+        templateFormat = plist.get(u"TemplateFormat", u"1.0")
+        
+        if templateFormat != u"1.0":
+            LogWarning(u"Unknown format version %@", templateFormat)
+        
         for key in plist.keys():
             if key == u"IncludeTemplates":
                 for includePath in plist[u"IncludeTemplates"]:
@@ -76,6 +81,8 @@ class IEDTemplate(NSObject):
                 self.setVolumeName_(plist[u"VolumeName"])
             elif key == u"VolumeSize":
                 self.setVolumeSize_(plist[u"VolumeSize"])
+            elif key == u"TemplateFormat":
+                pass
             
             else:
                 LogWarning(u"Unknown key '%@' in template", key)
