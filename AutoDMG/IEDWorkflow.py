@@ -455,8 +455,8 @@ class IEDWorkflow(NSObject):
         
         if self.volumeSize() is None:
             # Calculate DMG size. Multiply package requirements by 1.1, round
-            # to the nearest GB, and add 3.
-            self.setVolumeSize_(int((float(sizeRequirement) * 1.1) / (1000.0 * 1000.0 * 1000.0) + 3.5))
+            # to the nearest GB, and add 23.
+            self.setVolumeSize_(int((float(sizeRequirement) * 1.1) / (1000.0 * 1000.0 * 1000.0) + 23.5))
         else:
             # Make sure user specified image size is large enough.
             if sizeRequirement > self.volumeSize() * 1000 * 1000 * 1000:
