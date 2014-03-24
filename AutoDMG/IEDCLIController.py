@@ -134,7 +134,8 @@ class IEDCLIController(NSObject):
         if template.applyUpdates:
             profile = self.profileController.profileForVersion_Build_(self.installerVersion, self.installerBuild)
             if profile is None:
-                self.failWithMessage_(self.profileController.whyNoProfileForVersion_build_(version, build))
+                self.failWithMessage_(self.profileController.whyNoProfileForVersion_build_(self.installerVersion,
+                                                                                           self.installerBuild))
                 return 1
             
             for update in profile:
