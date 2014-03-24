@@ -112,7 +112,7 @@ class IEDTemplate(NSObject):
     
     def setOutputPath_(self, path):
         LogInfo(u"Setting output path to '%@'", path)
-        self.outputPath = os.path.expanduser(path)
+        self.outputPath = IEDUtil.resolvePath_(os.path.expanduser(path))
     
     def setVolumeName_(self, name):
         LogInfo(u"Setting volume name to '%@'", name)
