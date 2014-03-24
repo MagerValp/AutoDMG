@@ -28,7 +28,14 @@ class IEDAppVersionController(NSObject):
         # Create a buffer for data.
         self.plistData = NSMutableData.alloc().init()
         # Start download.
-        url = NSURL.URLWithString_(self.defaults.stringForKey_(u"AppVersionURL"))
+        osVer, osBuild = IEDUtil.readSystemVersion_(u"/")[1:3]
+        appVer, appBuild = IEDUtil.getAppVersion()
+        urlString = u"%s?osVer=%s&osBuild=%s&appVer=%s&appBuild=%s" % (self.defaults.stringForKey_(u"AppVersionURL"),
+                                                                       osVer,
+                                                                       osBuild,
+                                                                       appVer,
+                                                                       appBuild)
+        url = NSURL.URLWithString_(urlString)
         request = NSURLRequest.requestWithURL_(url)
         self.connection = NSURLConnection.connectionWithRequest_delegate_(request, self)
         LogDebug(u"connection = %@", self.connection)
