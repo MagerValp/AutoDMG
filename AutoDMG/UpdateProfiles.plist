@@ -21,50 +21,47 @@
 			<string>12E55</string>
 			<string>12F37</string>
 		</array>
-		<key>10.9.1-13B42</key>
-		<array>
-			<string>13A598</string>
-			<string>13A603</string>
-		</array>
-		<key>10.9.1-13B3116</key>
+		<key>10.9.2-13C64</key>
 		<array>
 			<string>13A2093</string>
 			<string>13A3017</string>
+			<string>13A4023</string>
+			<string>13A598</string>
+			<string>13A603</string>
+			<string>13B3116</string>
+			<string>13B4116</string>
+			<string>13B42</string>
 		</array>
 	</dict>
 	<key>Profiles</key>
 	<dict>
 		<key>10.8.5-12F2015</key>
 		<array>
-			<string>SafariML</string>
 			<string>RemoteDesktopClient</string>
-			<string>iTunes</string>
 			<string>AirPortUtility</string>
+			<string>AppStoreML</string>
+			<string>SafariML</string>
+			<string>Security2014-001ML</string>
+			<string>iTunes</string>
 		</array>
 		<key>10.8.5-12F45</key>
 		<array>
-			<string>SafariML</string>
 			<string>RemoteDesktopClient</string>
-			<string>iTunes</string>
 			<string>AirPortUtility</string>
-		</array>
-		<key>10.9.1-13B3116</key>
-		<array>
-			<string>RemoteDesktopClient</string>
-			<string>iBooks</string>
-			<string>BookKit</string>
+			<string>AppStoreML</string>
+			<string>SafariML</string>
+			<string>Security2014-001ML</string>
 			<string>iTunes</string>
 		</array>
-		<key>10.9.1-13B42</key>
+		<key>10.9.2-13C64</key>
 		<array>
-			<string>RemoteDesktopClient</string>
 			<string>iBooks</string>
 			<string>BookKit</string>
 			<string>iTunes</string>
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2013-12-17T09:33:00Z</date>
+	<date>2014-02-26T19:08:26Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AirPortUtility</key>
@@ -77,6 +74,17 @@
 			<integer>22480138</integer>
 			<key>url</key>
 			<string>http://support.apple.com/downloads/DL1664/en_US/AirPortUtility6.3.1.dmg</string>
+		</dict>
+		<key>AppStoreML</key>
+		<dict>
+			<key>name</key>
+			<string>Mac App Store Update</string>
+			<key>sha1</key>
+			<string>329b47c098d3881d25dbc16ba74c1aba71d26179</string>
+			<key>size</key>
+			<integer>3785760</integer>
+			<key>url</key>
+			<string>http://swcdn.apple.com/content/downloads/54/51/031-2395/qeqbn5wc3kflff920aj1esepak7qizc3na/AppStoreUpdate.pkg</string>
 		</dict>
 		<key>BookKit</key>
 		<dict>
@@ -103,13 +111,24 @@
 		<key>SafariML</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 6.1.1 for Mountain Lion</string>
+			<string>Safari 6.1.2 for Mountain Lion</string>
 			<key>sha1</key>
-			<string>90f574872d92a9761392f2f702aa999e763958c8</string>
+			<string>a8ea5553ea53d4d966c501398ef290bb7e0c8751</string>
 			<key>size</key>
-			<integer>52928251</integer>
+			<integer>52919854</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/14/11/031-0766/81xcvudgdeer5ik4dhdg13an0w8agy27vo/Safari6.1.1MountainLion.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/62/03/031-2500/2f1ltblld7rkqg9r419b7uxc7ijggw6v9e/Safari6.1.2MountainLion.pkg</string>
+		</dict>
+		<key>Security2014-001ML</key>
+		<dict>
+			<key>name</key>
+			<string>Security Update 2014-001 for Mountain Lion</string>
+			<key>sha1</key>
+			<string>227ca2e0060e40835dcc29bfd37cb0e0364912f4</string>
+			<key>size</key>
+			<integer>115827522</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1729/en_US/SecUpd2014-001.dmg</string>
 		</dict>
 		<key>iBooks</key>
 		<dict>
@@ -125,13 +144,13 @@
 		<key>iTunes</key>
 		<dict>
 			<key>name</key>
-			<string>iTunes 11.1.3</string>
+			<string>iTunes 11.1.5</string>
 			<key>sha1</key>
-			<string>8d5d4b7ef285b0c30343bf1ea70d382efdf90f57</string>
+			<string>d731cabbe1f9213491f3169921a45986ac944e58</string>
 			<key>size</key>
-			<integer>231443089</integer>
+			<integer>232682409</integer>
 			<key>url</key>
-			<string>https://secure-appldnld.apple.com/iTunes11/031-1545.20131105.Lki98/iTunes11.1.3.dmg</string>
+			<string>https://secure-appldnld.apple.com/iTunes11/031-3480.20140225.C1nB2/iTunes11.1.5.dmg</string>
 		</dict>
 	</dict>
 </dict>
