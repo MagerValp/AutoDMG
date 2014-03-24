@@ -283,7 +283,7 @@ class IEDWorkflow(NSObject):
             })
         installerPhases.extend([
             # hdiutil convert.
-            {u"title": u"Finalizing disk image", u"weight": 313 * 1024 * 1024},
+            {u"title": u"Converting disk image", u"weight": 313 * 1024 * 1024},
         ])
         self.tasks.append({
             u"method": self.taskInstall,
@@ -294,10 +294,10 @@ class IEDWorkflow(NSObject):
         self.tasks.append({
             u"method": self.taskFinalize,
             u"phases": [
-                {u"title": u"Finalizing disk image", u"weight":   2 * 1024 * 1024},
-                {u"title": u"Finalizing disk image", u"weight":   1 * 1024 * 1024},
-                {u"title": u"Finalizing disk image", u"weight": 150 * 1024 * 1024},
-                {u"title": u"Finalizing disk image", u"weight":  17 * 1024 * 1024, u"optional": True},
+                {u"title": u"Scanning disk image", u"weight":   2 * 1024 * 1024},
+                {u"title": u"Scanning disk image", u"weight":   1 * 1024 * 1024},
+                {u"title": u"Scanning disk image", u"weight": 150 * 1024 * 1024},
+                {u"title": u"Scanning disk image", u"weight":  17 * 1024 * 1024, u"optional": True},
             ],
         })
         

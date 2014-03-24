@@ -100,6 +100,7 @@ class ProgressWatcher(NSObject):
                         self.asrPercent = int(m.group(0))
                         self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
                     else:
+                        self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": u"asr: " + progressStr.rstrip()})
                         break
             
             notification.object().readInBackgroundAndNotify()
