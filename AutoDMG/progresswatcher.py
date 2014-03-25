@@ -79,6 +79,8 @@ class ProgressWatcher(NSObject):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
         if data.length():
             progressStr = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
+            if (not self.asrProgressActive) and (u"\x0a" in progressStr):
+                progressStr = u"".join(progressStr.partition(u"\x0a")[1:])
             while progressStr:
                 if progressStr.startswith(u"\x0a"):
                     progressStr = progressStr[1:]
@@ -100,7 +102,7 @@ class ProgressWatcher(NSObject):
                         self.asrPercent = int(m.group(0))
                         self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
                     else:
-                        self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": u"asr: " + progressStr.rstrip()})
+                        self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": u"asr output: " + progressStr.rstrip()})
                         break
             
             notification.object().readInBackgroundAndNotify()

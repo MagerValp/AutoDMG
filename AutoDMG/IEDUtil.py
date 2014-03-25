@@ -40,7 +40,7 @@ class IEDUtil(NSObject):
         """Expand symlinks and resolve aliases."""
         try:
             fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
-            return fsref.as_pathname().decode(u"utf-8")
+            return os.path.abspath(fsref.as_pathname().decode(u"utf-8"))
         except MacOS.Error as e:
             return None
     

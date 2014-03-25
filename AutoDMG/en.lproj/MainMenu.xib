@@ -28,7 +28,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Installer Placeholder" id="RE6-zK-dbt"/>
                                 </imageView>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" id="0RU-gN-IOh" customClass="IEDTextFieldSourceSelector">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="NO" id="0RU-gN-IOh" customClass="IEDTextFieldSourceSelector">
                                     <rect key="frame" x="11" y="14" width="357" height="17"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Drop OS X Installer Here" id="4bI-t5-Kdi">
