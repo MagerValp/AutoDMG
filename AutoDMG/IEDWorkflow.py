@@ -446,7 +446,7 @@ class IEDWorkflow(NSObject):
             installedSize = IEDUtil.getInstalledPkgSize_(path)
             if installedSize is None:
                 self.delegate.buildFailed_details_(u"Failed to determine installed size",
-                                                   u"Unable to determine installation size requirements for %s" % package.path())
+                                                   u"Unable to determine installation size requirements for %s" % path)
                 self.stop()
                 return
             sizeRequirement += installedSize
