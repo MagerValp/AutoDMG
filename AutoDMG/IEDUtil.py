@@ -13,6 +13,8 @@ import MacOS
 
 import os.path
 import subprocess
+import tempfile
+import shutil
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
@@ -83,15 +85,25 @@ class IEDUtil(NSObject):
     
     @classmethod
     def getInstalledPkgSize_(cls, pkgPath):
-        p = subprocess.Popen([u"/usr/sbin/installer",
-                             u"-pkginfo",
-                             u"-verbose",
-                             u"-plist",
-                             u"-pkg",
-                             pkgPath],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        out, err = p.communicate()
+        pkgFileName = os.path.os.path.basename(pkgPath)
+        tempdir = tempfile.mkdtemp()
+        try:
+            symlinkPath = os.path.join(tempdir, pkgFileName)
+            os.symlink(pkgPath, symlinkPath)
+            p = subprocess.Popen([u"/usr/sbin/installer",
+                                 u"-pkginfo",
+                                 u"-verbose",
+                                 u"-plist",
+                                 u"-pkg",
+                                 symlinkPath],
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+            out, err = p.communicate()
+        finally:
+            try:
+                shutil.rmtree(tempdir)
+            except BaseException as e:
+                LogWarning(u"Unable to remove tempdir: %@", unicode(e))
         if p.returncode != 0:
             LogError(u"installer -pkginfo -pkg '%@' failed with exit code %d", pkgPath, p.returncode)
             return None
