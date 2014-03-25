@@ -167,6 +167,14 @@ class IEDCLIController(NSObject):
             else:
                 self.failWithMessage_(u"%s already exists" % template.outputPath)
                 return 1
+        else:
+            outputDir = os.path.dirname(template.outputPath)
+            if outputDir and not os.path.exists(outputDir):
+                try:
+                    os.makedirs(outputDir)
+                except OSError as e:
+                    self.failWithMessage_(u"%s does not exist and can't be created: %s" % (outputDir, unicode(e)))
+                    return 1
         
         # If we're not running as root get the password for authentication.
         if os.getuid() != 0:
