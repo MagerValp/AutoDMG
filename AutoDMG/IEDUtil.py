@@ -16,6 +16,7 @@ import subprocess
 import tempfile
 import shutil
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+IEDMountInfo = objc.lookUpClass(u"IEDMountInfo")
 
 
 class IEDUtil(NSObject):
@@ -84,6 +85,13 @@ class IEDUtil(NSObject):
         return u"%.1f %s" % (bytes, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
     
     @classmethod
+    def findMountPoint_(cls, path):
+        path = os.path.abspath(path)
+        while not os.path.ismount(path):
+            path = os.path.dirname(path)
+        return path
+    
+    @classmethod
     def getInstalledPkgSize_(cls, pkgPath):
         pkgFileName = os.path.os.path.basename(pkgPath)
         tempdir = tempfile.mkdtemp()
@@ -105,8 +113,16 @@ class IEDUtil(NSObject):
             except BaseException as e:
                 LogWarning(u"Unable to remove tempdir: %@", unicode(e))
         if p.returncode != 0:
-            LogError(u"installer -pkginfo -pkg '%@' failed with exit code %d", pkgPath, p.returncode)
-            return None
+            mountPoints = IEDMountInfo.getMountPoints()
+            fsInfo = mountPoints[cls.findMountPoint_(pkgPath)]
+            if os.path.isdir(pkgPath) and not fsInfo[u"islocal"]:
+                LogWarning(u"Estimating package size since installer -pkginfo " \
+                           u"failed and '%@' is a bundle package on %@",
+                           pkgPath, fsInfo[u"fstypename"])
+                return cls.getPackageSize_(pkgPath) * 2
+            else:
+                LogError(u"installer -pkginfo -pkg '%@' failed with exit code %d", pkgPath, p.returncode)
+                return None
         outData = NSData.dataWithBytes_length_(out, len(out))
         plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
                                                                                                       NSPropertyListImmutable,

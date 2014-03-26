@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0506B97C17F0849C0011CCC2 /* AutoDMG.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */; };
+		051626A618E2D1BE000288D1 /* IEDMountInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 051626A518E2D1BE000288D1 /* IEDMountInfo.m */; };
 		051B177117F446560026E12B /* progresswatcher.py in Resources */ = {isa = PBXBuildFile; fileRef = 051B177017F446560026E12B /* progresswatcher.py */; };
 		05429D761816715300CD61E6 /* Package blue arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D721816715300CD61E6 /* Package blue arrow.png */; };
 		05429D771816715300CD61E6 /* Package blue arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 05429D731816715300CD61E6 /* Package blue arrow@2x.png */; };
@@ -52,6 +53,8 @@
 
 /* Begin PBXFileReference section */
 		0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AutoDMG.iconset; sourceTree = "<group>"; };
+		051626A418E2D1BE000288D1 /* IEDMountInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IEDMountInfo.h; sourceTree = "<group>"; };
+		051626A518E2D1BE000288D1 /* IEDMountInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IEDMountInfo.m; sourceTree = "<group>"; };
 		051B177017F446560026E12B /* progresswatcher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = progresswatcher.py; sourceTree = "<group>"; };
 		05429D721816715300CD61E6 /* Package blue arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package blue arrow.png"; sourceTree = "<group>"; };
 		05429D731816715300CD61E6 /* Package blue arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Package blue arrow@2x.png"; sourceTree = "<group>"; };
@@ -166,6 +169,8 @@
 			children = (
 				66EA72DA17EB1586009B8350 /* main.m */,
 				66EA72DC17EB1587009B8350 /* AutoDMG-Prefix.pch */,
+				051626A418E2D1BE000288D1 /* IEDMountInfo.h */,
+				051626A518E2D1BE000288D1 /* IEDMountInfo.m */,
 			);
 			name = ObjC;
 			sourceTree = "<group>";
@@ -369,6 +374,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				051626A618E2D1BE000288D1 /* IEDMountInfo.m in Sources */,
 				66EA72DB17EB1586009B8350 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
