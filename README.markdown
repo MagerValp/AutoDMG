@@ -9,7 +9,7 @@ AutoDMG takes an OS X installer and builds a system image, suitable for deployme
 System Requirements
 -------------------
 
-AutoDMG requires Mac OS X 10.8 or newer.
+AutoDMG requires Mac OS X 10.7 or newer.
 
 
 Support
