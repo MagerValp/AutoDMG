@@ -115,9 +115,9 @@ class IEDUtil(NSObject):
         if p.returncode != 0:
             mountPoints = IEDMountInfo.getMountPoints()
             fsInfo = mountPoints[cls.findMountPoint_(pkgPath)]
-            if os.path.isdir(pkgPath) and not fsInfo[u"islocal"]:
+            if not fsInfo[u"islocal"]:
                 LogWarning(u"Estimating package size since installer -pkginfo " \
-                           u"failed and '%@' is a bundle package on %@",
+                           u"failed and '%@' is on a remote (%@) filesystem",
                            pkgPath, fsInfo[u"fstypename"])
                 return cls.getPackageSize_(pkgPath) * 2
             else:
