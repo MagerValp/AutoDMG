@@ -70,25 +70,26 @@ class IEDUpdateCache(NSObject):
                     os.unlink(itempath)
             except OSError as e:
                 LogWarning(u"Cache pruning of %s failed: %s" % (item, unicode(e)))
-        for sha1, name in symlinks.iteritems():
-            sha1Path = os.path.join(self.updateDir, sha1)
-            linkPath = os.path.join(self.updateDir, name)
+        for sha1 in symlinks.iterkeys():
+            sha1Path = self.cachePath_(sha1)
+            linkPath = self.updatePath_(sha1)
+            name = os.path.basename(linkPath)
             if os.path.exists(sha1Path):
                 if os.path.lexists(linkPath):
                     if os.readlink(linkPath) == sha1:
-                        LogDebug(u"Found %s -> %s" % (name, sha1))
+                        LogInfo(u"Found %s -> %s" % (name, sha1))
                         continue
-                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
+                    LogInfo(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
                     try:
                         os.unlink(linkPath)
                     except OSError as e:
                         LogWarning(u"Cache pruning of %s failed: %s" % (name, unicode(c)))
                         continue
-                LogDebug(u"Creating %s -> %s" % (name, sha1))
+                LogInfo(u"Creating %s -> %s" % (name, sha1))
                 os.symlink(sha1, linkPath)
             else:
                 if os.path.lexists(linkPath):
-                    LogDebug(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
+                    LogInfo(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
                     try:
                         os.unlink(linkPath)
                     except OSError as e:
@@ -191,7 +192,7 @@ class IEDUpdateCache(NSObject):
                 LogError(error)
                 self.delegate.downloadFailed_withError_(self.package, error)
                 return
-            linkPath = os.path.join(self.updateDir, os.path.basename(self.package.url()))
+            linkPath = self.updatePath_(self.package.sha1())
             try:
                 os.symlink(self.package.sha1(), linkPath)
             except OSError as e:

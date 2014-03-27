@@ -141,7 +141,8 @@ class IEDProfileController(NSObject):
         self.publicationDate = plist[u"PublicationDate"]
         self.updatePaths = dict()
         for name, update in plist[u"Updates"].iteritems():
-            self.updatePaths[update[u"sha1"]] = os.path.basename(update[u"url"])
+            filename, ext = os.path.splitext(os.path.basename(update[u"url"]))
+            self.updatePaths[update[u"sha1"]] = u"%s(%s)%s" % (filename, update[u"sha1"][:7], ext)
         self.deprecatedInstallerBuilds = dict()
         try:
             for replacement, builds in plist[u"DeprecatedInstallers"].iteritems():
