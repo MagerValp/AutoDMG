@@ -43,7 +43,6 @@ class IEDCLIController(NSObject):
         self.busy = False
         
         self.progressMax = 1.0
-        self.lastProgress = -1.0
         self.lastMessage = u""
         
         self.hasFailed = False
@@ -330,6 +329,7 @@ class IEDCLIController(NSObject):
     
     def buildStartingWithOutput_(self, outputPath):
         self.busy = True
+        self.lastProgressPercent = -100.0
     
     def buildSetTotalWeight_(self, totalWeight):
         self.progressMax = totalWeight
@@ -339,9 +339,9 @@ class IEDCLIController(NSObject):
     
     def buildSetProgress_(self, progress):
         percent = 100.0 * progress / self.progressMax
-        if abs(percent - self.lastProgress) >= 0.1:
+        if abs(percent - self.lastProgressPercent) >= 0.1:
             LogInfo(u"progress: %.1f%%", percent)
-        self.lastProgress = percent
+            self.lastProgressPercent = percent
     
     def buildSetProgressMessage_(self, message):
         if message != self.lastMessage:
@@ -368,7 +368,8 @@ class IEDCLIController(NSObject):
     
     def downloadStarting_(self, package):
         LogNotice(u"Downloading %@ (%@)", package.name(), IEDUtil.formatBytes_(package.size()))
-        #self.downloadCounter += 1
+        self.lastProgressPercent = -100.0
+        self.lastProgressTimestamp = NSDate.alloc().init()
     
     def downloadStarted_(self, package):
         LogDebug(u"downloadStarted:")
@@ -377,7 +378,15 @@ class IEDCLIController(NSObject):
         LogDebug(u"downloadStopped:")
     
     def downloadGotData_bytesRead_(self, package, bytes):
-        LogInfo(u"%.1f%%", float(bytes) * 100.0 / float(package.size()))
+        percent = 100.0 * float(bytes) / float(package.size())
+        # Log progress if we've downloaded more than 10%, more than one second
+        # has passed, or if we're at 100%.
+        if (abs(percent - self.lastProgressPercent) >= 10.0) or \
+           (abs(self.lastProgressTimestamp.timeIntervalSinceNow()) >= 1.0) or \
+           (bytes == package.size()):
+            LogInfo(u"progress: %.1f%%", percent)
+            self.lastProgressPercent = percent
+            self.lastProgressTimestamp = NSDate.alloc().init()
     
     def downloadSucceeded_(self, package):
         LogDebug(u"downloadSucceeded:")
