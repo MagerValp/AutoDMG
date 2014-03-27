@@ -31,7 +31,7 @@ The latest release can be found on the [release page](https://github.com/MagerVa
 License
 -------
 
-    Copyright 2013 Per Olofsson, University of Gothenburg
+    Copyright 2013-2014 Per Olofsson, University of Gothenburg. All rights reserved.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

@@ -4,7 +4,7 @@
 #  AutoDMG
 #
 #  Created by Per Olofsson on 2014-02-26.
-#  Copyright (c) 2014 University of Gothenburg. All rights reserved.
+#  Copyright 2013-2014 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
 import objc

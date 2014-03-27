@@ -4,7 +4,7 @@
 #  AutoDMG
 #
 #  Created by Pelle on 2013-10-28.
-#  Copyright (c) 2013 University of Gothenburg. All rights reserved.
+#  Copyright 2013-2014 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
 from Foundation import *
