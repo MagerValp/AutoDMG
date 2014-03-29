@@ -112,7 +112,11 @@ class IEDUtil(NSObject):
                 shutil.rmtree(tempdir)
             except BaseException as e:
                 LogWarning(u"Unable to remove tempdir: %@", unicode(e))
-        if p.returncode != 0:
+        if p.returncode == -11:
+            LogWarning(u"Estimating package size since installer -pkginfo " \
+                       u"'%@' crashed", pkgPath)
+            return cls.getPackageSize_(pkgPath) * 2
+        elif p.returncode != 0:
             mountPoints = IEDMountInfo.getMountPoints()
             fsInfo = mountPoints[cls.findMountPoint_(pkgPath)]
             if not fsInfo[u"islocal"]:
