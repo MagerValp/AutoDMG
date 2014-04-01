@@ -428,6 +428,7 @@ class IEDWorkflow(NSObject):
                 mountPoint = self.attachedPackageDMGs[package.path()]
                 packagePaths = glob.glob(os.path.join(mountPoint, "*.mpkg"))
                 packagePaths += glob.glob(os.path.join(mountPoint, "*.pkg"))
+                packagePaths += glob.glob(os.path.join(mountPoint, "*.app"))
                 if len(packagePaths) == 0:
                     self.fail_details_(u"No installer found",
                                        u"No package found in %s" % package.name())

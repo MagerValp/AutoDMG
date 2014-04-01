@@ -108,31 +108,44 @@ for package; do
     else
         echo "IED:MSG:Installing $(basename "$package")"
     fi
-    if [[ $TESTING == "yes" ]]; then
-        sleep 1
-        echo "installer:PHASE:Faking it   "
-        echo "installer:%25.0"
-        sleep 1
-        echo "installer:PHASE:Faking it.  "
-        echo "installer:%50.0"
-        sleep 1
-        echo "installer:PHASE:Faking it.. "
-        echo "installer:%75.0"
-        sleep 1
-        echo "installer:PHASE:Faking it..."
+    if [[ "${package##*.}" == "app" ]]; then
+        appname="${package##*/}"
+        apppath="$sparsemount/Applications/$appname"
+        echo "installer:PHASE:Copying $appname"
+        echo "installer:%5.0"
+        ditto --noqtn --noacl "$package" "$apppath"
+        echo "installer:PHASE:Changing ownership"
+        echo "installer:%95.0"
+        chown -hR root:admin "$apppath"
+        echo "installer:PHASE:"
         echo "installer:%100.0"
-        sleep 1
     else
-        installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
-        declare -i result=$?
-        if [[ $result -ne 0 ]]; then
-            if [[ $pkgnum -eq 1 ]]; then
-                pkgname="OS install"
-            else
-                pkgname=$(basename "$package")
+        if [[ $TESTING == "yes" ]]; then
+            sleep 1
+            echo "installer:PHASE:Faking it   "
+            echo "installer:%25.0"
+            sleep 1
+            echo "installer:PHASE:Faking it.  "
+            echo "installer:%50.0"
+            sleep 1
+            echo "installer:PHASE:Faking it.. "
+            echo "installer:%75.0"
+            sleep 1
+            echo "installer:PHASE:Faking it..."
+            echo "installer:%100.0"
+            sleep 1
+        else
+            installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
+            declare -i result=$?
+            if [[ $result -ne 0 ]]; then
+                if [[ $pkgnum -eq 1 ]]; then
+                    pkgname="OS install"
+                else
+                    pkgname=$(basename "$package")
+                fi
+                echo "IED:FAILURE:$pkgname failed with return code $result"
+                exit 102
             fi
-            echo "IED:FAILURE:$pkgname failed with return code $result"
-            exit 102
         fi
     fi
 done
