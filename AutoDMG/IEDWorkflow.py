@@ -434,7 +434,7 @@ class IEDWorkflow(NSObject):
                                        u"No package found in %s" % package.name())
                     return
                 elif len(packagePaths) > 1:
-                    LogWarning(u"Multiple packages found in disk image of %s, using %s" % (update[u"name"], packagePaths[0]))
+                    LogWarning(u"Multiple packages found in %s, using %s" % (package.path(), packagePaths[0]))
                 self.packagesToInstall.append(packagePaths[0])
             else:
                 self.packagesToInstall.append(package.path())
