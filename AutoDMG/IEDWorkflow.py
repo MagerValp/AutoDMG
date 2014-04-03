@@ -426,6 +426,7 @@ class IEDWorkflow(NSObject):
         for package in self.additionalPackages:
             if package.path().endswith(u".dmg"):
                 mountPoint = self.attachedPackageDMGs[package.path()]
+                LogDebug(u"Looking for packages in %@: %@", mountPoint, glob.glob(os.path.join(mountPoint, "*")))
                 packagePaths = glob.glob(os.path.join(mountPoint, "*.mpkg"))
                 packagePaths += glob.glob(os.path.join(mountPoint, "*.pkg"))
                 packagePaths += glob.glob(os.path.join(mountPoint, "*.app"))

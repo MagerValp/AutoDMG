@@ -51,12 +51,12 @@ class IEDDMGHelper(NSObject):
                               u"-mountRandom", u"/tmp",
                               u"-nobrowse",
                               u"-noverify",
-                              u"-plist",
-                              u"-owners", u"on"],
-                             bufsize=-1,
+                              u"-plist"],
+                             bufsize=1,
+                             stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
-        out, err = p.communicate()
+        out, err = p.communicate(u"Y\n")
         if p.returncode != 0:
             errstr = u"hdiutil attach failed with return code %d" % p.returncode
             if err:
@@ -65,7 +65,9 @@ class IEDDMGHelper(NSObject):
                                                   u"dmg-path": dmgPath,
                                                   u"error-message": errstr})
             return
-        plist = plistlib.readPlistFromString(out)
+        # Strip EULA text.
+        xmlStartIndex = out.find("<?xml")
+        plist = plistlib.readPlistFromString(out[xmlStartIndex:])
         for partition in plist[u"system-entities"]:
             if u"mount-point" in partition:
                 self.dmgs[dmgPath] = partition[u"mount-point"]
@@ -108,7 +110,7 @@ class IEDDMGHelper(NSObject):
             if tries == maxtries >> 1:
                 cmd.append(u"-force")
             p = subprocess.Popen(cmd,
-                                 bufsize=-1,
+                                 bufsize=1,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
             out, err = p.communicate()
