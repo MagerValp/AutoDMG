@@ -16,8 +16,6 @@ import traceback
 import objc
 import Foundation
 
-objc.setVerbose(1)
-
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 import IEDLog
 from IEDUtil import *
@@ -36,6 +34,19 @@ import platform
 #    downloadparser.set_defaults(func=doupdates_download)
 
 
+def gui_unexpected_error_alert():
+    exceptionInfo = traceback.format_exc()
+    NSLog(u"AutoDMG died with an uncaught exception, %@", exceptionInfo)
+    from AppKit import NSAlertSecondButtonReturn
+    alert = NSAlert.alloc().init()
+    alert.setMessageText_(u"AutoDMG died with an uncaught exception")
+    alert.setInformativeText_(exceptionInfo)
+    alert.addButtonWithTitle_(u"Quit")
+    alert.addButtonWithTitle_(u"Save Log…")
+    while alert.runModal() == NSAlertSecondButtonReturn:
+        IEDLog.IEDLog.saveLog_(IEDLog.IEDLog, None)
+    sys.exit(os.EX_SOFTWARE)
+
 def gui_main():
     IEDLog.IEDLogToController  = True
     IEDLog.IEDLogToSyslog      = True
@@ -53,7 +64,7 @@ def gui_main():
     import IEDAppVersionController
     
     # pass control to AppKit
-    AppHelper.runEventLoop()
+    AppHelper.runEventLoop(unexpectedErrorAlert=gui_unexpected_error_alert)
     
     return os.EX_OK
 
