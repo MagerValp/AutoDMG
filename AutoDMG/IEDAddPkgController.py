@@ -105,7 +105,7 @@ class IEDAddPkgController(NSObject):
                 return NSDragOperationNone
             # Ensure the file extension is pkg or mpkg.
             name, ext = os.path.splitext(path)
-            if ext.lower() not in (u".pkg", u".mpkg", u".app"):
+            if ext.lower() not in (u".pkg", u".mpkg", u".app", u".dmg"):
                 return NSDragOperationNone
         return NSDragOperationCopy
     
