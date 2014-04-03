@@ -7,6 +7,7 @@
 #  Copyright 2013-2014 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+import os
 import sys
 import argparse
 
@@ -53,7 +54,7 @@ def gui_main():
     # pass control to AppKit
     AppHelper.runEventLoop()
     
-    return 0
+    return os.EX_OK
 
 
 def cli_main(argv):
@@ -108,7 +109,7 @@ def cli_main(argv):
                     IEDLog.IEDLogFileHandle = open(args.logfile, u"a", buffering=1)
                 except OSError as e:
                     print >>sys.stderr, (u"Couldn't open %s for writing" % (args.logfile)).encode(u"utf-8")
-                    return 1
+                    return os.EX_CANTCREAT
             IEDLog.IEDLogToFile = True
         
         # Check if we're running with root.
@@ -123,7 +124,7 @@ def cli_main(argv):
                 LogWarning(u"Running as root, using %@", os.path.join(url.path(), u"AutoDMG"))
             else:
                 LogError(u"Running as root isn't recommended (use -r to override)")
-                return 1
+                return os.EX_USAGE
         
         # Log version info on startup.
         version, build = IEDUtil.getAppVersion()
