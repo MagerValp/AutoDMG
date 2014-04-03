@@ -262,6 +262,7 @@
 				66EA72C617EB1585009B8350 /* Frameworks */,
 				66EA72C717EB1585009B8350 /* Resources */,
 				0506B97D17F085210011CCC2 /* ShellScript */,
+				6691F13A18EE027500E8D663 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -365,6 +366,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/bash\n#\n# Sets the version string to a monotonically increased string, based on\n# the number of git commits.\n\nset -o errexit\nset -o nounset\n\nVERSION=$(git --git-dir=\"$PROJECT_DIR/.git\" --work-tree=\"$PROJECT_DIR\" log | grep '^commit' | wc -l)\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $VERSION\" \"$TARGET_BUILD_DIR/$INFOPLIST_PATH\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6691F13A18EE027500E8D663 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\n\nif [[ \"$CONFIGURATION\" != \"Release\" ]]; then\n    exit 0\nfi\n\necho \"Building Release configuration, making sure we're not building with TESTING=yes\"\ntesting=$(grep '^declare.*TESTING' \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/installesdtodmg.sh\" | cut -d\\\" -f2)\nif [[ \"$testing\" == \"yes\" ]]; then\n    echo \"Can't build Release configuration with TESTING=yes\" >&2\n    exit 1\nelse\n    echo \"Release checks OK\"\nfi\n\nexit 0\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
