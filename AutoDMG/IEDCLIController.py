@@ -10,8 +10,8 @@
 from Foundation import *
 from AppKit import *
 
-import sys
 import os
+import sys
 import getpass
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUpdateCache import *

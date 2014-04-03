@@ -22,18 +22,6 @@ from IEDUtil import *
 import platform
 
 
-#def addargs_updates(argparser):
-#    sp = argparser.add_subparsers()
-#    pullparser = sp.add_parser(u"pull", help=doupdates_pull.__doc__)
-#    pullparser.set_defaults(func=doupdates_pull)
-#    showparser = sp.add_parser(u"show", help=doupdates_show.__doc__)
-#    showparser.add_argument(u"build", help=u"OS build number")
-#    showparser.set_defaults(func=doupdates_show)
-#    downloadparser = sp.add_parser(u"download", help=doupdates_download.__doc__)
-#    downloadparser.add_argument(u"build", help=u"OS build number")
-#    downloadparser.set_defaults(func=doupdates_download)
-
-
 def gui_unexpected_error_alert():
     exceptionInfo = traceback.format_exc()
     NSLog(u"AutoDMG died with an uncaught exception, %@", exceptionInfo)
@@ -149,8 +137,6 @@ def cli_main(argv):
         LogInfo(u"PyObjC %@", objc.__version__)
         
         return args.func(args)
-        #from PyObjCTools import AppHelper
-        #AppHelper.runConsoleEventLoop(installInterrupt=True)
     finally:
         clicontroller.cleanup()
 
