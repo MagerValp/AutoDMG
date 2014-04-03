@@ -7,14 +7,14 @@
 #  Copyright 2013-2014 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+import os
 import sys
 import argparse
+import traceback
 
 #import modules required by application
 import objc
 import Foundation
-
-objc.setVerbose(1)
 
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 import IEDLog
@@ -22,17 +22,18 @@ from IEDUtil import *
 import platform
 
 
-#def addargs_updates(argparser):
-#    sp = argparser.add_subparsers()
-#    pullparser = sp.add_parser(u"pull", help=doupdates_pull.__doc__)
-#    pullparser.set_defaults(func=doupdates_pull)
-#    showparser = sp.add_parser(u"show", help=doupdates_show.__doc__)
-#    showparser.add_argument(u"build", help=u"OS build number")
-#    showparser.set_defaults(func=doupdates_show)
-#    downloadparser = sp.add_parser(u"download", help=doupdates_download.__doc__)
-#    downloadparser.add_argument(u"build", help=u"OS build number")
-#    downloadparser.set_defaults(func=doupdates_download)
-
+def gui_unexpected_error_alert():
+    exceptionInfo = traceback.format_exc()
+    NSLog(u"AutoDMG died with an uncaught exception, %@", exceptionInfo)
+    from AppKit import NSAlertSecondButtonReturn
+    alert = NSAlert.alloc().init()
+    alert.setMessageText_(u"AutoDMG died with an uncaught exception")
+    alert.setInformativeText_(exceptionInfo)
+    alert.addButtonWithTitle_(u"Quit")
+    alert.addButtonWithTitle_(u"Save Log…")
+    while alert.runModal() == NSAlertSecondButtonReturn:
+        IEDLog.IEDLog.saveLog_(IEDLog.IEDLog, None)
+    sys.exit(os.EX_SOFTWARE)
 
 def gui_main():
     IEDLog.IEDLogToController  = True
@@ -51,9 +52,9 @@ def gui_main():
     import IEDAppVersionController
     
     # pass control to AppKit
-    AppHelper.runEventLoop()
+    AppHelper.runEventLoop(unexpectedErrorAlert=gui_unexpected_error_alert)
     
-    return 0
+    return os.EX_OK
 
 
 def cli_main(argv):
@@ -108,7 +109,7 @@ def cli_main(argv):
                     IEDLog.IEDLogFileHandle = open(args.logfile, u"a", buffering=1)
                 except OSError as e:
                     print >>sys.stderr, (u"Couldn't open %s for writing" % (args.logfile)).encode(u"utf-8")
-                    return 1
+                    return os.EX_CANTCREAT
             IEDLog.IEDLogToFile = True
         
         # Check if we're running with root.
@@ -123,7 +124,7 @@ def cli_main(argv):
                 LogWarning(u"Running as root, using %@", os.path.join(url.path(), u"AutoDMG"))
             else:
                 LogError(u"Running as root isn't recommended (use -r to override)")
-                return 1
+                return os.EX_USAGE
         
         # Log version info on startup.
         version, build = IEDUtil.getAppVersion()
@@ -136,31 +137,36 @@ def cli_main(argv):
         LogInfo(u"PyObjC %@", objc.__version__)
         
         return args.func(args)
-        #from PyObjCTools import AppHelper
-        #AppHelper.runConsoleEventLoop(installInterrupt=True)
     finally:
         clicontroller.cleanup()
 
 
-# Decode arguments as utf-8 and filter out arguments from Finder and
-# Xcode.
-decoded_argv = list()
-i = 1
-while i < len(sys.argv):
-    arg = sys.argv[i].decode(u"utf-8")
-    if arg.startswith(u"-psn"):
-        pass
-    elif arg == u"-NSDocumentRevisionsDebugMode":
-        i += 1
-    elif arg.startswith(u"-NS"):
-        pass
-    else:
-        decoded_argv.append(arg)
-    i += 1
+# Global exception handler to make sure we always log tracebacks.
+try:
 
-# If no arguments are supplied, assume the GUI should be started.
-if len(decoded_argv) == 0:
-    sys.exit(gui_main())
-# Otherwise parse the command line arguments.
-else:
-    sys.exit(cli_main(decoded_argv))
+    # Decode arguments as utf-8 and filter out arguments from Finder and
+    # Xcode.
+    decoded_argv = list()
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i].decode(u"utf-8")
+        if arg.startswith(u"-psn"):
+            pass
+        elif arg == u"-NSDocumentRevisionsDebugMode":
+            i += 1
+        elif arg.startswith(u"-NS"):
+            pass
+        else:
+            decoded_argv.append(arg)
+        i += 1
+
+    # If no arguments are supplied, assume the GUI should be started.
+    if len(decoded_argv) == 0:
+        sys.exit(gui_main())
+    # Otherwise parse the command line arguments.
+    else:
+        sys.exit(cli_main(decoded_argv))
+
+except Exception:
+    NSLog(u"AutoDMG died with an uncaught exception, %@", traceback.format_exc())
+    sys.exit(os.EX_SOFTWARE)

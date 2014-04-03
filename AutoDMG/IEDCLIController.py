@@ -10,8 +10,8 @@
 from Foundation import *
 from AppKit import *
 
-import sys
 import os
+import sys
 import getpass
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUpdateCache import *
@@ -86,14 +86,14 @@ class IEDCLIController(NSObject):
         
         if not sourcePath and not templatePath:
             self.failWithMessage_(u"'%s' is not a valid OS X installer or AutoDMG template" % args.source)
-            return 1
+            return os.EX_DATAERR
         
         if templatePath:
             template = IEDTemplate.alloc().init()
             error = template.loadTemplateAndReturnError_(templatePath)
             if error:
                 self.failWithMessage_(u"Couldn't load template from '%s': %s" % (templatePath, error))
-                return 1
+                return os.EX_DATAERR
         else:
             template = IEDTemplate.alloc().initWithSourcePath_(sourcePath)
         
@@ -108,14 +108,14 @@ class IEDCLIController(NSObject):
         if args.packages:
             if not template.setAdditionalPackages_(args.packages):
                 self.failWithMessage_(u"Additional packages failed verification")
-                return 1
+                return os.EX_DATAERR
         
         if not template.sourcePath:
             self.failWithMessage_(u"No source path")
-            return 1
+            return os.EX_USAGE
         if not template.outputPath:
             self.failWithMessage_(u"No output path")
-            return 1
+            return os.EX_USAGE
         
         LogNotice(u"Installer: %@", template.sourcePath)
         LogNotice(u"Output Path: %@", template.outputPath)
@@ -126,7 +126,7 @@ class IEDCLIController(NSObject):
         self.workflow.setSource_(template.sourcePath)
         self.waitBusy()
         if self.hasFailed:
-            return 1
+            return os.EX_DATAERR
         
         # Generate the list of updates to install.
         updates = list()
@@ -135,13 +135,13 @@ class IEDCLIController(NSObject):
             if profile is None:
                 self.failWithMessage_(self.profileController.whyNoProfileForVersion_build_(self.installerVersion,
                                                                                            self.installerBuild))
-                return 1
+                return os.EX_DATAERR
             
             for update in profile:
                 LogNotice(u"Update: %@ (%@)", update[u"name"], IEDUtil.formatBytes_(update[u"size"]))
                 if not self.cache.isCached_(update[u"sha1"]):
                     self.failWithMessage_(u"Can't apply updates, %s is missing from cache" % update[u"name"])
-                    return 1
+                    return os.EX_DATAERR
                 package = IEDPackage.alloc().init()
                 package.setName_(update[u"name"])
                 package.setPath_(self.cache.updatePath_(update[u"sha1"]))
@@ -162,10 +162,10 @@ class IEDCLIController(NSObject):
                     os.unlink(template.outputPath)
                 except OSError as e:
                     self.failWithMessage_(u"Couldn't remove %s: %s" % (template.outputPath, unicode(e)))
-                    return 1
+                    return os.EX_CANTCREAT
             else:
                 self.failWithMessage_(u"%s already exists" % template.outputPath)
-                return 1
+                return os.EX_CANTCREAT
         else:
             outputDir = os.path.dirname(template.outputPath)
             if outputDir and not os.path.exists(outputDir):
@@ -173,7 +173,7 @@ class IEDCLIController(NSObject):
                     os.makedirs(outputDir)
                 except OSError as e:
                     self.failWithMessage_(u"%s does not exist and can't be created: %s" % (outputDir, unicode(e)))
-                    return 1
+                    return os.EX_CANTCREAT
         
         # If we're not running as root get the password for authentication.
         if os.getuid() != 0:
@@ -191,9 +191,9 @@ class IEDCLIController(NSObject):
         self.workflow.start()
         self.waitBusy()
         if self.hasFailed:
-            return 1
+            return 1 # EXIT_FAILURE
         
-        return 0
+        return os.EX_OK
     
     def checkTemplate_(self, path):
         path = IEDUtil.resolvePath_(path)
@@ -225,7 +225,7 @@ class IEDCLIController(NSObject):
         profile = self.profileController.profileForVersion_Build_(args.version, args.build)
         if profile is None:
             self.failWithMessage_(self.profileController.whyNoProfileForVersion_build_(args.version, args.build))
-            return 1
+            return os.EX_DATAERR
         
         LogNotice(u"%d update%@ for %@ %@:", len(profile), u"" if len(profile) == 1 else u"s", args.version, args.build)
         for update in profile:
@@ -234,7 +234,7 @@ class IEDCLIController(NSObject):
                       update[u"name"],
                       IEDUtil.formatBytes_(update[u"size"]))
         
-        return 0
+        return os.EX_OK
     
     def addargsList_(self, argparser):
         argparser.add_argument(u"version", help=u"OS X version")
@@ -250,7 +250,7 @@ class IEDCLIController(NSObject):
         profile = self.profileController.profileForVersion_Build_(args.version, args.build)
         if profile is None:
             self.failWithMessage_(self.profileController.whyNoProfileForVersion_build_(args.version, args.build))
-            return 1
+            return os.EX_DATAERR
         
         updates = list()
         for update in profile:
@@ -269,11 +269,11 @@ class IEDCLIController(NSObject):
             self.waitBusy()
         
         if self.hasFailed:
-            return 1
+            return 1 # EXIT_FAILURE
         
         LogNotice(u"All updates for %@ %@ downloaded", args.version, args.build)
         
-        return 0
+        return os.EX_OK
     
     def addargsDownload_(self, argparser):
         argparser.add_argument(u"version", help=u"OS X version")
@@ -291,9 +291,9 @@ class IEDCLIController(NSObject):
         self.waitBusy()
         
         if self.hasFailed:
-            return 1
+            return 1 # EXIT_FAILURE
         
-        return 0
+        return os.EX_OK
     
     def addargsUpdate_(self, argparser):
         defaults = NSUserDefaults.standardUserDefaults()
