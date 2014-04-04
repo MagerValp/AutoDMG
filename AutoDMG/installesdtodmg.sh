@@ -12,7 +12,8 @@
 #
 # Usage (mount InstallESD.dmg first):
 #
-#   installesdtodmg.sh user group output.dmg "/Volumes/OS X Install ESD/Packages/OSInstall.mpkg" [package.pkg ...]
+#   installesdtodmg.sh user group output.dmg "Macintosh HD" 32 /tmp/template.adtmpl \
+#       "/Volumes/OS X Install ESD/Packages/OSInstall.mpkg" [package.pkg ...]
 
 
 declare -r TESTING="no"
@@ -74,7 +75,8 @@ group="$2"
 compresseddmg="$3"
 volname="$4"
 size="$5"
-shift 5
+template="$6"
+shift 6
 
 # Get a work directory and check free space.
 tempdir=$(mktemp -d -t installesdtodmg)
@@ -151,6 +153,10 @@ for package; do
 done
 # Stop watching /var/log/install.log.
 echo "IED:WATCHLOG:STOP"
+
+# Copy template.
+mkdir -p "$sparsemount/private/var/log"
+cp "$template" "$sparsemount/private/var/log"
 
 # Finalize image.
 echo "IED:PHASE:asr"

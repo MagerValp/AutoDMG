@@ -14,6 +14,9 @@ import glob
 import grp
 import traceback
 import time
+import tempfile
+import shutil
+import datetime
 
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
@@ -39,6 +42,7 @@ class IEDWorkflow(NSObject):
         self.listenerPath = self.listener.listenOnSocket_withDelegate_(u"/tmp/se.gu.it.IEDSocketListener", self)
         
         # State for the workflow.
+        self._source = None
         self._outputPath = None
         self._volumeName = u"Macintosh HD"
         self.installerMountPoint = None
@@ -48,6 +52,9 @@ class IEDWorkflow(NSObject):
         self._authUsername = None
         self._authPassword = None
         self._volumeSize = None
+        self._template = None
+        self.tempDir = None
+        self.templatePath = None
         
         return self
     
@@ -109,12 +116,16 @@ class IEDWorkflow(NSObject):
     def setSource_(self, path):
         LogDebug(u"setSource:%@", path)
         
+        self._source = None
         self.newSourcePath = path
         if self.installerMountPoint:
             self.delegate.ejectingSource()
             self.dmgHelper.detachAll_(self.continueSetSource_)
         else:
             self.continueSetSource_({})
+    
+    def source(self):
+        return self._source
     
     def continueSetSource_(self, failedUnmounts):
         LogDebug(u"continueSetSource:%@", failedUnmounts)
@@ -175,6 +186,7 @@ class IEDWorkflow(NSObject):
         runningVersion = tuple(int(x) for x in platform.mac_ver()[0].split(u"."))
         if installerVersion[:2] == runningVersion[:2]:
             LogNotice(u"Accepted source %@: %@ %@ %@", self.newSourcePath, name, version, build)
+            self._source = self.newSourcePath
             self.installerName = name
             self.installerVersion = version
             self.installerBuild = build
@@ -234,6 +246,28 @@ class IEDWorkflow(NSObject):
     def setVolumeSize_(self, size):
         self._volumeSize = size
     
+    # Template to save in image.
+    
+    def template(self):
+        return self._template
+    def setTemplate_(self, template):
+        self._template = template
+    
+    # Handle temporary directory during workflow.
+    
+    def createTempDir(self):
+        self.tempDir = tempfile.mkdtemp()
+    
+    def deleteTempDir(self):
+        if self.tempDir:
+            try:
+                shutil.rmtree(self.tempDir)
+            except OSError as e:
+                LogWarning(u"Can't remove temporary directory '%@': %@",
+                           self.tempDir,
+                           unicode(e))
+            finally:
+                self.tempDir = None
     
     # Start the workflow.
     #
@@ -253,6 +287,22 @@ class IEDWorkflow(NSObject):
         LogNotice(u"Using installer: %@ %@ %@", self.installerName, self.installerVersion, self.installerBuild)
         LogNotice(u"Using output path: %@", self.outputPath())
         self.delegate.buildStartingWithOutput_(self.outputPath())
+        
+        self.createTempDir()
+        LogDebug(u"Created temporary directory at %@", self.tempDir)
+        
+        if not self.template():
+            self.fail_details_(u"Template missing",
+                               u"A template for inclusion in the image is required.")
+            return
+        
+        datestamp = datetime.datetime.today().strftime("%Y%m%d")
+        self.templatePath = os.path.join(self.tempDir, u"AutoDMG-%s.adtmpl" % datestamp)
+        LogDebug(u"Saving template to %@", self.templatePath)
+        error = self.template().saveTemplateAndReturnError_(self.templatePath)
+        if error:
+            self.fail_details_(u"Couldn't save template to tempdir", error)
+            return
         
         # The workflow is split into tasks, and each task has one or more
         # phases. Each phase of the installation is given a weight for the
@@ -376,6 +426,7 @@ class IEDWorkflow(NSObject):
     # or failed.
     def stop(self):
         LogDebug(u"Workflow stopping")
+        self.deleteTempDir()
         self.detachInstallerDMGs()
         self.delegate.buildStopped()
     
@@ -501,6 +552,7 @@ class IEDWorkflow(NSObject):
             u"--output", self.outputPath(),
             u"--volume-name", self.volumeName(),
             u"--size", unicode(self.volumeSize()),
+            u"--template", self.templatePath,
         ] + self.packagesToInstall
         LogInfo(u"Launching install with arguments:")
         for arg in args:

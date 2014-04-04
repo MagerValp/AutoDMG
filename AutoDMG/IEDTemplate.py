@@ -44,6 +44,25 @@ class IEDTemplate(NSObject):
         
         return self
     
+    def saveTemplateAndReturnError_(self, path):
+        plist = NSMutableDictionary.alloc().init()
+        plist[u"TemplateFormat"] = self.templateFormat = u"1.0"
+        plist[u"AdditionalPackages"] = self.additionalPackages
+        plist[u"ApplyUpdates"] = self.applyUpdates
+        plist[u"VolumeName"] = self.volumeName
+        if self.sourcePath:
+            plist[u"SourcePath"] = self.sourcePath
+        if self.outputPath:
+            plist[u"OutputPath"] = self.outputPath
+        if self.volumeSize:
+            plist[u"VolumeSize"] = self.volumeSize
+        if plist.writeToFile_atomically_(path, False):
+            return None
+        else:
+            error = u"Couldn't write dictionary to plist at %s" % (path)
+            LogWarning(u"%@", error)
+            return error
+    
     def loadTemplateAndReturnError_(self, path):
         if path in self.loadedTemplates:
             return u"%s included recursively" % path
@@ -53,7 +72,7 @@ class IEDTemplate(NSObject):
         plist = NSDictionary.dictionaryWithContentsOfFile_(path)
         if not plist:
             error = u"Couldn't read dictionary from plist at %s" % (path)
-            LogDebug(u"%@", error)
+            LogWarning(u"%@", error)
             return error
         
         templateFormat = plist.get(u"TemplateFormat", u"1.0")

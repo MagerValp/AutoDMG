@@ -188,6 +188,7 @@ class IEDCLIController(NSObject):
         self.workflow.setOutputPath_(template.outputPath)
         self.workflow.setVolumeName_(template.volumeName)
         self.workflow.setVolumeSize_(template.volumeSize)
+        self.workflow.setTemplate_(template)
         self.workflow.start()
         self.waitBusy()
         if self.hasFailed:

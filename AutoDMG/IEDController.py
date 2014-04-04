@@ -15,6 +15,7 @@ import os.path
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUpdateController import *
 from IEDWorkflow import *
+from IEDTemplate import *
 
 
 class IEDController(NSObject):
@@ -193,6 +194,17 @@ class IEDController(NSObject):
             if not success:
                 NSApp.presentError_(error)
                 return
+        
+        # Create a template to save inside the image.
+        template = IEDTemplate.alloc().init()
+        template.setSourcePath_(self.workflow.source())
+        if self.updateController.packagesToInstall():
+            template.setApplyUpdates_(True)
+        else:
+            template.setApplyUpdates_(False)
+        template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
+        template.setOutputPath_(panel.URL().path())
+        self.workflow.setTemplate_(template)
         
         self.workflow.setPackagesToInstall_(self.updateController.packagesToInstall() + \
                                             self.addPkgController.packagesToInstall())
