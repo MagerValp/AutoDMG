@@ -426,14 +426,18 @@ class IEDWorkflow(NSObject):
         for package in self.additionalPackages:
             if package.path().endswith(u".dmg"):
                 mountPoint = self.attachedPackageDMGs[package.path()]
+                LogDebug(u"Looking for packages and applications in %@: %@",
+                         mountPoint,
+                         glob.glob(os.path.join(mountPoint, "*")))
                 packagePaths = glob.glob(os.path.join(mountPoint, "*.mpkg"))
                 packagePaths += glob.glob(os.path.join(mountPoint, "*.pkg"))
+                packagePaths += glob.glob(os.path.join(mountPoint, "*.app"))
                 if len(packagePaths) == 0:
-                    self.fail_details_(u"No installer found",
-                                       u"No package found in %s" % package.name())
+                    self.fail_details_(u"Nothing found to install",
+                                       u"No package or application found in %s" % package.name())
                     return
                 elif len(packagePaths) > 1:
-                    LogWarning(u"Multiple packages found in %s, using %s" % (package.path(), packagePaths[0]))
+                    LogWarning(u"Multiple items found in %s, using %s" % (package.path(), packagePaths[0]))
                 self.packagesToInstall.append(packagePaths[0])
             else:
                 self.packagesToInstall.append(package.path())

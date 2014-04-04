@@ -93,6 +93,11 @@ class IEDUtil(NSObject):
     
     @classmethod
     def getInstalledPkgSize_(cls, pkgPath):
+        # For apps just return the size on disk.
+        name, ext = os.path.splitext(pkgPath)
+        if ext == u".app":
+            return cls.getPackageSize_(pkgPath)
+        # For packages try to get the size requirements with installer.
         pkgFileName = os.path.os.path.basename(pkgPath)
         tempdir = tempfile.mkdtemp()
         try:
@@ -112,6 +117,7 @@ class IEDUtil(NSObject):
                 shutil.rmtree(tempdir)
             except BaseException as e:
                 LogWarning(u"Unable to remove tempdir: %@", unicode(e))
+        # Try to handle some common scenarios when installer fails.
         if p.returncode == -11:
             LogWarning(u"Estimating package size since installer -pkginfo " \
                        u"'%@' crashed", pkgPath)
