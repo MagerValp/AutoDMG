@@ -36,9 +36,9 @@ def checkSource_(self, sender):
         return None
     path = IEDUtil.resolvePath_(filenames[0])
     if os.path.exists(os.path.join(path,
-                      u"Contents/SharedSupport/InstallESD.dmg")) or \
-    (os.path.basename(path).lower().startswith(u"installesd") and \
-     os.path.basename(path).lower().endswith(u".dmg")):
+                      u"Contents/SharedSupport/InstallESD.dmg")):
+        return path
+    elif path.lower().endswith(u".dmg"):
         return path
     else:
         return None

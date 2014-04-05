@@ -76,7 +76,12 @@ compresseddmg="$3"
 volname="$4"
 size="$5"
 template="$6"
-shift 6
+if [[ "$7" == *.dmg ]]; then
+    sysimg="$7"
+    shift 7
+else
+    shift 6
+fi
 
 # Get a work directory and check free space.
 tempdir=$(mktemp -d -t installesdtodmg)
@@ -91,9 +96,14 @@ fi
 # Create and mount a sparse image.
 echo "IED:PHASE:sparseimage"
 echo "IED:MSG:Creating disk image"
-sparsedmg="$tempdir/os.sparseimage"
-hdiutil create -size "${size}g" -type SPARSE -fs HFS+J -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
-sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
+if [[ -z "$sysimg" ]]; then
+    sparsedmg="$tempdir/os.sparseimage"
+    hdiutil create -size "${size}g" -type SPARSE -fs HFS+J -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
+    sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
+else
+    shadowfile="$tempdir/autodmg.shadow"
+    sparsemount=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg" | grep Apple_HFS | cut -f3)
+fi
 dmgmounts+=("$sparsemount")
 
 # Install OS and packages.
@@ -167,7 +177,12 @@ unmount_dmgs
 
 # Convert the sparse image to a compressed image.
 echo "IED:MSG:Converting disk image to read only"
-if ! hdiutil convert -puppetstrings -format UDZO "$sparsedmg" -o "$compresseddmg"; then
+if [[ -z "$sysimg" ]]; then
+    hdiutil convert -puppetstrings -format UDZO "$sparsedmg" -o "$compresseddmg"
+else
+    hdiutil convert -puppetstrings -format UDZO -shadow "$shadowfile" "$sysimg" -o "$compresseddmg"
+fi
+if [[ $? -ne 0 ]]; then
     echo "IED:FAILURE:Disk image conversion failed"
     exit 103
 fi
