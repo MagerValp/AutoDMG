@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  main.py
 #  AutoDMG
@@ -12,7 +12,6 @@ import sys
 import argparse
 import traceback
 
-#import modules required by application
 import objc
 import Foundation
 
@@ -132,8 +131,8 @@ def cli_main(argv):
         name, version, build = IEDUtil.readSystemVersion_(u"/")
         LogInfo(u"%@ %@ %@", name, version, build)
         LogInfo(u"%@ %@ (%@)", platform.python_implementation(),
-                                 platform.python_version(),
-                                 platform.python_compiler())
+                               platform.python_version(),
+                               platform.python_compiler())
         LogInfo(u"PyObjC %@", objc.__version__)
         
         return args.func(args)

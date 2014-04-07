@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDProfileController.py
 #  AutoDMG
@@ -77,7 +77,7 @@ class IEDProfileController(NSObject):
         supportedMajorVersions = set()
         supportedPointReleases = defaultdict(set)
         for versionBuild in self.profiles.keys():
-            version , _, build = versionBuild.partition(u"-")
+            version, _, build = versionBuild.partition(u"-")
             buildsForVersion[version].add(build)
             versionTuple = tuple(int(x) for x in version.split(u"."))
             major = versionTuple[1]
@@ -229,5 +229,3 @@ class IEDProfileController(NSObject):
         LogInfo(u"User canceled profile update")
         self.connection.cancel()
         self.profileUpdateWindow.orderOut_(self)
-
-

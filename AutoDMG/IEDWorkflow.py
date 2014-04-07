@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDWorkflow.py
 #  AutoDMG
@@ -78,7 +78,7 @@ class IEDWorkflow(NSObject):
         self.dmgHelper.detachAll_(None)
     
     def handleDetachResult_(self, result):
-        if result[u"success"] == True:
+        if result[u"success"]:
             try:
                 del self.attachedPackageDMGs[result[u"dmg-path"]]
             except KeyError:
@@ -155,7 +155,7 @@ class IEDWorkflow(NSObject):
     def handleSourceMountResult_(self, result):
         LogDebug(u"handleSourceMountResult:%@", result)
         
-        if result[u"success"] == False:
+        if not result[u"success"]:
             self.delegate.sourceFailed_text_(u"Failed to mount %s" % result[u"dmg-path"],
                                              result[u"error-message"])
             return
@@ -237,6 +237,7 @@ class IEDWorkflow(NSObject):
     
     def outputPath(self):
         return self._outputPath
+    
     def setOutputPath_(self, path):
         self._outputPath = path
     
@@ -244,6 +245,7 @@ class IEDWorkflow(NSObject):
     
     def volumeName(self):
         return self._volumeName
+    
     def setVolumeName_(self, name):
         self._volumeName = name
     
@@ -251,10 +253,13 @@ class IEDWorkflow(NSObject):
     
     def authUsername(self):
         return self._authUsername
+    
     def setAuthUsername_(self, authUsername):
         self._authUsername = authUsername
+    
     def authPassword(self):
         return self._authPassword
+    
     def setAuthPassword_(self, authPassword):
         self._authPassword = authPassword
     
@@ -262,6 +267,7 @@ class IEDWorkflow(NSObject):
     
     def volumeSize(self):
         return self._volumeSize
+    
     def setVolumeSize_(self, size):
         self._volumeSize = size
     
@@ -269,6 +275,7 @@ class IEDWorkflow(NSObject):
     
     def template(self):
         return self._template
+    
     def setTemplate_(self, template):
         self._template = template
     
@@ -407,7 +414,7 @@ class IEDWorkflow(NSObject):
         if self.currentTask:
             if self.currentTask[u"phases"]:
                 for phase in self.currentTask[u"phases"]:
-                    if phase.get(u"optional", False) == False:
+                    if not phase.get(u"optional", False):
                         details = NSString.stringWithFormat_(u"Phases remaining: %@", self.currentTask[u"phases"])
                         self.fail_details_(u"Task finished prematurely", details)
                         return
@@ -479,7 +486,7 @@ class IEDWorkflow(NSObject):
     def attachPackageDMG_(self, result):
         LogDebug(u"attachPackageDMG:%@", result)
         
-        if result[u"success"] == False:
+        if not result[u"success"]:
             self.fail_details_(u"Failed to attach %s" % result[u"dmg-path"],
                                result[u"error-message"])
             return
@@ -590,11 +597,12 @@ class IEDWorkflow(NSObject):
     def launchScript_(self, args):
         LogDebug(u"launchScript:")
         
+        def escape(s):
+            return s.replace(u"\\", u"\\\\").replace(u'"', u'\\"')
+        
         # Generate an AppleScript snippet to launch a shell command with
         # administrator privileges.
         shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
-        def escape(s):
-            return s.replace(u"\\", u"\\\\").replace(u'"', u'\\"')
         scriptLines = list(u'set arg%d to "%s"' % (i, escape(arg)) for i, arg in enumerate(args))
         if self.authPassword() is not None:
             scriptLines.append(u'do shell script %s user name "%s" password "%s" '
@@ -693,5 +701,3 @@ class IEDWorkflow(NSObject):
         
         else:
             self.fail_details_(u"Unknown progress notification", u"Message: %@", msg)
-
-

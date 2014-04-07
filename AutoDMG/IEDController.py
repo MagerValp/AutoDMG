@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDController.py
 #  AutoDMG
@@ -206,7 +206,7 @@ class IEDController(NSObject):
         template.setOutputPath_(panel.URL().path())
         self.workflow.setTemplate_(template)
         
-        self.workflow.setPackagesToInstall_(self.updateController.packagesToInstall() + \
+        self.workflow.setPackagesToInstall_(self.updateController.packagesToInstall() +
                                             self.addPkgController.packagesToInstall())
         self.workflow.setOutputPath_(panel.URL().path())
         self.workflow.start()
@@ -262,6 +262,3 @@ class IEDController(NSObject):
         self.buildProgressWindow.orderOut_(self)
         self.enableMainWindowControls()
         self.busy = False
-    
-
-

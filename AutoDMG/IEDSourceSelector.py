@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDSourceSelector.py
 #  AutoDMG
@@ -100,4 +100,3 @@ classAddMethods(IEDTextFieldSourceSelector, [
     draggingUpdated_,
     performDragOperation_,
 ])
-

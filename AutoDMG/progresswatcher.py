@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  progresswatcher.py
 #  AutoDMG
@@ -324,4 +324,3 @@ def main(argv):
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
-    

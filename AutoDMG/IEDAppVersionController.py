@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDAppVersionController.py
 #  AutoDMG
@@ -128,4 +128,3 @@ class IEDAppVersionController(NSObject):
                 verString = u"current"
             alert.setInformativeText_(u"AutoDMG v%s build %s appears to be %s." % (displayVersion, build, verString))
             alert.runModal()
-

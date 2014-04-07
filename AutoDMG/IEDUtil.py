@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDUtil.py
 #  AutoDMG
@@ -56,7 +56,7 @@ class IEDUtil(NSObject):
         if os.path.exists(os.path.join(path,
                           u"Contents/SharedSupport/InstallESD.dmg")):
             return path
-        if (os.path.basename(path).lower().startswith(u"installesd") and \
+        if (os.path.basename(path).lower().startswith(u"installesd") and
             os.path.basename(path).lower().endswith(u".dmg")) and \
            os.path.exists(path):
             return path
@@ -104,11 +104,11 @@ class IEDUtil(NSObject):
             symlinkPath = os.path.join(tempdir, pkgFileName)
             os.symlink(pkgPath, symlinkPath)
             p = subprocess.Popen([u"/usr/sbin/installer",
-                                 u"-pkginfo",
-                                 u"-verbose",
-                                 u"-plist",
-                                 u"-pkg",
-                                 symlinkPath],
+                                  u"-pkginfo",
+                                  u"-verbose",
+                                  u"-plist",
+                                  u"-pkg",
+                                  symlinkPath],
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
             out, err = p.communicate()
@@ -119,14 +119,14 @@ class IEDUtil(NSObject):
                 LogWarning(u"Unable to remove tempdir: %@", unicode(e))
         # Try to handle some common scenarios when installer fails.
         if p.returncode == -11:
-            LogWarning(u"Estimating package size since installer -pkginfo " \
+            LogWarning(u"Estimating package size since installer -pkginfo "
                        u"'%@' crashed", pkgPath)
             return cls.getPackageSize_(pkgPath) * 2
         elif p.returncode != 0:
             mountPoints = IEDMountInfo.getMountPoints()
             fsInfo = mountPoints[cls.findMountPoint_(pkgPath)]
             if not fsInfo[u"islocal"]:
-                LogWarning(u"Estimating package size since installer -pkginfo " \
+                LogWarning(u"Estimating package size since installer -pkginfo "
                            u"failed and '%@' is on a remote (%@) filesystem",
                            pkgPath, fsInfo[u"fstypename"])
                 return cls.getPackageSize_(pkgPath) * 2
@@ -141,7 +141,5 @@ class IEDUtil(NSObject):
         if not plist:
             LogError(u"Error decoding plist: %@", error)
             return None
-        LogDebug(u"%@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"])* 1024))
+        LogDebug(u"%@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"]) * 1024))
         return int(plist[u"Size"]) * 1024
-
-
