@@ -28,30 +28,36 @@ class IEDPackage(NSObject):
     
     def name(self):
         return self._name
+    
     def setName_(self, name):
         self._name = name
     
     def path(self):
         return self._path
+    
     def setPath_(self, path):
         self._path = path
     
     def size(self):
         return self._size
+    
     def setSize_(self, size):
         self._size = size
     
     def url(self):
         return self._url
+    
     def setUrl_(self, url):
         self._url = url
     
     def image(self):
         return self._image
+    
     def setImage_(self, image):
         self._image = image
     
     def sha1(self):
         return self._sha1
+    
     def setSha1_(self, sha1):
         self._sha1 = sha1

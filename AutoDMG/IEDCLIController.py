@@ -192,7 +192,7 @@ class IEDCLIController(NSObject):
         self.workflow.start()
         self.waitBusy()
         if self.hasFailed:
-            return 1 # EXIT_FAILURE
+            return 1    # EXIT_FAILURE
         
         return os.EX_OK
     
@@ -270,7 +270,7 @@ class IEDCLIController(NSObject):
             self.waitBusy()
         
         if self.hasFailed:
-            return 1 # EXIT_FAILURE
+            return 1    # EXIT_FAILURE
         
         LogNotice(u"All updates for %@ %@ downloaded", args.version, args.build)
         
@@ -292,7 +292,7 @@ class IEDCLIController(NSObject):
         self.waitBusy()
         
         if self.hasFailed:
-            return 1 # EXIT_FAILURE
+            return 1    # EXIT_FAILURE
         
         return os.EX_OK
     
@@ -319,7 +319,6 @@ class IEDCLIController(NSObject):
         self.installerVersion = info[u"version"]
         self.installerBuild = info[u"build"]
         LogNotice(u"Found installer: %s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
-        #self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
         self.busy = False
     
     def sourceFailed_text_(self, message, text):

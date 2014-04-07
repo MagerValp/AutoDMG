@@ -38,8 +38,8 @@ class IEDAppDelegate(NSObject):
         name, version, build = IEDUtil.readSystemVersion_(u"/")
         LogInfo(u"%@ %@ %@", name, version, build)
         LogInfo(u"%@ %@ (%@)", platform.python_implementation(),
-                                 platform.python_version(),
-                                 platform.python_compiler())
+                               platform.python_version(),
+                               platform.python_compiler())
         LogInfo(u"PyObjC %@", pyObjCVersion)
         
         # Initialize user defaults before application starts.
@@ -69,7 +69,7 @@ class IEDAppDelegate(NSObject):
             alert = NSAlert.alloc().init()
             alert.setAlertStyle_(NSCriticalAlertStyle)
             alert.setMessageText_(u"Application busy")
-            alert.setInformativeText_(u"Quitting now could leave the " \
+            alert.setInformativeText_(u"Quitting now could leave the "
                                       u"system in an unpredictable state.")
             alert.addButtonWithTitle_(u"Quit")
             alert.addButtonWithTitle_(u"Stay")

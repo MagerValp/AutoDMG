@@ -35,15 +35,18 @@ class IEDLogLine(NSObject):
     
     def date(self):
         return self._date
+    
     def setDate(self, date):
         self._date = date
     
     def message(self):
         return self._message
+    
     def setMessage(self, message):
         self._message = message
     
     def level(self):
         return self._level
+    
     def setLevel(self, level):
         self._level = level

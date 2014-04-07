@@ -156,7 +156,7 @@ class IEDDMGHelper(NSObject):
     
     def handleDetachAllResult_(self, result):
         LogDebug(u"handleDetachAllResult:%@", result)
-        if result[u"success"] == False:
+        if not result[u"success"]:
             self.detachAllFailed[result[u"dmg-path"]] = result[u"error-message"]
         self.detachAllRemaining -= 1
         if self.detachAllRemaining == 0:

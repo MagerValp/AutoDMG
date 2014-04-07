@@ -220,8 +220,8 @@ def LogToFile(level, message):
     if IEDLogFileHandle is not None:
         print >>IEDLogFileHandle, \
             NSString.stringWithFormat_(u"%@  %@",
-            timestamp(),
-            message).encode(u"utf-8")
+                                       timestamp(),
+                                       message).encode(u"utf-8")
     else:
         NSLog(u"IEDLogFileHandle not open")
 
