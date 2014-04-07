@@ -145,6 +145,14 @@ class IEDController(NSObject):
         self.sourceLabel.setStringValue_(u"%s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
         self.sourceLabel.setTextColor_(NSColor.controlTextColor())
         self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
+        template = info[u"template"]
+        if template:
+            # Don't default to applying updates to an image that was built
+            # with updates applied, and vice versa.
+            if template.applyUpdates:
+                self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
+            else:
+                self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
         self.enableMainWindowControls()
         self.busy = False
     

@@ -22,6 +22,7 @@ from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessag
 from IEDUtil import *
 from IEDSocketListener import *
 from IEDDMGHelper import *
+from IEDTemplate import *
 
 
 class IEDWorkflow(NSObject):
@@ -172,8 +173,10 @@ class IEDWorkflow(NSObject):
             # Check if the source is an InstallESD or system image.
             if os.path.exists(os.path.join(mountPoint, u"Packages", u"OSInstall.mpkg")):
                 self.sourceType = IEDWorkflow.INSTALL_ESD
+                LogDebug(u"sourceType = INSTALL_ESD")
             else:
                 self.sourceType = IEDWorkflow.SYSTEM_IMAGE
+                LogDebug(u"sourceType = SYSTEM_IMAGE")
         
         baseSystemPath = os.path.join(mountPoint, u"BaseSystem.dmg")
         
@@ -211,12 +214,25 @@ class IEDWorkflow(NSObject):
             u"name": name,
             u"version": version,
             u"build": build,
+            u"template": self.loadImageTemplate_(mountPoint),
         }
         self.delegate.sourceSucceeded_(info)
         # There's no reason to keep the dmg mounted if it's not an installer.
         if self.sourceType == IEDWorkflow.SYSTEM_IMAGE:
             self.dmgHelper.detachAll_(self.ejectSystemImage_)
-        
+    
+    def loadImageTemplate_(self, mountPoint):
+        LogDebug(u"checkTemplate:%@", mountPoint)
+        try:
+            path = glob.glob(os.path.join(mountPoint, u"private/var/log/*.adtmpl"))[0]
+        except IndexError:
+            return None
+        template = IEDTemplate.alloc().init()
+        error = template.loadTemplateAndReturnError_(path)
+        if error:
+            LogWarning(u"Error reading %@ from image: %@", os.path.basename(path), error)
+            return None
+        return template
     
     def rejectSource_(self, failedUnmounts):
         self.delegate.sourceFailed_text_(u"Version mismatch",
