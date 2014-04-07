@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDController.py
 #  AutoDMG
@@ -262,6 +262,3 @@ class IEDController(NSObject):
         self.buildProgressWindow.orderOut_(self)
         self.enableMainWindowControls()
         self.busy = False
-    
-
-

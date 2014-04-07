@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDWorkflow.py
 #  AutoDMG
@@ -665,5 +665,3 @@ class IEDWorkflow(NSObject):
         
         else:
             self.fail_details_(u"Unknown progress notification", u"Message: %@", msg)
-
-

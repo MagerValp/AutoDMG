@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDAddPkgController.py
 #  AutoDMG
@@ -164,5 +164,3 @@ class IEDAddPkgController(NSObject):
         pboard.declareTypes_owner_([IEDAddPkgController.movedRowsType], self)
         pboard.setPropertyList_forType_(u",".join(unicode(i) for i in indexes), IEDAddPkgController.movedRowsType)
         return True
-
-

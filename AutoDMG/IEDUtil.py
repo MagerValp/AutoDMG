@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDUtil.py
 #  AutoDMG
@@ -104,11 +104,11 @@ class IEDUtil(NSObject):
             symlinkPath = os.path.join(tempdir, pkgFileName)
             os.symlink(pkgPath, symlinkPath)
             p = subprocess.Popen([u"/usr/sbin/installer",
-                                 u"-pkginfo",
-                                 u"-verbose",
-                                 u"-plist",
-                                 u"-pkg",
-                                 symlinkPath],
+                                  u"-pkginfo",
+                                  u"-verbose",
+                                  u"-plist",
+                                  u"-pkg",
+                                  symlinkPath],
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
             out, err = p.communicate()
@@ -141,7 +141,5 @@ class IEDUtil(NSObject):
         if not plist:
             LogError(u"Error decoding plist: %@", error)
             return None
-        LogDebug(u"%@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"])* 1024))
+        LogDebug(u"%@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"]) * 1024))
         return int(plist[u"Size"]) * 1024
-
-

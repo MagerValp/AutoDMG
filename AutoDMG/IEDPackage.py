@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDPackage.py
 #  AutoDMG
@@ -47,11 +47,11 @@ class IEDPackage(NSObject):
         self._url = url
     
     def image(self):
-        return self._image    
+        return self._image
     def setImage_(self, image):
         self._image = image
     
     def sha1(self):
-        return self._sha1    
+        return self._sha1
     def setSha1_(self, sha1):
         self._sha1 = sha1

@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #  IEDUpdateController.py
 #  AutoDMG
@@ -267,5 +267,3 @@ class IEDUpdateController(NSObject):
             return self.updates[row].image()
         elif column.identifier() == u"name":
             return self.updates[row].name()
-
-
