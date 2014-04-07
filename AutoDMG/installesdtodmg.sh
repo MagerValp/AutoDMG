@@ -166,6 +166,7 @@ echo "IED:WATCHLOG:STOP"
 
 # Copy template.
 mkdir -p "$sparsemount/private/var/log"
+rm -f "$sparsemount/private/var/log"/*.adtmpl
 cp "$template" "$sparsemount/private/var/log"
 
 # Finalize image.
