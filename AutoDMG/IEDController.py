@@ -161,8 +161,10 @@ class IEDController(NSObject):
     def foundSourceForIcon_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
         icon.setSize_(NSMakeSize(256.0, 256.0))
+        tiff = icon.TIFFRepresentation()
+        image = NSImage.alloc().initWithData_(tiff)
         self.sourceImage.animator().setAlphaValue_(1.0)
-        self.sourceImage.animator().setImage_(icon)
+        self.sourceImage.animator().setImage_(image)
     
     def sourceSucceeded_(self, info):
         self.installerName = info[u"name"]
