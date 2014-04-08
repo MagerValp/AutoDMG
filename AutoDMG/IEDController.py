@@ -373,6 +373,7 @@ class IEDController(NSObject):
             self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
         if template.sourcePath:
             LogDebug(u"Setting source to %@", template.sourcePath)
+            self.setBusy_(True)
             self.workflow.setSource_(template.sourcePath)
         self.templateURL = url
         return True
