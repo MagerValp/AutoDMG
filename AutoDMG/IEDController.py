@@ -357,6 +357,7 @@ class IEDController(NSObject):
     
     def openTemplateAtURL_(self, url):
         LogDebug(u"openTemplateAtURL:%@", url)
+        self.templateURL = None
         template = IEDTemplate.alloc().init()
         error = template.loadTemplateAndReturnError_(url.path())
         if error:
@@ -373,4 +374,5 @@ class IEDController(NSObject):
         if template.sourcePath:
             LogDebug(u"Setting source to %@", template.sourcePath)
             self.workflow.setSource_(template.sourcePath)
+        self.templateURL = url
         return True
