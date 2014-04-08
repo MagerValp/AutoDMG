@@ -41,6 +41,7 @@ def gui_main():
     IEDLog.IEDLogToSyslog      = True
     IEDLog.IEDLogToStdOut      = True
     IEDLog.IEDLogToFile        = False
+    IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
     
     import AppKit
     from PyObjCTools import AppHelper
