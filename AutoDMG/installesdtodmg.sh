@@ -133,19 +133,19 @@ for package; do
         echo "installer:%100.0"
     else
         if [[ $TESTING == "yes" ]]; then
-            sleep 1
+            sleep 0.25
             echo "installer:PHASE:Faking it   "
             echo "installer:%25.0"
-            sleep 1
+            sleep 0.25
             echo "installer:PHASE:Faking it.  "
             echo "installer:%50.0"
-            sleep 1
+            sleep 0.25
             echo "installer:PHASE:Faking it.. "
             echo "installer:%75.0"
-            sleep 1
+            sleep 0.25
             echo "installer:PHASE:Faking it..."
             echo "installer:%100.0"
-            sleep 1
+            sleep 0.25
         else
             installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
             declare -i result=$?
