@@ -542,7 +542,6 @@
                 <outlet property="logController" destination="Ssv-D7-Tkv" id="Rnb-Ky-1XY"/>
                 <outlet property="mainWindow" destination="GmA-Xb-izQ" id="JNO-Fx-207"/>
                 <outlet property="openMenuItem" destination="72" id="Oyo-4c-wyf"/>
-                <outlet property="openRecentMenuItem" destination="124" id="HYW-Dw-qsX"/>
                 <outlet property="saveAsMenuItem" destination="80" id="JGu-LJ-kKm"/>
                 <outlet property="saveMenuItem" destination="75" id="dJr-y9-EBO"/>
                 <outlet property="sourceBox" destination="zyE-7U-hFC" id="zew-uO-2Pr"/>

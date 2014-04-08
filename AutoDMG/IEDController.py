@@ -39,7 +39,6 @@ class IEDController(NSObject):
     
     fileMenu = IBOutlet()
     openMenuItem = IBOutlet()
-    openRecentMenuItem = IBOutlet()
     saveMenuItem = IBOutlet()
     saveAsMenuItem = IBOutlet()
     
@@ -71,9 +70,6 @@ class IEDController(NSObject):
         
         # Currently loaded template.
         self.templateURL = None
-        
-        # Hide the Open Recent menu as it isn't implemented.
-        self.openRecentMenuItem.setHidden_(True)
     
     # Methods to communicate with app delegate.
     
@@ -363,6 +359,8 @@ class IEDController(NSObject):
         if error:
             self.displayAlert_text_(u"Couldn't open template", error)
             return False
+        self.templateURL = url
+        NSDocumentController.sharedDocumentController().noteNewRecentDocumentURL_(url)
         LogDebug(u"Setting additional packages to %@", template.additionalPackages)
         self.addPkgController.replacePackagesWithPaths_(template.additionalPackages)
         if template.applyUpdates:
@@ -375,5 +373,4 @@ class IEDController(NSObject):
             LogDebug(u"Setting source to %@", template.sourcePath)
             self.setBusy_(True)
             self.workflow.setSource_(template.sourcePath)
-        self.templateURL = url
         return True
