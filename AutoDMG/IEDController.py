@@ -323,8 +323,9 @@ class IEDController(NSObject):
         self.saveTemplateToURL_(panel.URL())
     
     def saveTemplateToURL_(self, url):
-        self.templateURL = url
         LogDebug(u"saveTemplateToURL:%@", url)
+        self.templateURL = url
+        NSDocumentController.sharedDocumentController().noteNewRecentDocumentURL_(url)
         
         # Create a template from the current state.
         template = IEDTemplate.alloc().init()
