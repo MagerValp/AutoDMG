@@ -137,18 +137,33 @@ class IEDCLIController(NSObject):
                                                                                            self.installerBuild))
                 return os.EX_DATAERR
             
+            missingUpdates = list()
+            
             for update in profile:
                 LogNotice(u"Update: %@ (%@)", update[u"name"], IEDUtil.formatBytes_(update[u"size"]))
-                if not self.cache.isCached_(update[u"sha1"]):
-                    self.failWithMessage_(u"Can't apply updates, %s is missing from cache" % update[u"name"])
-                    return os.EX_DATAERR
                 package = IEDPackage.alloc().init()
                 package.setName_(update[u"name"])
                 package.setPath_(self.cache.updatePath_(update[u"sha1"]))
                 package.setSize_(update[u"size"])
                 package.setUrl_(update[u"url"])
                 package.setSha1_(update[u"sha1"])
+                if not self.cache.isCached_(update[u"sha1"]):
+                    if args.download_updates:
+                        missingUpdates.append(package)
+                    else:
+                        self.failWithMessage_(u"Can't apply updates, %s is missing from cache" % update[u"name"])
+                        return os.EX_DATAERR
                 updates.append(package)
+            
+            if missingUpdates:
+                self.cache.downloadUpdates_(missingUpdates)
+                self.busy = True
+                self.waitBusy()
+                if self.hasFailed:
+                    self.failWithMessage_(u"Can't build due to updates missing from cache")
+                    return 1    # EXIT_FAILURE
+                updates.extend(missingUpdates)
+                LogNotice(u"All updates for %@ %@ downloaded", self.installerVersion, self.installerBuild)
         
         # Generate the list of additional packages to install.
         template.resolvePackages()
@@ -213,6 +228,7 @@ class IEDCLIController(NSObject):
         argparser.add_argument(u"-i", u"--installer", help=u"Override installer in template")
         argparser.add_argument(u"-n", u"--name", help=u"Installed system volume name")
         argparser.add_argument(u"-u", u"--updates", action=u"store_const", const=True, help=u"Apply updates")
+        argparser.add_argument(u"-U", u"--download-updates", action=u"store_true", help=u"Download missing updates")
         argparser.add_argument(u"-f", u"--force", action=u"store_true", help=u"Overwrite output")
         argparser.add_argument(u"packages", nargs=u"*", help=u"Additional packages")
     
