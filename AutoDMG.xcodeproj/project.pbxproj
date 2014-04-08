@@ -17,6 +17,7 @@
 		05429D7B1816BE9900CD61E6 /* IEDUpdateController.py in Resources */ = {isa = PBXBuildFile; fileRef = 05429D7A1816BE9900CD61E6 /* IEDUpdateController.py */; };
 		05429D7D1816BED500CD61E6 /* IEDAddPkgController.py in Resources */ = {isa = PBXBuildFile; fileRef = 05429D7C1816BED500CD61E6 /* IEDAddPkgController.py */; };
 		055DBD291822AAA10008DA0E /* IEDUtil.py in Resources */ = {isa = PBXBuildFile; fileRef = 055DBD281822AAA10008DA0E /* IEDUtil.py */; };
+		05C36AD318F406EF002AF318 /* AutoDMG Template.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 05C36AD218F406EF002AF318 /* AutoDMG Template.iconset */; };
 		05FD2081181A5BCE00302827 /* IEDLog.py in Resources */ = {isa = PBXBuildFile; fileRef = 05FD2080181A5BCE00302827 /* IEDLog.py */; };
 		6612F06018164BC500655C8B /* IEDUpdateCache.py in Resources */ = {isa = PBXBuildFile; fileRef = 6612F05F18164BC500655C8B /* IEDUpdateCache.py */; };
 		66158EBE1821480200E43508 /* Exclamation.png in Resources */ = {isa = PBXBuildFile; fileRef = 66158EBC1821480200E43508 /* Exclamation.png */; };
@@ -63,6 +64,7 @@
 		05429D7A1816BE9900CD61E6 /* IEDUpdateController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUpdateController.py; sourceTree = "<group>"; };
 		05429D7C1816BED500CD61E6 /* IEDAddPkgController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDAddPkgController.py; sourceTree = "<group>"; };
 		055DBD281822AAA10008DA0E /* IEDUtil.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUtil.py; sourceTree = "<group>"; };
+		05C36AD218F406EF002AF318 /* AutoDMG Template.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = "AutoDMG Template.iconset"; sourceTree = "<group>"; };
 		05FD2080181A5BCE00302827 /* IEDLog.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDLog.py; sourceTree = "<group>"; };
 		6612F05F18164BC500655C8B /* IEDUpdateCache.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUpdateCache.py; sourceTree = "<group>"; };
 		66158EBC1821480200E43508 /* Exclamation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Exclamation.png; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				0506B97B17F0849C0011CCC2 /* AutoDMG.iconset */,
+				05C36AD218F406EF002AF318 /* AutoDMG Template.iconset */,
 				66EA72D617EB1586009B8350 /* AutoDMG-Info.plist */,
 				66EA72DD17EB1587009B8350 /* Credits.rtf */,
 				66D24F2518171E680042F227 /* Defaults.plist */,
@@ -345,6 +348,7 @@
 				05FD2081181A5BCE00302827 /* IEDLog.py in Resources */,
 				665E92871815B07A00A8F683 /* UpdateProfiles.plist in Resources */,
 				66EA72F317EB3B40009B8350 /* IEDSourceSelector.py in Resources */,
+				05C36AD318F406EF002AF318 /* AutoDMG Template.iconset in Resources */,
 				051B177117F446560026E12B /* progresswatcher.py in Resources */,
 				66EA72DF17EB1587009B8350 /* Credits.rtf in Resources */,
 				66EA72F517EC764B009B8350 /* installesdtodmg.sh in Resources */,
