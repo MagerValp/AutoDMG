@@ -10,45 +10,80 @@
 #import <Python/Python.h>
 
 
+int gSysExit;
+
+void checkSysExit(void)
+{
+    if (gSysExit) {
+        NSLog(@"Application terminated with exit()");
+    }
+}
+
+
 int main(int argc, const char *argv[])
 {
     int result;
     
+    gSysExit = 1;
+    atexit(checkSysExit);
+    
     @autoreleasepool {
-
-        NSBundle *mainBundle = [NSBundle mainBundle];
-        NSString *resourcePath = [mainBundle resourcePath];
-        NSArray *pythonPathArray = @[resourcePath, [resourcePath stringByAppendingPathComponent:@"PyObjC"]];
         
-        setenv("PYTHONPATH", [[pythonPathArray componentsJoinedByString:@":"] UTF8String], 1);
-        
-        NSArray *possibleMainExtensions = @[@"py", @"pyc", @"pyo"];
-        NSString *mainFilePath = nil;
-        
-        for (NSString *possibleMainExtension in possibleMainExtensions) {
-            mainFilePath = [mainBundle pathForResource:@"main" ofType:possibleMainExtension];
-            if (mainFilePath) {
-                break;
-            }
-        }
-        if (!mainFilePath) {
-            [NSException raise:NSInternalInconsistencyException format:@"%s:%d main() Failed to find the main.{py,pyc,pyo} file in the application wrapper's Resources directory.", __FILE__, __LINE__];
-        }
-        
+        // Initialize Python interpreter.
         Py_SetProgramName("/usr/bin/python");
         Py_Initialize();
-        PySys_SetArgv(argc, (char **)argv);
-        
-        const char *mainFilePathPtr = [mainFilePath UTF8String];
-        FILE *mainFile = fopen(mainFilePathPtr, "r");
-        result = PyRun_SimpleFile(mainFile, (char *)[[mainFilePath lastPathComponent] UTF8String]);
-        
-        if (result != 0) {
-            [NSException raise:NSInternalInconsistencyException
-                        format:@"%s:%d main() PyRun_SimpleFile failed with file '%@', see console for errors.", __FILE__, __LINE__, mainFilePath];
+        PySys_SetArgvEx(argc, (char **)argv, 0);
+        PyObject *pSysPath = PySys_GetObject("path");
+        PyObject *pResourcePath = PyString_FromString([[[NSBundle mainBundle] resourcePath] UTF8String]);
+        if (PyList_Insert(pSysPath, 0, pResourcePath) == -1) {
+            PyErr_Print();
+            [NSException raise:NSInternalInconsistencyException format:@"Couldn't add '%@' to sys.path", [[NSBundle mainBundle] resourcePath]];
         }
+        
+        // Import main.py from Resources.
+        PyObject *pName = PyString_FromString("main");
+        PyObject *pModule = PyImport_Import(pName);
+        Py_DECREF(pName);
+        if (!pModule) {
+            PyErr_Print();
+            [NSException raise:NSInternalInconsistencyException format:@"Import of main.py failed"];
+        }
+        
+        // Find the function main().
+        PyObject *pFunc = PyObject_GetAttrString(pModule, "main");
+        if (!pFunc) {
+            if (PyErr_Occurred()) {
+                PyErr_Print();
+            }
+            Py_DECREF(pModule);
+            [NSException raise:NSInternalInconsistencyException format:@"Can't find function main() in main.py"];
+        }
+        if (!PyCallable_Check(pFunc)) {
+            Py_DECREF(pFunc);
+            Py_DECREF(pModule);
+            [NSException raise:NSInternalInconsistencyException format:@"main isn't callable in main.py"];
+        }
+        
+        // Call main().
+        PyObject *pValue = PyObject_CallObject(pFunc, NULL);
+        // NB: If NSApplicationMain() is called in the Python script the code below this point will never execute.
+        Py_DECREF(pFunc);
+        if (!pValue) {
+            PyErr_Print();
+            Py_DECREF(pModule);
+            [NSException raise:NSInternalInconsistencyException format:@"Call to main() in main.py failed"];
+        }
+        
+        // Use the returned value as our exit status.
+        result = (int)PyInt_AsLong(pValue);
+        
+        Py_DECREF(pValue);
+        Py_DECREF(pModule);
+        
+        Py_Finalize();
     
     }
-
+    
+    gSysExit = 0;
     return result;
 }

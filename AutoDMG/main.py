@@ -143,32 +143,39 @@ def cli_main(argv):
         clicontroller.cleanup()
 
 
-# Global exception handler to make sure we always log tracebacks.
-try:
-
-    # Decode arguments as utf-8 and filter out arguments from Finder and
-    # Xcode.
-    decoded_argv = list()
-    i = 1
-    while i < len(sys.argv):
-        arg = sys.argv[i].decode(u"utf-8")
-        if arg.startswith(u"-psn"):
-            pass
-        elif arg == u"-NSDocumentRevisionsDebugMode":
+def main():
+    # Global exception handler to make sure we always log tracebacks.
+    try:
+        
+        # Decode arguments as utf-8 and filter out arguments from Finder and
+        # Xcode.
+        decoded_argv = list()
+        i = 1
+        while i < len(sys.argv):
+            arg = sys.argv[i].decode(u"utf-8")
+            if arg.startswith(u"-psn"):
+                pass
+            elif arg == u"-NSDocumentRevisionsDebugMode":
+                i += 1
+            elif arg.startswith(u"-NS"):
+                pass
+            else:
+                decoded_argv.append(arg)
             i += 1
-        elif arg.startswith(u"-NS"):
-            pass
+        
+        # If no arguments are supplied, assume the GUI should be started.
+        if len(decoded_argv) == 0:
+            return gui_main()
+        # Otherwise parse the command line arguments.
         else:
-            decoded_argv.append(arg)
-        i += 1
+            return cli_main(decoded_argv)
+    
+    except SystemExit as e:
+        return e.code
+    except Exception:
+        NSLog(u"AutoDMG died with an uncaught exception, %@", traceback.format_exc())
+        return os.EX_SOFTWARE
 
-    # If no arguments are supplied, assume the GUI should be started.
-    if len(decoded_argv) == 0:
-        sys.exit(gui_main())
-    # Otherwise parse the command line arguments.
-    else:
-        sys.exit(cli_main(decoded_argv))
 
-except Exception:
-    NSLog(u"AutoDMG died with an uncaught exception, %@", traceback.format_exc())
-    sys.exit(os.EX_SOFTWARE)
+if __name__ == '__main__':
+    sys.exit(main())
