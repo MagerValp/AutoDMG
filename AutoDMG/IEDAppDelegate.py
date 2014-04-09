@@ -65,7 +65,7 @@ class IEDAppDelegate(NSObject):
     
     def applicationShouldTerminate_(self, sender):
         LogDebug(u"applicationShouldTerminate:")
-        if self.mainWindowController.isBusy():
+        if self.mainWindowController.busy():
             alert = NSAlert.alloc().init()
             alert.setAlertStyle_(NSCriticalAlertStyle)
             alert.setMessageText_(u"Application busy")
@@ -85,3 +85,28 @@ class IEDAppDelegate(NSObject):
     @IBAction
     def showHelp_(self, sender):
         NSWorkspace.sharedWorkspace().openURL_(NSURL.URLWithString_(defaults.stringForKey_(u"HelpURL")))
+    
+    
+    
+    # Trampolines for document handling.
+    
+    @IBAction
+    def saveDocument_(self, sender):
+        LogDebug(u"saveDocument:")
+        self.mainWindowController.saveTemplate()
+    
+    @IBAction
+    def saveDocumentAs_(self, sender):
+        LogDebug(u"saveDocumentAs:")
+        self.mainWindowController.saveTemplateAs()
+    
+    @IBAction
+    def openDocument_(self, sender):
+        LogDebug(u"openDocument:")
+        self.mainWindowController.openTemplate()
+    
+    def validateMenuItem_(self, menuItem):
+        return self.mainWindowController.validateMenuItem_(menuItem)
+    
+    def application_openFile_(self, application, filename):
+        return self.mainWindowController.openTemplateAtURL_(NSURL.fileURLWithPath_(filename))

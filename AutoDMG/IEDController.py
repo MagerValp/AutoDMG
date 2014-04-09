@@ -37,6 +37,11 @@ class IEDController(NSObject):
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
     
+    fileMenu = IBOutlet()
+    openMenuItem = IBOutlet()
+    saveMenuItem = IBOutlet()
+    saveAsMenuItem = IBOutlet()
+    
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
         
@@ -61,17 +66,35 @@ class IEDController(NSObject):
         self.enabled = True
         
         # When busy is true quitting gets a confirmation prompt.
-        self.busy = False
+        self._busy = False
+        
+        # Currently loaded template.
+        self.templateURL = None
     
     # Methods to communicate with app delegate.
     
     def cleanup(self):
         self.workflow.cleanup()
     
-    def isBusy(self):
-        return self.busy
+    def busy(self):
+        return self._busy
+    
+    def setBusy_(self, busy):
+        self._busy = busy
+        if busy:
+            self.disableMainWindowControls()
+        else:
+            self.enableMainWindowControls()
     
     # Helper methods.
+    
+    def validateMenuItem_(self, menuItem):
+        if self.busy():
+            if menuItem in (self.openMenuItem,
+                            self.saveMenuItem,
+                            self.saveAsMenuItem):
+                return False
+        return True
     
     def displayAlert_text_(self, message, text):
         LogDebug(u"Displaying alert: %@ (%@)", message, text)
@@ -116,8 +139,7 @@ class IEDController(NSObject):
     # Act on user dropping an installer.
     
     def acceptSource_(self, path):
-        self.disableMainWindowControls()
-        self.busy = True
+        self.setBusy_(True)
         self.workflow.setSource_(path)
     
     # Workflow delegate methods.
@@ -135,8 +157,10 @@ class IEDController(NSObject):
     def foundSourceForIcon_(self, path):
         icon = NSWorkspace.sharedWorkspace().iconForFile_(path)
         icon.setSize_(NSMakeSize(256.0, 256.0))
+        tiff = icon.TIFFRepresentation()
+        image = NSImage.alloc().initWithData_(tiff)
         self.sourceImage.animator().setAlphaValue_(1.0)
-        self.sourceImage.animator().setImage_(icon)
+        self.sourceImage.animator().setImage_(image)
     
     def sourceSucceeded_(self, info):
         self.installerName = info[u"name"]
@@ -145,8 +169,15 @@ class IEDController(NSObject):
         self.sourceLabel.setStringValue_(u"%s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
         self.sourceLabel.setTextColor_(NSColor.controlTextColor())
         self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
-        self.enableMainWindowControls()
-        self.busy = False
+        template = info[u"template"]
+        if template:
+            # Don't default to applying updates to an image that was built
+            # with updates applied, and vice versa.
+            if template.applyUpdates:
+                self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
+            else:
+                self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
+        self.setBusy_(False)
     
     def sourceFailed_text_(self, message, text):
         self.displayAlert_text_(message, text)
@@ -154,8 +185,7 @@ class IEDController(NSObject):
         self.sourceImage.animator().setAlphaValue_(1.0)
         self.sourceLabel.setStringValue_(u"Drop OS X Installer Here")
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
-        self.enableMainWindowControls()
-        self.busy = False
+        self.setBusy_(False)
     
     
     
@@ -221,8 +251,7 @@ class IEDController(NSObject):
         self.buildProgressBar.setDoubleValue_(0.0)
         self.buildProgressMessage.setStringValue_(u"")
         self.buildProgressWindow.makeKeyAndOrderFront_(self)
-        self.disableMainWindowControls()
-        self.busy = True
+        self.setBusy_(True)
     
     def buildSetTotalWeight_(self, totalWeight):
         self.buildProgressBar.setMaxValue_(totalWeight)
@@ -260,5 +289,89 @@ class IEDController(NSObject):
     
     def buildStopped(self):
         self.buildProgressWindow.orderOut_(self)
-        self.enableMainWindowControls()
-        self.busy = False
+        self.setBusy_(False)
+    
+    
+    
+    # Load and save templates.
+    
+    def saveTemplate(self):
+        if self.templateURL:
+            self.saveTemplateToURL_(self.templateURL)
+        else:
+            self.saveTemplateAs()
+    
+    def saveTemplateAs(self):
+        panel = NSSavePanel.savePanel()
+        panel.setExtensionHidden_(False)
+        panel.setAllowedFileTypes_([u"adtmpl"])
+        formatter = NSDateFormatter.alloc().init()
+        formatter.setDateFormat_(u"yyMMdd")
+        dateStr = formatter.stringFromDate_(NSDate.date())
+        panel.setNameFieldStringValue_(u"AutoDMG-%s.adtmpl" % (dateStr))
+        result = panel.runModal()
+        if result != NSFileHandlingPanelOKButton:
+            return
+        
+        exists, error = panel.URL().checkResourceIsReachableAndReturnError_(None)
+        if exists:
+            success, error = NSFileManager.defaultManager().removeItemAtURL_error_(panel.URL(), None)
+            if not success:
+                NSApp.presentError_(error)
+                return
+        
+        self.saveTemplateToURL_(panel.URL())
+    
+    def saveTemplateToURL_(self, url):
+        LogDebug(u"saveTemplateToURL:%@", url)
+        self.templateURL = url
+        NSDocumentController.sharedDocumentController().noteNewRecentDocumentURL_(url)
+        
+        # Create a template from the current state.
+        template = IEDTemplate.alloc().init()
+        if self.workflow.source():
+            template.setSourcePath_(self.workflow.source())
+        if self.updateController.packagesToInstall():
+            template.setApplyUpdates_(True)
+        else:
+            template.setApplyUpdates_(False)
+        template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
+        
+        error = template.saveTemplateAndReturnError_(url.path())
+        if error:
+            self.displayAlert_text_(u"Couldn't save template", error)
+    
+    def openTemplate(self):
+        panel = NSOpenPanel.openPanel()
+        panel.setExtensionHidden_(False)
+        panel.setAllowedFileTypes_([u"adtmpl"])
+        
+        result = panel.runModal()
+        if result != NSFileHandlingPanelOKButton:
+            return
+        
+        return self.openTemplateAtURL_(panel.URL())
+    
+    def openTemplateAtURL_(self, url):
+        LogDebug(u"openTemplateAtURL:%@", url)
+        self.templateURL = None
+        template = IEDTemplate.alloc().init()
+        error = template.loadTemplateAndReturnError_(url.path())
+        if error:
+            self.displayAlert_text_(u"Couldn't open template", error)
+            return False
+        self.templateURL = url
+        NSDocumentController.sharedDocumentController().noteNewRecentDocumentURL_(url)
+        LogDebug(u"Setting additional packages to %@", template.additionalPackages)
+        self.addPkgController.replacePackagesWithPaths_(template.additionalPackages)
+        if template.applyUpdates:
+            LogDebug(u"Enable updates")
+            self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
+        else:
+            LogDebug(u"Disable updates")
+            self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
+        if template.sourcePath:
+            LogDebug(u"Setting source to %@", template.sourcePath)
+            self.setBusy_(True)
+            self.workflow.setSource_(template.sourcePath)
+        return True

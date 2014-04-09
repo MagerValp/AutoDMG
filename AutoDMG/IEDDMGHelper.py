@@ -69,9 +69,10 @@ class IEDDMGHelper(NSObject):
         xmlStartIndex = out.find("<?xml")
         plist = plistlib.readPlistFromString(out[xmlStartIndex:])
         for partition in plist[u"system-entities"]:
-            if u"mount-point" in partition:
-                self.dmgs[dmgPath] = partition[u"mount-point"]
-                break
+            if partition[u"content-hint"] == u"Apple_HFS":
+                if u"mount-point" in partition:
+                    self.dmgs[dmgPath] = partition[u"mount-point"]
+                    break
         else:
             self.tellDelegate_message_(selector, {u"success": False,
                                                   u"dmg-path": dmgPath,

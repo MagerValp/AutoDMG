@@ -22,12 +22,16 @@ from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessag
 from IEDUtil import *
 from IEDSocketListener import *
 from IEDDMGHelper import *
+from IEDTemplate import *
 
 
 class IEDWorkflow(NSObject):
     """The workflow contains the logic needed to setup, execute, and report
     the result of the build.
     """
+    
+    INSTALL_ESD = 1
+    SYSTEM_IMAGE = 2
     
     def init(self):
         self = super(IEDWorkflow, self).init()
@@ -88,6 +92,11 @@ class IEDWorkflow(NSObject):
         for dmgPath, mountPoint in self.attachedPackageDMGs.iteritems():
             self.dmgHelper.detach_selector_(dmgPath, self.handleDetachResult_)
     
+    def alertFailedUnmounts_(self, failedUnmounts):
+        if failedUnmounts:
+            text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
+            self.delegate.displayAlert_text_(u"Failed to eject dmgs", text)
+    
     
     
     # External state of controller.
@@ -130,9 +139,8 @@ class IEDWorkflow(NSObject):
     def continueSetSource_(self, failedUnmounts):
         LogDebug(u"continueSetSource:%@", failedUnmounts)
         
-        if failedUnmounts:
-            text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
-            self.delegate.displayAlert_text_(u"Failed to eject dmgs", text)
+        self.alertFailedUnmounts_(failedUnmounts)
+        
         self.installESDPath = os.path.join(self.newSourcePath, u"Contents/SharedSupport/InstallESD.dmg")
         if not os.path.exists(self.installESDPath):
             self.installESDPath = self.newSourcePath
@@ -162,50 +170,77 @@ class IEDWorkflow(NSObject):
         # Don't set this again since 10.9 mounts BaseSystem.dmg after InstallESD.dmg.
         if self.installerMountPoint is None:
             self.installerMountPoint = mountPoint
+            # Check if the source is an InstallESD or system image.
+            if os.path.exists(os.path.join(mountPoint, u"Packages", u"OSInstall.mpkg")):
+                self.sourceType = IEDWorkflow.INSTALL_ESD
+                LogDebug(u"sourceType = INSTALL_ESD")
+            else:
+                self.sourceType = IEDWorkflow.SYSTEM_IMAGE
+                LogDebug(u"sourceType = SYSTEM_IMAGE")
         
         baseSystemPath = os.path.join(mountPoint, u"BaseSystem.dmg")
         
+        # If we find a SystemVersion.plist we proceed to the next step.
         if os.path.exists(os.path.join(mountPoint, IEDUtil.VERSIONPLIST_PATH)):
-            # FIXME: check Packages/OSInstall.mpkg
             self.checkVersion_(mountPoint)
+        # Otherwise check if there's a BaseSystem.dmg that we need to examine.
         elif os.path.exists(baseSystemPath):
             self.baseSystemMountedFromPath = baseSystemPath
             self.dmgHelper.attach_selector_(baseSystemPath, self.handleSourceMountResult_)
         else:
-            self.delegate.sourceFailed_text_(u"Invalid installer",
-                                             u"Couldn't find system version in InstallESD.")
+            self.delegate.sourceFailed_text_(u"Invalid source",
+                                             u"Couldn't find system version.")
     
     def checkVersion_(self, mountPoint):
         LogDebug(u"checkVersion:%@", mountPoint)
         
-        # InstallESD.dmg for 10.7/10.8, BaseSystem.dmg for 10.9.
+        # We're now examining InstallESD.dmg for 10.7/10.8, BaseSystem.dmg for
+        # 10.9, or a system image.
         name, version, build = IEDUtil.readSystemVersion_(mountPoint)
         if self.baseSystemMountedFromPath:
             self.dmgHelper.detach_selector_(self.baseSystemMountedFromPath, self.handleDetachResult_)
         installerVersion = tuple(int(x) for x in version.split(u"."))
         runningVersion = tuple(int(x) for x in platform.mac_ver()[0].split(u"."))
-        if installerVersion[:2] == runningVersion[:2]:
-            LogNotice(u"Accepted source %@: %@ %@ %@", self.newSourcePath, name, version, build)
-            self._source = self.newSourcePath
-            self.installerName = name
-            self.installerVersion = version
-            self.installerBuild = build
-            info = {
-                u"name": name,
-                u"version": version,
-                u"build": build,
-            }
-            self.delegate.sourceSucceeded_(info)
-        else:
+        if installerVersion[:2] != runningVersion[:2]:
             self.delegate.ejectingSource()
             self.dmgHelper.detachAll_(self.rejectSource_)
+            return
+        LogNotice(u"Accepted source %@: %@ %@ %@", self.newSourcePath, name, version, build)
+        self._source = self.newSourcePath
+        self.installerName = name
+        self.installerVersion = version
+        self.installerBuild = build
+        info = {
+            u"name": name,
+            u"version": version,
+            u"build": build,
+            u"template": self.loadImageTemplate_(mountPoint),
+        }
+        self.delegate.sourceSucceeded_(info)
+        # There's no reason to keep the dmg mounted if it's not an installer.
+        if self.sourceType == IEDWorkflow.SYSTEM_IMAGE:
+            self.dmgHelper.detachAll_(self.ejectSystemImage_)
+    
+    def loadImageTemplate_(self, mountPoint):
+        LogDebug(u"checkTemplate:%@", mountPoint)
+        try:
+            path = glob.glob(os.path.join(mountPoint, u"private/var/log/*.adtmpl"))[0]
+        except IndexError:
+            return None
+        template = IEDTemplate.alloc().init()
+        error = template.loadTemplateAndReturnError_(path)
+        if error:
+            LogWarning(u"Error reading %@ from image: %@", os.path.basename(path), error)
+            return None
+        return template
     
     def rejectSource_(self, failedUnmounts):
         self.delegate.sourceFailed_text_(u"Version mismatch",
                                          u"The major version of the installer and the current OS must match.")
-        if failedUnmounts:
-            text = u"\n".join(u"%s: %s" % (dmg, error) for dmg, error in failedUnmounts.iteritems())
-            self.delegate.displayAlert_text_(u"Failed to eject dmgs", text)
+        self.alertFailedUnmounts_(failedUnmounts)
+    
+    def ejectSystemImage_(self, failedUnmounts):
+        self.alertFailedUnmounts_(failedUnmounts)
     
     
     
@@ -330,8 +365,12 @@ class IEDWorkflow(NSObject):
         installerPhases = [
             {u"title": u"Starting install",    u"weight":       21 * 1024 * 1024},
             {u"title": u"Creating disk image", u"weight":       21 * 1024 * 1024},
-            {u"title": u"Installing OS",       u"weight": 4 * 1024 * 1024 * 1024},
         ]
+        if self.sourceType == IEDWorkflow.INSTALL_ESD:
+            installerPhases.append({
+                u"title": u"Installing OS",
+                u"weight": 4 * 1024 * 1024 * 1024,
+            })
         for package in self.additionalPackages:
             installerPhases.append({
                 u"title": u"Installing %s" % package.name(),
@@ -477,10 +516,12 @@ class IEDWorkflow(NSObject):
     def continuePrepare(self):
         LogDebug(u"continuePrepare")
         
-        # Generate a list of packages to install, starting with the OS.
-        self.packagesToInstall = [
-            os.path.join(self.installerMountPoint, u"Packages/OSInstall.mpkg"),
-        ]
+        # Generate a list of packages to install.
+        self.packagesToInstall = list()
+        if self.sourceType == IEDWorkflow.INSTALL_ESD:
+            self.packagesToInstall.append(os.path.join(self.installerMountPoint,
+                                                       u"Packages",
+                                                       u"OSInstall.mpkg"))
         for package in self.additionalPackages:
             if package.path().endswith(u".dmg"):
                 mountPoint = self.attachedPackageDMGs[package.path()]
@@ -560,7 +601,10 @@ class IEDWorkflow(NSObject):
             u"--volume-name", self.volumeName(),
             u"--size", unicode(self.volumeSize()),
             u"--template", self.templatePath,
-        ] + self.packagesToInstall
+        ]
+        if self.sourceType == IEDWorkflow.SYSTEM_IMAGE:
+            args.extend([u"--baseimage", self.source()])
+        args.extend(self.packagesToInstall)
         LogInfo(u"Launching install with arguments:")
         for arg in args:
             LogInfo(u"    '%@'", arg)

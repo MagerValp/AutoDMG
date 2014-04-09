@@ -274,13 +274,17 @@ def run(args, sockPath, mode):
 def installesdtodmg(args):
     if args.cd:
         os.chdir(args.cd)
+    if args.baseimage:
+        baseimage = [args.baseimage]
+    else:
+        baseimage = []
     pwargs = [u"./installesdtodmg.sh",
               args.user,
               args.group,
               args.output,
               args.volume_name,
               args.size,
-              args.template] + args.packages
+              args.template] + baseimage + args.packages
     run(pwargs, args.socket, u"ied")
 
 
@@ -304,6 +308,7 @@ def main(argv):
     iedparser.add_argument(u"-t", u"--template", help=u"Path to adtmpl", required=True)
     iedparser.add_argument(u"-n", u"--volume-name", default=u"Macintosh HD", help=u"Set installed system's volume name.")
     iedparser.add_argument(u"-s", u"--size", default=u"32", help=u"Disk image size in GB.")
+    iedparser.add_argument(u"-b", u"--baseimage", default=None, help=u"Base system image for shadow mount.")
     iedparser.add_argument(u"packages", help=u"Packages to install", nargs=u"+")
     iedparser.set_defaults(func=installesdtodmg)
     

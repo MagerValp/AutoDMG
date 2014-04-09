@@ -63,6 +63,23 @@ class IEDAddPkgController(NSObject):
     
     
     
+    # Loading.
+    
+    def replacePackagesWithPaths_(self, packagePaths):
+        del self.packages[:]
+        self.packagePaths.clear()
+        for path in packagePaths:
+            package = IEDPackage.alloc().init()
+            package.setName_(os.path.basename(path))
+            package.setPath_(path)
+            package.setSize_(IEDUtil.getPackageSize_(path))
+            package.setImage_(NSWorkspace.sharedWorkspace().iconForFile_(path))
+            self.packages.append(package)
+            self.packagePaths.add(path)
+        self.tableView.reloadData()
+    
+    
+    
     # Act on remove button.
     
     @IBAction

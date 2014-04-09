@@ -15,6 +15,8 @@ import traceback
 import objc
 import Foundation
 
+objc.setVerbose(True)
+
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 import IEDLog
 from IEDUtil import *
@@ -39,6 +41,7 @@ def gui_main():
     IEDLog.IEDLogToSyslog      = True
     IEDLog.IEDLogToStdOut      = True
     IEDLog.IEDLogToFile        = False
+    IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
     
     import AppKit
     from PyObjCTools import AppHelper
