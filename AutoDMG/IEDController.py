@@ -12,7 +12,7 @@ from AppKit import *
 from objc import IBAction, IBOutlet
 
 import os.path
-from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
 from IEDUpdateController import *
 from IEDWorkflow import *
 from IEDTemplate import *
@@ -199,6 +199,7 @@ class IEDController(NSObject):
     
     # Act on build button.
     
+    @LogException
     @IBAction
     def buildButtonClicked_(self, sender):
         panel = NSSavePanel.savePanel()

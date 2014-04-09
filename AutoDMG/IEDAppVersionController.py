@@ -10,7 +10,7 @@
 from Foundation import *
 from objc import IBAction, IBOutlet
 
-from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
 from IEDUtil import *
 
 
@@ -19,6 +19,7 @@ class IEDAppVersionController(NSObject):
     def awakeFromNib(self):
         self.defaults = NSUserDefaults.standardUserDefaults()
     
+    @LogException
     @IBAction
     def checkForAppUpdate_(self, sender):
         self.checkForAppUpdateSilently_(False)

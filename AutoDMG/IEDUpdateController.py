@@ -14,6 +14,7 @@ from IEDProfileController import *
 from IEDUpdateCache import *
 from IEDPackage import *
 from IEDUtil import *
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
 
 
 class IEDUpdateController(NSObject):
@@ -125,6 +126,7 @@ class IEDUpdateController(NSObject):
     
     # Act on profile update requested.
     
+    @LogException
     @IBAction
     def checkForProfileUpdates_(self, sender):
         LogInfo(u"Checking for updates")
@@ -133,6 +135,7 @@ class IEDUpdateController(NSObject):
         url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
         self.profileController.updateFromURL_(url)
     
+    @LogException
     @IBAction
     def cancelProfileUpdateCheck_(self, sender):
         self.profileController.cancelUpdateDownload()
@@ -187,6 +190,7 @@ class IEDUpdateController(NSObject):
     
     # Act on apply updates checkbox changing.
     
+    @LogException
     @IBAction
     def applyUpdatesCheckboxChanged_(self, sender):
         if self.delegate:
@@ -196,6 +200,7 @@ class IEDUpdateController(NSObject):
     
     # Act on download button being clicked.
     
+    @LogException
     @IBAction
     def downloadButtonClicked_(self, sender):
         self.disableControls()
@@ -208,6 +213,7 @@ class IEDUpdateController(NSObject):
     
     # Act on download stop button being clicked.
     
+    @LogException
     @IBAction
     def downloadStopButtonClicked_(self, sender):
         self.cache.stopDownload()

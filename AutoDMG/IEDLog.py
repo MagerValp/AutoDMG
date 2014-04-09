@@ -16,6 +16,7 @@ from IEDLogLine import *
 import inspect
 import syslog
 import sys
+import traceback
 
 
 IEDLogLevelEmergency = 0
@@ -55,6 +56,25 @@ def IEDLogLevelName(level):
         u"Info",
         u"Debug",
     )[level]
+
+
+def LogException(func):
+    """Wrap IBActions to catch exceptions."""
+    def wrapper(c, s):
+        global _log
+        try:
+            func(c, s)
+        except Exception as e:
+            exceptionInfo = traceback.format_exc()
+            LogDebug(u"Uncaught exception in %@, %@", func.__name__, exceptionInfo.rstrip())
+            alert = NSAlert.alloc().init()
+            alert.setMessageText_(u"Uncaught exception")
+            alert.setInformativeText_(exceptionInfo)
+            alert.addButtonWithTitle_(u"Dismiss")
+            alert.addButtonWithTitle_(u"Save Log…")
+            while alert.runModal() == NSAlertSecondButtonReturn:
+                _log.saveLog_(IEDLog.IEDLog, None)
+    return wrapper
 
 
 class IEDLog(NSObject):
@@ -107,6 +127,7 @@ class IEDLog(NSObject):
     
     # Act on user showing log window.
     
+    @LogException
     @IBAction
     def displayLogWindow_(self, sender):
         self.logAtBottom = True
@@ -130,6 +151,7 @@ class IEDLog(NSObject):
     
     # Act on user filtering log.
     
+    @LogException
     @IBAction
     def setLevel_(self, sender):
         self.visibleLogLines = [x for x in self.logLines if x.level() <= self.levelSelector.indexOfSelectedItem()]
@@ -141,6 +163,7 @@ class IEDLog(NSObject):
     
     # Act on user clicking save button.
     
+    @LogException
     @IBAction
     def saveLog_(self, sender):
         panel = NSSavePanel.savePanel()

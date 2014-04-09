@@ -11,7 +11,7 @@ from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet, __version__ as pyObjCVersion
 
-from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
 from IEDUtil import *
 import platform
 
@@ -82,6 +82,7 @@ class IEDAppDelegate(NSObject):
         LogDebug(u"applicationWillTerminate:")
         self.mainWindowController.cleanup()
     
+    @LogException
     @IBAction
     def showHelp_(self, sender):
         NSWorkspace.sharedWorkspace().openURL_(NSURL.URLWithString_(defaults.stringForKey_(u"HelpURL")))
@@ -90,16 +91,19 @@ class IEDAppDelegate(NSObject):
     
     # Trampolines for document handling.
     
+    @LogException
     @IBAction
     def saveDocument_(self, sender):
         LogDebug(u"saveDocument:")
         self.mainWindowController.saveTemplate()
     
+    @LogException
     @IBAction
     def saveDocumentAs_(self, sender):
         LogDebug(u"saveDocumentAs:")
         self.mainWindowController.saveTemplateAs()
     
+    @LogException
     @IBAction
     def openDocument_(self, sender):
         LogDebug(u"openDocument:")

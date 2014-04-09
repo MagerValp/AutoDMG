@@ -12,7 +12,7 @@ from AppKit import *
 from objc import IBAction, IBOutlet
 import os.path
 
-from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
 from IEDUtil import *
 from IEDPackage import *
 
@@ -82,6 +82,7 @@ class IEDAddPkgController(NSObject):
     
     # Act on remove button.
     
+    @LogException
     @IBAction
     def removeButtonClicked_(self, sender):
         indexes = self.tableView.selectedRowIndexes()
