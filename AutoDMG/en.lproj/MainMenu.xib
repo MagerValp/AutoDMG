@@ -200,7 +200,7 @@
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="3O3-bG-GP2">
                                     <rect key="frame" x="16" y="159" width="350" height="17"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Additional packages:" id="1dz-ud-6qY">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Additional software:" id="1dz-ud-6qY">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
