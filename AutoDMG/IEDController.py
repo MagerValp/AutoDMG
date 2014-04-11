@@ -171,12 +171,18 @@ class IEDController(NSObject):
         self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
         template = info[u"template"]
         if template:
+            LogInfo(u"Template found in image: %@", repr(template))
             # Don't default to applying updates to an image that was built
             # with updates applied, and vice versa.
             if template.applyUpdates:
                 self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
             else:
                 self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
+        else:
+            LogInfo(u"No template found in image")
+            # If the image doesn't have a template inside, assume that updates
+            # were applied.
+            self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
         self.setBusy_(False)
     
     def sourceFailed_text_(self, message, text):

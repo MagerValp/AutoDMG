@@ -35,6 +35,16 @@ class IEDTemplate(NSObject):
         
         return self
     
+    def __repr__(self):
+        return "\n".join(("<IEDTemplate",
+                          "    sourcePath=%s" % repr(self.sourcePath),
+                          "    outputPath=%s" % repr(self.outputPath),
+                          "    applyUpdates=%s" % repr(self.applyUpdates),
+                          "    additionalPackages=(%s)" % ", ".join(repr(x) for x in self.additionalPackages),
+                          "    volumeName=%s" % repr(self.volumeName),
+                          "    volumeSize=%s" % repr(self.volumeSize),
+                          ">"))
+    
     def initWithSourcePath_(self, path):
         self = self.init()
         if self is None:
