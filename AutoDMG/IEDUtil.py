@@ -16,7 +16,13 @@ import subprocess
 import tempfile
 import shutil
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
-IEDMountInfo = objc.lookUpClass(u"IEDMountInfo")
+try:
+    IEDMountInfo = objc.lookUpClass(u"IEDMountInfo")
+except objc.nosuchclass_error:
+    # Create a dummy class to allow import from pure python for testing. Will
+    # crash when an attempt is made to use the class.
+    class IEDMountInfo(object):
+        pass
 
 
 class IEDUtil(NSObject):
