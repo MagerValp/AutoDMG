@@ -215,6 +215,7 @@ class IEDWorkflow(NSObject):
             u"version": version,
             u"build": build,
             u"template": self.loadImageTemplate_(mountPoint),
+            u"sourceType": self.sourceType,
         }
         self.delegate.sourceSucceeded_(info)
         # There's no reason to keep the dmg mounted if it's not an installer.

@@ -179,10 +179,11 @@ class IEDController(NSObject):
             else:
                 self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
         else:
-            LogInfo(u"No template found in image")
-            # If the image doesn't have a template inside, assume that updates
-            # were applied.
-            self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
+            if info[u"sourceType"] == IEDWorkflow.SYSTEM_IMAGE:
+                LogInfo(u"No template found in image")
+                # If the image doesn't have a template inside, assume that updates
+                # were applied.
+                self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
         self.setBusy_(False)
     
     def sourceFailed_text_(self, message, text):
