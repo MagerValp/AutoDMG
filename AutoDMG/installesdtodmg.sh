@@ -86,7 +86,7 @@ fi
 # Get a work directory and check free space.
 tempdir=$(mktemp -d -t installesdtodmg)
 tempdirs+=("$tempdir")
-freespace=$(df -g / | tail -1 | awk '{print $4}')
+freespace=$(df -g "$tempdir" | tail -1 | awk '{print $4}')
 if [[ "$freespace" -lt 15 ]]; then
     echo "IED:FAILURE:Less than 15 GB free disk space, aborting"
     exit 100
