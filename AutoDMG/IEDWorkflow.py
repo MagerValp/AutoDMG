@@ -541,6 +541,11 @@ class IEDWorkflow(NSObject):
                 self.packagesToInstall.append(packagePaths[0])
             else:
                 self.packagesToInstall.append(package.path())
+        if len(self.packagesToInstall) == 0:
+            self.delegate.buildFailed_details_(u"Nothing to do",
+                                               u"There are no packages to install")
+            self.stop()
+            return
         
         # Calculate disk image size requirements.
         sizeRequirement = 0
