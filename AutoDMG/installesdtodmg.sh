@@ -102,10 +102,13 @@ if [[ -z "$sysimg" ]]; then
     sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
 else
     shadowfile="$tempdir/autodmg.shadow"
-    sparsemount=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg" | grep Apple_HFS | cut -f3)
+    shadowdev=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg" \
+                | grep Apple_HFS \
+                | awk '{print $1}')
+    echo "IED:MSG:Renaming $shadowdev to $volname"
     echo "IED:MSG:Renaming volume"
-    diskutil rename "$sparsemount" "$volname"
-    sparsemount="/Volumes/$volname"
+    diskutil rename "$shadowdev" "$volname"
+    sparsemount=$(hdiutil info | grep "^$shadowdev" | cut -f3)
 fi
 dmgmounts+=("$sparsemount")
 
