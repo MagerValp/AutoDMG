@@ -103,6 +103,9 @@ if [[ -z "$sysimg" ]]; then
 else
     shadowfile="$tempdir/autodmg.shadow"
     sparsemount=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg" | grep Apple_HFS | cut -f3)
+    echo "IED:MSG:Renaming volume"
+    diskutil rename "$sparsemount" "$volname"
+    sparsemount="/Volumes/$volname"
 fi
 dmgmounts+=("$sparsemount")
 
