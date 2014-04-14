@@ -42,6 +42,10 @@ class IEDController(NSObject):
     saveMenuItem = IBOutlet()
     saveAsMenuItem = IBOutlet()
     
+    advancedWindow = IBOutlet()
+    volumeName = IBOutlet()
+    volumeSize = IBOutlet()
+    
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
         
@@ -204,6 +208,15 @@ class IEDController(NSObject):
     
     
     
+    # Act on user showing log window.
+    
+    @LogException
+    @IBAction
+    def displayAdvancedWindow_(self, sender):
+        self.advancedWindow.makeKeyAndOrderFront_(self)
+    
+    
+    
     # Act on build button.
     
     @LogException
@@ -242,6 +255,12 @@ class IEDController(NSObject):
             template.setApplyUpdates_(False)
         template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
         template.setOutputPath_(panel.URL().path())
+        if self.volumeName.stringValue():
+            template.setVolumeName_(self.volumeName.stringValue())
+            self.workflow.setVolumeName_(self.volumeName.stringValue().strip())
+        if self.volumeSize.stringValue():
+            template.setVolumeSize_(self.volumeSize.intValue())
+            self.workflow.setVolumeSize_(self.volumeSize.intValue())
         self.workflow.setTemplate_(template)
         
         self.workflow.setPackagesToInstall_(self.updateController.packagesToInstall() +
@@ -370,14 +389,27 @@ class IEDController(NSObject):
             return False
         self.templateURL = url
         NSDocumentController.sharedDocumentController().noteNewRecentDocumentURL_(url)
+        # AdditionalPackages.
         LogDebug(u"Setting additional packages to %@", template.additionalPackages)
         self.addPkgController.replacePackagesWithPaths_(template.additionalPackages)
+        # ApplyUpdates.
         if template.applyUpdates:
             LogDebug(u"Enable updates")
             self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
         else:
             LogDebug(u"Disable updates")
             self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
+        # VolumeName.
+        self.volumeName.setStringValue_(u"")
+        if template.volumeName:
+            LogDebug(u"Setting volume name to %@", template.volumeName)
+            self.volumeName.setStringValue_(template.volumeName)
+        # VolumeSize.
+        self.volumeSize.setStringValue_(u"")
+        if template.volumeSize:
+            LogDebug(u"Setting volume size to %@", template.volumeSize)
+            self.volumeSize.setIntValue_(template.volumeSize)
+        # SourcePath.
         if template.sourcePath:
             LogDebug(u"Setting source to %@", template.sourcePath)
             self.setBusy_(True)
