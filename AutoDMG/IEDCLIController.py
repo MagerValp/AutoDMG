@@ -118,8 +118,6 @@ class IEDCLIController(NSObject):
             return os.EX_USAGE
         
         LogNotice(u"Installer: %@", template.sourcePath)
-        LogNotice(u"Output Path: %@", template.outputPath)
-        LogNotice(u"Volume Name: %@", template.volumeName)
         
         # Set the source.
         self.busy = True
@@ -127,6 +125,15 @@ class IEDCLIController(NSObject):
         self.waitBusy()
         if self.hasFailed:
             return os.EX_DATAERR
+        
+        template.resolveVariables_({
+            u"OSNAME":      self.installerName,
+            u"OSVERSION":   self.installerVersion,
+            u"OSBUILD":     self.installerBuild,
+        })
+        
+        LogNotice(u"Output Path: %@", template.outputPath)
+        LogNotice(u"Volume Name: %@", template.volumeName)
         
         # Generate the list of updates to install.
         updates = list()
