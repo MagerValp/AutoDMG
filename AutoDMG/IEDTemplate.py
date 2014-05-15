@@ -11,6 +11,7 @@ import objc
 from Foundation import *
 
 import os.path
+import re
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 from IEDUtil import *
 from IEDPackage import *
@@ -160,3 +161,22 @@ class IEDTemplate(NSObject):
             package.setSize_(IEDUtil.getPackageSize_(path))
             package.setImage_(NSWorkspace.sharedWorkspace().iconForFile_(path))
             self.packagesToInstall.append(package)
+    
+    re_keyref = re.compile(r'%(?P<key>[A-Z][A-Z_0-9]*)%')
+    
+    def resolveVariables_(self, variables):
+        formatter = NSDateFormatter.alloc().init()
+        formatter.setDateFormat_(u"yyMMdd")
+        variables[u"DATE"] = formatter.stringFromDate_(NSDate.date())
+        formatter.setDateFormat_(u"HHmmss")
+        variables[u"TIME"] = formatter.stringFromDate_(NSDate.date())
+        
+        def getvar(m):
+            try:
+                return variables[m.group("key")]
+            except KeyError as err:
+                LogWarning("Template references undefined variable: %%%@%%", m.group("key"))
+                return u"%%%s%%" % m.group("key")
+        
+        self.volumeName = self.re_keyref.sub(getvar, self.volumeName)
+        self.outputPath = self.re_keyref.sub(getvar, self.outputPath)
