@@ -40,8 +40,14 @@ def gui_main():
     IEDLog.IEDLogToController  = True
     IEDLog.IEDLogToSyslog      = True
     IEDLog.IEDLogToStdOut      = True
-    IEDLog.IEDLogToFile        = False
     IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
+    logFile = os.path.expanduser(u"~/Library/Logs/AutoDMG.log")
+    try:
+        IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
+        IEDLog.IEDLogToFile = True
+    except OSError as e:
+        IEDLog.IEDLogToFile = False
+        LogWarning(u"Couldn't open %s for writing" % (logFile)).encode(u"utf-8")
     
     import AppKit
     from PyObjCTools import AppHelper
