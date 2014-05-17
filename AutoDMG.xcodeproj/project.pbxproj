@@ -261,6 +261,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66EA72E917EB1587009B8350 /* Build configuration list for PBXNativeTarget "AutoDMG" */;
 			buildPhases = (
+				66FF143F192751BD00B524C9 /* ShellScript */,
 				66EA72C517EB1585009B8350 /* Sources */,
 				66EA72C617EB1585009B8350 /* Frameworks */,
 				66EA72C717EB1585009B8350 /* Resources */,
@@ -384,6 +385,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/bash\n\nif [[ \"$CONFIGURATION\" != \"Release\" ]]; then\n    exit 0\nfi\n\necho \"Building Release configuration, making sure we're not building with TESTING=yes\"\ntesting=$(grep '^declare.*TESTING' \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/installesdtodmg.sh\" | cut -d\\\" -f2)\nif [[ \"$testing\" == \"yes\" ]]; then\n    echo \"Can't build Release configuration with TESTING=yes\" >&2\n    exit 1\nelse\n    echo \"Release checks OK\"\nfi\n\nexit 0\n";
+			showEnvVarsInLog = 0;
+		};
+		66FF143F192751BD00B524C9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "updatedir=\"${PROJECT_DIR}UpdateProfiles\"\nif [[ -f \"$updatedir/UpdateProfiles.plist\" ]]; then\n    cp \"$updatedir/UpdateProfiles.plist\" \"$PROJECT_DIR/$PRODUCT_NAME/UpdateProfiles.plist\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
