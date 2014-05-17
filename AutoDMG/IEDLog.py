@@ -36,7 +36,7 @@ IEDLogToFile        = False
 
 # Default log levels.
 IEDLogStdOutLogLevel    = IEDLogLevelNotice
-IEDLogFileLogLevel      = IEDLogLevelInfo
+IEDLogFileLogLevel      = IEDLogLevelDebug
 
 # File handle for log file.
 IEDLogFileHandle = None
