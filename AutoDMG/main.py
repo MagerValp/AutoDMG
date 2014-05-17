@@ -41,8 +41,14 @@ def gui_main():
     IEDLog.IEDLogToSyslog      = True
     IEDLog.IEDLogToStdOut      = True
     IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
-    logFile = os.path.expanduser(u"~/Library/Logs/AutoDMG.log")
+    formatter = NSDateFormatter.alloc().init()
+    formatter.setDateFormat_(u"yyyy-MM-dd")
+    dateStr = formatter.stringFromDate_(NSDate.date())
     try:
+        logDir = os.path.expanduser(u"~/Library/Logs/AutoDMG")
+        if not os.path.exists(logDir):
+            os.makedirs(logDir)
+        logFile = os.path.join(logDir, u"AutoDMG-%s.log" % dateStr)
         IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
         IEDLog.IEDLogToFile = True
     except OSError as e:
