@@ -23,6 +23,18 @@ from IEDUtil import *
 import platform
 
 
+def get_date_string():
+    formatter = NSDateFormatter.alloc().init()
+    formatter.setDateFormat_(u"yyyy-MM-dd")
+    return formatter.stringFromDate_(NSDate.date())
+
+def setup_log_dir():
+    logDir = os.path.expanduser(u"~/Library/Logs/AutoDMG")
+    if not os.path.exists(logDir):
+        os.makedirs(logDir)
+    return logDir
+
+
 def gui_unexpected_error_alert():
     exceptionInfo = traceback.format_exc()
     NSLog(u"AutoDMG died with an uncaught exception, %@", exceptionInfo)
@@ -41,14 +53,8 @@ def gui_main():
     IEDLog.IEDLogToSyslog      = True
     IEDLog.IEDLogToStdOut      = True
     IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
-    formatter = NSDateFormatter.alloc().init()
-    formatter.setDateFormat_(u"yyyy-MM-dd")
-    dateStr = formatter.stringFromDate_(NSDate.date())
     try:
-        logDir = os.path.expanduser(u"~/Library/Logs/AutoDMG")
-        if not os.path.exists(logDir):
-            os.makedirs(logDir)
-        logFile = os.path.join(logDir, u"AutoDMG-%s.log" % dateStr)
+        logFile = os.path.join(setup_log_dir(), u"AutoDMG-%s.log" % get_date_string())
         IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
         IEDLog.IEDLogToFile = True
     except OSError as e:
@@ -113,17 +119,21 @@ def cli_main(argv):
         
         IEDLog.IEDLogFileLogLevel = args.log_level
         
-        if args.logfile:
-            if args.logfile == u"-":
-                # Redirect log to stdout instead.
-                IEDLog.IEDLogFileHandle = sys.stdout
-                IEDLog.IEDLogToStdOut = False
-            else:
-                try:
-                    IEDLog.IEDLogFileHandle = open(args.logfile, u"a", buffering=1)
-                except OSError as e:
-                    print >>sys.stderr, (u"Couldn't open %s for writing" % (args.logfile)).encode(u"utf-8")
-                    return os.EX_CANTCREAT
+        if args.logfile == u"-":
+            # Redirect log to stdout instead.
+            IEDLog.IEDLogFileHandle = sys.stdout
+            IEDLog.IEDLogToFile = True
+            IEDLog.IEDLogToStdOut = False
+        else:
+            try:
+                if args.logfile:
+                    logFile = args.logfile
+                else:
+                    logFile = os.path.join(setup_log_dir(), u"AutoDMG-%s.log" % get_date_string())
+                IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
+            except OSError as e:
+                print >>sys.stderr, (u"Couldn't open %s for writing" % logFile).encode(u"utf-8")
+                return os.EX_CANTCREAT
             IEDLog.IEDLogToFile = True
         
         # Check if we're running with root.
