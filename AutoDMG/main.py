@@ -28,7 +28,7 @@ def get_date_string():
     formatter.setDateFormat_(u"yyyy-MM-dd")
     return formatter.stringFromDate_(NSDate.date())
 
-def setup_log_dir():
+def get_log_dir():
     logDir = os.path.expanduser(u"~/Library/Logs/AutoDMG")
     if not os.path.exists(logDir):
         os.makedirs(logDir)
@@ -54,7 +54,7 @@ def gui_main():
     IEDLog.IEDLogToStdOut      = True
     IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
     try:
-        logFile = os.path.join(setup_log_dir(), u"AutoDMG-%s.log" % get_date_string())
+        logFile = os.path.join(get_log_dir(), u"AutoDMG-%s.log" % get_date_string())
         IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
         IEDLog.IEDLogToFile = True
     except OSError as e:
@@ -129,7 +129,7 @@ def cli_main(argv):
                 if args.logfile:
                     logFile = args.logfile
                 else:
-                    logFile = os.path.join(setup_log_dir(), u"AutoDMG-%s.log" % get_date_string())
+                    logFile = os.path.join(get_log_dir(), u"AutoDMG-%s.log" % get_date_string())
                 IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
             except OSError as e:
                 print >>sys.stderr, (u"Couldn't open %s for writing" % logFile).encode(u"utf-8")
