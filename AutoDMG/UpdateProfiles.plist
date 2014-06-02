@@ -55,7 +55,7 @@
 			<string>MigAsstLion</string>
 			<string>AirPortUtility</string>
 			<string>RemoteDesktopClient</string>
-			<string>Security2014-001Lion</string>
+			<string>Security2014-002Lion</string>
 			<string>iTunes</string>
 			<string>SafariLion</string>
 			<string>AppStoreLion</string>
@@ -83,10 +83,11 @@
 			<string>iBooks</string>
 			<string>BookKit</string>
 			<string>iTunes</string>
+			<string>SafariMav</string>
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2014-05-17T06:57:51Z</date>
+	<date>2014-05-28T18:40:39Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AirPortUtility</key>
@@ -169,35 +170,46 @@
 		<key>SafariLion</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 6.1.3 for Lion</string>
+			<string>Safari 6.1.4 for Lion</string>
 			<key>sha1</key>
-			<string>e41ef12c8502eefe028fc9d5af6c8610c3f085a9</string>
+			<string>6a4f10f753a17ca9097547012682707f6aedfd9c</string>
 			<key>size</key>
-			<integer>54398730</integer>
+			<integer>54412045</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/15/57/031-3445/ufnxrdv2eonlvqoavqx3lvqj4woggy313m/Safari6.1.3Lion.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/17/37/031-02224/8gxq9vhxcra3e5adif9fhvafxoefypqvlx/Safari6.1.4Lion.pkg</string>
 		</dict>
 		<key>SafariML</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 6.1.3 for Mountain Lion</string>
+			<string>Safari 6.1.4 for Mountain Lion</string>
 			<key>sha1</key>
-			<string>c3e4863589d410c6b6ae823b7239d27098c8f085</string>
+			<string>0ee38570ab44621cf9a3bd1df9701898893713e9</string>
 			<key>size</key>
-			<integer>52921840</integer>
+			<integer>52932672</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/45/61/031-3448/crheap80pu74m9d6e9d0s1o5lpq4njk262/Safari6.1.3MountainLion.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/20/28/031-02225/l4fvklwmcf442w0ujno5ege16wcx2ncvzm/Safari6.1.4MountainLion.pkg</string>
 		</dict>
-		<key>Security2014-001Lion</key>
+		<key>SafariMav</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2014-001 (Lion)</string>
+			<string>Safari 7.0.4 for Mavericks</string>
 			<key>sha1</key>
-			<string>57dfb7fdf3a212e68ee6958b8cf82d229b161e0e</string>
+			<string>fd296edcf8e81176a4d1c2cb4899aed970be236c</string>
 			<key>size</key>
-			<integer>123368930</integer>
+			<integer>53713770</integer>
 			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1727/en_US/SecUpd2014-001Lion.dmg</string>
+			<string>http://swcdn.apple.com/content/downloads/27/18/031-02230/gsknnssco736jswk1fg33dmym5ppgy4d04/Safari7.0.4Mavericks.pkg</string>
+		</dict>
+		<key>Security2014-002Lion</key>
+		<dict>
+			<key>name</key>
+			<string>Security Update 2014-002 (Lion)</string>
+			<key>sha1</key>
+			<string>26e70f01419a63a316e1b96800c2f5a0ee5c91cd</string>
+			<key>size</key>
+			<integer>126949545</integer>
+			<key>url</key>
+			<string>http://support.apple.com/downloads/DL1738/en_US/SecUpd2014-002Lion.dmg</string>
 		</dict>
 		<key>Security2014-002ML</key>
 		<dict>
@@ -224,13 +236,13 @@
 		<key>iTunes</key>
 		<dict>
 			<key>name</key>
-			<string>iTunes 11.2.1</string>
+			<string>iTunes 11.2.2</string>
 			<key>sha1</key>
-			<string>d7e00140775bd15069ded529388add2ce6f0b538</string>
+			<string>517c961fac40d22b10eba9f26c75dc24c114d4a8</string>
 			<key>size</key>
-			<integer>235153354</integer>
+			<integer>235109296</integer>
 			<key>url</key>
-			<string>https://secure-appldnld.apple.com/iTunes11/031-02968.20140516.KvetR/iTunes11.2.1.dmg</string>
+			<string>https://secure-appldnld.apple.com/iTunes11/031-02990.20140528.GG3ed/iTunes11.2.2.dmg</string>
 		</dict>
 	</dict>
 </dict>
