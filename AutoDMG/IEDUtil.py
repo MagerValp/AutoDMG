@@ -131,14 +131,13 @@ class IEDUtil(NSObject):
         elif p.returncode != 0:
             mountPoints = IEDMountInfo.getMountPoints()
             fsInfo = mountPoints[cls.findMountPoint_(pkgPath)]
-            if not fsInfo[u"islocal"]:
-                LogWarning(u"Estimating package size since installer -pkginfo "
-                           u"failed and '%@' is on a remote (%@) filesystem",
-                           pkgPath, fsInfo[u"fstypename"])
-                return cls.getPackageSize_(pkgPath) * 2
+            LogWarning(u"Estimating package size since installer -pkginfo "
+                       u"failed and '%@' is on a '%@' filesystem",
+                       pkgPath, fsInfo[u"fstypename"])
+            if os.path.basename(pkgPath) == u"OSInstall.mpkg":
+                return 8 * 1024 * 1024 * 1024
             else:
-                LogError(u"installer -pkginfo -pkg '%@' failed with exit code %d", pkgPath, p.returncode)
-                return None
+                return cls.getPackageSize_(pkgPath) * 2
         outData = NSData.dataWithBytes_length_(out, len(out))
         plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
                                                                                                       NSPropertyListImmutable,
