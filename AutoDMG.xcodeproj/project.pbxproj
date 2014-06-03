@@ -284,7 +284,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = IED;
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = "University of Gothenburg";
 				TargetAttributes = {
 					66EA72C817EB1585009B8350 = {
