@@ -85,9 +85,12 @@
 			<string>iTunes</string>
 			<string>SafariMav</string>
 		</array>
+		<key>10.10-14A238x</key>
+		<array>
+		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2014-05-28T18:40:39Z</date>
+	<date>2014-06-03T08:11:00Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AirPortUtility</key>
