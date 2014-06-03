@@ -8,6 +8,7 @@
 #
 
 from Foundation import *
+from AppKit import *
 from objc import IBAction, IBOutlet
 
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
