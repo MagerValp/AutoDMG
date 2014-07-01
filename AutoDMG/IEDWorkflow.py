@@ -593,7 +593,7 @@ class IEDWorkflow(NSObject):
         # The script is wrapped with progresswatcher.py which parses script
         # output and sends it back as notifications to IEDSocketListener.
         try:
-            groupName = grp.getgrgid(os.getgid()).gr_name
+            groupName = grp.getgrgid(os.getgid()).gr_name.decode("utf-8")
         except KeyError:
             groupName = unicode(os.getgid())
         args = [
