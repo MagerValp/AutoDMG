@@ -164,6 +164,12 @@ class IEDUpdateCache(NSObject):
     
     def connection_didReceiveResponse_(self, connection, response):
         LogDebug(u"%@ status code %d", self.package.name(), response.statusCode())
+        if response.statusCode() >= 400:
+            connection.cancel()
+            self.fileHandle.closeFile()
+            error = u"%s failed with HTTP %d" % (self.package.name(), response.statusCode())
+            self.delegate.downloadFailed_withError_(self.package, error)
+            self.delegate.downloadAllDone()
     
     def connection_didReceiveData_(self, connection, data):
         try:
@@ -174,6 +180,7 @@ class IEDUpdateCache(NSObject):
             error = u"Writing to %s failed: %s" % (self.cacheTmpPath_(self.package.sha1()), unicode(e))
             self.fileHandle.closeFile()
             self.delegate.downloadFailed_withError_(self.package, error)
+            self.delegate.downloadAllDone()
             return
         self.checksum.update(data)
         self.bytesReceived += data.length()
@@ -206,6 +213,7 @@ class IEDUpdateCache(NSObject):
             self.delegate.downloadSucceeded_(self.package)
             self.downloadNextUpdate()
         else:
-            error = u"Expected sha1 checksum %s but got %s" % (sha1.lower(), m.hexdigest().lower())
+            error = u"Expected sha1 checksum %s but got %s" % (self.package.sha1().lower(), self.checksum.hexdigest().lower())
             LogError(error)
             self.delegate.downloadFailed_withError_(self.package, error)
+            self.delegate.downloadAllDone()
