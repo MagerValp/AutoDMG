@@ -9,6 +9,7 @@
 
 from Foundation import *
 from AppKit import *
+from Collaboration import CBIdentity, CBIdentityAuthority
 
 import os
 import sys
@@ -199,8 +200,13 @@ class IEDCLIController(NSObject):
         
         # If we're not running as root get the password for authentication.
         if os.getuid() != 0:
-            username = getpass.getuser()
-            password = getpass.getpass(u"Password for %s: " % username)
+            username = NSUserName()
+            currentUser = CBIdentity.identityWithName_authority_(username, CBIdentityAuthority.defaultIdentityAuthority())
+            passwordOK = False
+            while not passwordOK:
+                password = getpass.getpass(u"Password for %s: " % username).decode(u"utf-8")
+                if currentUser.authenticateWithPassword_(password):
+                    passwordOK = True
             self.workflow.setAuthUsername_(username)
             self.workflow.setAuthPassword_(password)
         
