@@ -12,6 +12,20 @@ System Requirements
 AutoDMG requires Mac OS X 10.7 or newer.
 
 
+Presentation
+------------
+
+For a great overview of modular imaging and a demonstration of some of AutoDMG's features, watch Anthony Reimer's presentation from Penn State MacAdmins 2014:
+
+[![Modular Image Creation](http://img.youtube.com/vi/VQXhTPsUlzI/0.jpg)](http://www.youtube.com/watch?v=VQXhTPsUlzI)
+
+
+Download
+--------
+
+The latest release can be found on the [release page](https://github.com/MagerValp/AutoDMG/releases).
+
+
 Support
 -------
 
@@ -20,12 +34,6 @@ Documentation and help is in the [AutoDMG wiki](https://github.com/MagerValp/Aut
 If you have questions or need help, you can join us in [##osx-server](http://webchat.freenode.net/?channels=##osx-server).
 
 If you find a bug, please report it in the [issue tracker](https://github.com/MagerValp/AutoDMG/issues).
-
-
-Download
---------
-
-The latest release can be found on the [release page](https://github.com/MagerValp/AutoDMG/releases).
 
 
 License
