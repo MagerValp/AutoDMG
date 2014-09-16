@@ -121,11 +121,7 @@ echo "IED:WATCHLOG:START"
 for package; do
     echo "IED:PHASE:install $pkgnum:$package"
     let pkgnum++
-    if [[ $pkgnum -eq 1 ]]; then
-        echo "IED:MSG:Starting OS install"
-    else
-        echo "IED:MSG:Installing $(basename "$package")"
-    fi
+    echo "IED:MSG:Installing $(basename "$package")"
     if [[ "${package##*.}" == "app" ]]; then
         appname="${package##*/}"
         apppath="$sparsemount/Applications/$appname"
