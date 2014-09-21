@@ -873,7 +873,7 @@ Gw
                 <rect key="frame" x="0.0" y="0.0" width="1065" height="576"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0yR-ok-JsV">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0yR-ok-JsV">
                         <rect key="frame" x="18" y="22" width="64" height="17"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Log level:" id="brp-gJ-Z6W">
                             <font key="font" metaFont="system"/>
@@ -881,7 +881,7 @@ Gw
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rr9-yW-D7j">
+                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rr9-yW-D7j">
                         <rect key="frame" x="86" y="17" width="103" height="26"/>
                         <popUpButtonCell key="cell" type="push" title="Info" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="4AS-D9-afg" id="yhE-DD-DY3">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -910,9 +910,9 @@ Gw
                             </binding>
                         </connections>
                     </popUpButton>
-                    <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fs2-vb-8RG">
+                    <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fs2-vb-8RG">
                         <rect key="frame" x="20" y="57" width="1025" height="499"/>
-                        <clipView key="contentView" ambiguous="YES" misplaced="YES" id="zAm-5t-U4I">
+                        <clipView key="contentView" misplaced="YES" id="zAm-5t-U4I">
                             <rect key="frame" x="1" y="17" width="1023" height="481"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -979,8 +979,8 @@ Gw
                             <autoresizingMask key="autoresizingMask"/>
                         </tableHeaderView>
                     </scrollView>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aMO-qH-xF1">
-                        <rect key="frame" x="950" y="13" width="101" height="32"/>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aMO-qH-xF1">
+                        <rect key="frame" x="947" y="13" width="104" height="32"/>
                         <buttonCell key="cell" type="push" title="Save As…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HxQ-qA-NOa">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -990,10 +990,23 @@ Gw
                         </connections>
                     </button>
                 </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="aMO-qH-xF1" secondAttribute="trailing" constant="20" id="0bW-vs-orO"/>
+                    <constraint firstItem="fs2-vb-8RG" firstAttribute="top" secondItem="JcL-bv-xO1" secondAttribute="top" constant="20" id="5Q8-OH-CA7"/>
+                    <constraint firstAttribute="bottom" secondItem="rr9-yW-D7j" secondAttribute="bottom" constant="20" id="A7G-ni-jip"/>
+                    <constraint firstAttribute="bottom" secondItem="0yR-ok-JsV" secondAttribute="bottom" constant="22" id="RDM-Hm-yCT"/>
+                    <constraint firstItem="aMO-qH-xF1" firstAttribute="top" secondItem="fs2-vb-8RG" secondAttribute="bottom" constant="16" id="SFc-sQ-wae"/>
+                    <constraint firstItem="0yR-ok-JsV" firstAttribute="leading" secondItem="JcL-bv-xO1" secondAttribute="leading" constant="20" id="Tcg-Il-CCO"/>
+                    <constraint firstAttribute="trailing" secondItem="fs2-vb-8RG" secondAttribute="trailing" constant="20" id="YWr-zT-sMY"/>
+                    <constraint firstItem="rr9-yW-D7j" firstAttribute="leading" secondItem="0yR-ok-JsV" secondAttribute="trailing" constant="8" id="Z8j-iy-2yj"/>
+                    <constraint firstItem="fs2-vb-8RG" firstAttribute="leading" secondItem="JcL-bv-xO1" secondAttribute="leading" constant="20" id="bRo-jm-AGq"/>
+                    <constraint firstAttribute="bottom" secondItem="aMO-qH-xF1" secondAttribute="bottom" constant="20" id="hLL-8D-PQN"/>
+                </constraints>
             </view>
             <connections>
                 <outlet property="delegate" destination="Ssv-D7-Tkv" id="Kby-wz-XGJ"/>
             </connections>
+            <point key="canvasLocation" x="243.5" y="32"/>
         </window>
         <customObject id="Ssv-D7-Tkv" customClass="IEDLog">
             <connections>
