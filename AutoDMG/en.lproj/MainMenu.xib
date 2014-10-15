@@ -966,6 +966,9 @@ Gw
                             </subviews>
                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </clipView>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="ze7-eo-cyl"/>
+                        </constraints>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="BYL-QI-2OZ">
                             <rect key="frame" x="1" y="482" width="1023" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
@@ -1001,6 +1004,7 @@ Gw
                     <constraint firstItem="rr9-yW-D7j" firstAttribute="leading" secondItem="0yR-ok-JsV" secondAttribute="trailing" constant="8" id="Z8j-iy-2yj"/>
                     <constraint firstItem="fs2-vb-8RG" firstAttribute="leading" secondItem="JcL-bv-xO1" secondAttribute="leading" constant="20" id="bRo-jm-AGq"/>
                     <constraint firstAttribute="bottom" secondItem="aMO-qH-xF1" secondAttribute="bottom" constant="20" id="hLL-8D-PQN"/>
+                    <constraint firstItem="aMO-qH-xF1" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="rr9-yW-D7j" secondAttribute="trailing" constant="20" id="lis-le-Iph"/>
                 </constraints>
             </view>
             <connections>
