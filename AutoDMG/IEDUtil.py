@@ -15,14 +15,8 @@ import os.path
 import subprocess
 import tempfile
 import shutil
+from xml.etree import ElementTree
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
-try:
-    IEDMountInfo = objc.lookUpClass(u"IEDMountInfo")
-except objc.nosuchclass_error:
-    # Create a dummy class to allow import from pure python for testing. Will
-    # crash when an attempt is made to use the class.
-    class IEDMountInfo(object):
-        pass
 
 
 class IEDUtil(NSObject):
@@ -100,10 +94,26 @@ class IEDUtil(NSObject):
     @classmethod
     def getInstalledPkgSize_(cls, pkgPath):
         # For apps just return the size on disk.
-        name, ext = os.path.splitext(pkgPath)
+        ext = os.path.splitext(pkgPath)[1].lower()
         if ext == u".app":
             return cls.getPackageSize_(pkgPath)
-        # For packages try to get the size requirements with installer.
+        elif ext in (u".pkg", u".mpkg"):
+            # For packages first try to get the size requirements with
+            # installer.
+            size = cls.getInstalledPkgSizeFromInstaller_(pkgPath)
+            if size is None:
+                # If this fails, manually extract the size requirements from
+                # the package.
+                return cls.calculateInstalledPkgSize_(pkgPath)
+            else:
+                return size
+        else:
+            LogError(u"Don't know how to calculate installed size for '%s'",
+                     pkgPath)
+            return None
+    
+    @classmethod
+    def getInstalledPkgSizeFromInstaller_(cls, pkgPath):
         pkgFileName = os.path.os.path.basename(pkgPath)
         tempdir = tempfile.mkdtemp()
         try:
@@ -123,22 +133,9 @@ class IEDUtil(NSObject):
                 shutil.rmtree(tempdir)
             except BaseException as e:
                 LogWarning(u"Unable to remove tempdir: %@", unicode(e))
-        # Try to handle some common scenarios when installer fails.
-        if p.returncode == -11:
-            LogWarning(u"Estimating package size since installer -pkginfo "
-                       u"'%@' crashed", pkgPath)
-            return cls.getPackageSize_(pkgPath) * 2
-        elif p.returncode != 0:
-            mountPoints = IEDMountInfo.getMountPoints()
-            fsInfo = mountPoints[cls.findMountPoint_(pkgPath)]
-            if not fsInfo[u"islocal"]:
-                LogWarning(u"Estimating package size since installer -pkginfo "
-                           u"failed and '%@' is on a remote (%@) filesystem",
-                           pkgPath, fsInfo[u"fstypename"])
-                return cls.getPackageSize_(pkgPath) * 2
-            else:
-                LogError(u"installer -pkginfo -pkg '%@' failed with exit code %d", pkgPath, p.returncode)
-                return None
+        if p.returncode != 0:
+            LogDebug(u"/usr/sbin/installer failed to determine size requirements")
+            return None
         outData = NSData.dataWithBytes_length_(out, len(out))
         plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
                                                                                                       NSPropertyListImmutable,
@@ -147,5 +144,93 @@ class IEDUtil(NSObject):
         if not plist:
             LogError(u"Error decoding plist: %@", error)
             return None
-        LogDebug(u"%@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"]) * 1024))
+        LogDebug(u"Installer says %@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"]) * 1024))
         return int(plist[u"Size"]) * 1024
+    
+    @classmethod
+    def calculateInstalledPkgSize_(cls, pkgPath):
+        if os.path.isdir(pkgPath):
+            size = cls.getBundlePkgInfo_(pkgPath)
+        else:
+            size = cls.getFlatPkgInfo_(pkgPath)
+        if size is None:
+            # If all else fails, estimate package size requirements.
+            LogWarning(u"Estimating package size for '%@'", pkgPath)
+            size = cls.getPackageSize_(pkgPath) * 2
+        LogDebug(u"%@ needs %@", pkgPath, cls.formatBytes_(size))
+        return size
+    
+    @classmethod
+    def getBundlePkgInfo_(cls, pkgPath):
+        distPath = os.path.join(pkgPath, u"Contents", u"distribution.dist")
+        infoPlistPath = os.path.join(pkgPath, u"Contents", u"Info.plist")
+        if os.path.exists(distPath):
+            return cls.getSizeFromDistribution_(distPath)
+        elif os.path.exists(infoPlistPath):
+            return cls.getSizeFromPkgInfoPlist_(infoPlistPath)
+        else:
+            LogError(u"No distribution.dist or Info.plist found in '%@'", pkgPath)
+            return None
+    
+    @classmethod
+    def getFlatPkgInfo_(cls, pkgPath):
+        tempdir = tempfile.mkdtemp()
+        try:
+            # Extract to tempdir, excluding all except Distribution and
+            # PackageInfo.
+            subprocess.check_output([u"/usr/bin/xar",
+                                     u"-x",
+                                     u"--exclude", u"^[^DP]",
+                                     u"--exclude", u"Payload",
+                                     u"-C", tempdir,
+                                     u"-f", pkgPath])
+            distPath = os.path.join(tempdir, u"Distribution")
+            pkgInfoPath = os.path.join(tempdir, u"PackageInfo")
+            if os.path.exists(distPath):
+                return cls.getSizeFromDistribution_(distPath)
+            elif os.path.exists(pkgInfoPath):
+                return cls.getSizeFromPackageInfo_(pkgInfoPath)
+            else:
+                LogError(u"No Distribution or PackageInfo found in '%@'", pkgPath)
+                return None
+        except subprocess.CalledProcessError as e:
+            LogError(u"xar failed with return code %d", e.returncode)
+            return None
+        finally:
+            try:
+                shutil.rmtree(tempdir)
+            except Exception as e:
+                LogWarning(u"Unable to remove tempdir: %@", unicode(e))
+    
+    @classmethod
+    def getSizeFromDistribution_(cls, distPath):
+        kbytes = 0
+        try:
+            tree = ElementTree.parse(distPath)
+            for pkgref in tree.iterfind(u"pkg-ref[@installKBytes]"):
+                kbytes += int(pkgref.get(u"installKBytes"))
+        except Exception as e:
+            LogError(u"Failed parsing '%@': %@", distPath, unicode(e))
+            return None
+        return kbytes * 1024
+    
+    @classmethod
+    def getSizeFromPackageInfo_(cls, pkgInfoPath):
+        kbytes = 0
+        try:
+            tree = ElementTree.parse(pkgInfoPath)
+            for payload in tree.iterfind(u"payload[@installKBytes]"):
+                kbytes += int(payload.get(u"installKBytes"))
+        except Exception as e:
+            LogError(u"Failed parsing '%@': %@", pkgInfoPath, unicode(e))
+            return None
+        return kbytes * 1024
+
+    @classmethod
+    def getSizeFromPkgInfoPlist_(cls, infoPlistPath):
+        try:
+            infoDict = NSDictionary.dictionaryWithContentsOfFile_(infoPlistPath)
+            return infoDict[u"IFPkgFlagInstalledSize"] * 1024
+        except Exception as e:
+            LogError(u"Failed parsing '%@': %@", infoPlistPath, unicode(e))
+            return None
