@@ -4,9 +4,16 @@
 <dict>
 	<key>DeprecatedInstallers</key>
 	<dict>
-		<key>10.10-14A314h</key>
+		<key>10.10-14A389</key>
 		<array>
+			<string>10.10-14A299l</string>
+			<string>10.10-14A329r</string>
+			<string>10.10-14A361p</string>
+			<string>10.10-14A379b</string>
 			<string>10.10-14A238x</string>
+			<string>10.10-14A314h</string>
+			<string>10.10-14A343f</string>
+			<string>10.10-14A379a</string>
 		</array>
 		<key>10.7.5-11G63</key>
 		<array>
@@ -38,7 +45,7 @@
 			<string>12E55</string>
 			<string>12F37</string>
 		</array>
-		<key>10.9.4-13E28</key>
+		<key>10.9.5-13F34</key>
 		<array>
 			<string>13A2093</string>
 			<string>13A3017</string>
@@ -50,14 +57,12 @@
 			<string>13B42</string>
 			<string>13C64</string>
 			<string>13D65</string>
+			<string>13E28</string>
 		</array>
 	</dict>
 	<key>Profiles</key>
 	<dict>
-		<key>10.10-14A299l</key>
-		<array>
-		</array>
-		<key>10.10-14A314h</key>
+		<key>10.10-14A389</key>
 		<array>
 		</array>
 		<key>10.8.5-12F2015</key>
@@ -66,7 +71,7 @@
 			<string>iTunes</string>
 			<string>AppStoreML</string>
 			<string>AirPortUtility</string>
-			<string>Security2014-003ML</string>
+			<string>Security2014-004ML</string>
 			<string>SafariML</string>
 		</array>
 		<key>10.8.5-12F45</key>
@@ -75,10 +80,10 @@
 			<string>iTunes</string>
 			<string>AppStoreML</string>
 			<string>AirPortUtility</string>
-			<string>Security2014-003ML</string>
+			<string>Security2014-004ML</string>
 			<string>SafariML</string>
 		</array>
-		<key>10.9.4-13E28</key>
+		<key>10.9.5-13F34</key>
 		<array>
 			<string>iBooks</string>
 			<string>BookKit</string>
@@ -87,7 +92,7 @@
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2014-08-20T07:16:00Z</date>
+	<date>2014-10-16T18:27:51Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AirPortUtility</key>
@@ -137,35 +142,35 @@
 		<key>SafariML</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 6.1.6 for Mountain Lion</string>
+			<string>Safari 6.2 for Mountain Lion</string>
 			<key>sha1</key>
-			<string>031853a5fba30c9d6261f7aafeebaaa726a89630</string>
+			<string>44d0860b50dcb52851c30a9d69e429c4b5ed7517</string>
 			<key>size</key>
-			<integer>52971277</integer>
+			<integer>60366903</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/31/25/031-05870/tltuwuubmlrc6bwh6vef3allskxrozygit/Safari6.1.6MountainLion.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/24/07/031-05303/j986d6amn22v51iya4nc6rgp0syumhg85k/Safari6.2MountainLion.pkg</string>
 		</dict>
 		<key>SafariMav</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 7.0.6 for Mavericks</string>
+			<string>Safari 7.1 for Mavericks</string>
 			<key>sha1</key>
-			<string>db4336687397bdb2cec7a4c20bf7123f720b7b88</string>
+			<string>70b578ee42ff0b47158003bcd697ace6d0edee29</string>
 			<key>size</key>
-			<integer>53755279</integer>
+			<integer>61004441</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/04/28/031-05873/rjzlqfvr0tjs32raq346nwwv4krfqx6a23/Safari7.0.6Mavericks.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/52/24/031-05306/ejsgyg0iatqosbvktr9jlamsm28k0yfoaf/Safari7.1Mavericks.pkg</string>
 		</dict>
-		<key>Security2014-003ML</key>
+		<key>Security2014-004ML</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2014-003 (Mountain Lion)</string>
+			<string>Security Update 2014-004 (Mountain Lion)</string>
 			<key>sha1</key>
-			<string>41ec102c8738b818c32463716a5445c8b7885b12</string>
+			<string>fe5231175860be2583c37c3af98f9464f4bb7f38</string>
 			<key>size</key>
-			<integer>139284575</integer>
+			<integer>158265406</integer>
 			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1753/en_US/SecUpd2014-003MtLion.dmg</string>
+			<string>http://support.apple.com/downloads/DL1762/en_US/SecUpd2014-004MtLion.dmg</string>
 		</dict>
 		<key>iBooks</key>
 		<dict>
@@ -181,13 +186,13 @@
 		<key>iTunes</key>
 		<dict>
 			<key>name</key>
-			<string>iTunes 11.3.1</string>
+			<string>iTunes 11.4</string>
 			<key>sha1</key>
-			<string>5e82560c3fd7175c5e4231df12bfe8b64580c09f</string>
+			<string>6a4850d190b7f1e44ac4f58ca265f3845b9df787</string>
 			<key>size</key>
-			<integer>239638519</integer>
+			<integer>242940774</integer>
 			<key>url</key>
-			<string>https://secure-appldnld.apple.com/iTunes11/031-06104.20140807.23Ffr/iTunes11.3.1.dmg</string>
+			<string>https://secure-appldnld.apple.com/iTunes11/031-06978.20140909.HuRRe/iTunes11.4.dmg</string>
 		</dict>
 	</dict>
 </dict>
