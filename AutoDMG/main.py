@@ -31,7 +31,10 @@ def get_date_string():
 def get_log_dir():
     logDir = os.path.expanduser(u"~/Library/Logs/AutoDMG")
     if not os.path.exists(logDir):
-        os.makedirs(logDir)
+        try:
+            os.makedirs(logDir)
+        except OSError as e:
+            LogWarning(u"Couldn't create %s" % (logDir))
     return logDir
 
 
@@ -53,13 +56,13 @@ def gui_main():
     IEDLog.IEDLogToSyslog      = True
     IEDLog.IEDLogToStdOut      = True
     IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
+    logFile = os.path.join(get_log_dir(), u"AutoDMG-%s.log" % get_date_string())
     try:
-        logFile = os.path.join(get_log_dir(), u"AutoDMG-%s.log" % get_date_string())
         IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
         IEDLog.IEDLogToFile = True
-    except OSError as e:
+    except IOError as e:
         IEDLog.IEDLogToFile = False
-        LogWarning(u"Couldn't open %s for writing" % (logFile)).encode(u"utf-8")
+        LogWarning(u"Couldn't open %s for writing" % (logFile))
     
     import AppKit
     from PyObjCTools import AppHelper
