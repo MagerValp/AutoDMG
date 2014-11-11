@@ -155,6 +155,15 @@ for package; do
                 echo "IED:FAILURE:$(basename "$package") failed with return code $result"
                 exit 102
             fi
+            # Fix language choice on 10.10 (github issue #93).
+            if [[ $(sw_vers -productVersion | cut -d. -f2) -ge 10 ]]; then
+                if [[ $(basename "$package") == "OSInstall.mpkg" ]]; then
+                    if rawlang=$(/usr/libexec/PlistBuddy -c "print :AppleLanguages:0" /Library/Preferences/.GlobalPreferences.plist 2> /dev/null); then
+                        lang=$(python -c "from Foundation import NSLocale; print NSLocale.canonicalLanguageIdentifierFromString_('$rawlang')")
+                        echo "LANGUAGE=$lang" > "$sparsemount/private/var/log/CDIS.custom"
+                    fi
+                fi
+            fi
         fi
     fi
 done
