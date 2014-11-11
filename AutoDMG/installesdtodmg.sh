@@ -161,6 +161,9 @@ for package; do
                     if rawlang=$(/usr/libexec/PlistBuddy -c "print :AppleLanguages:0" /Library/Preferences/.GlobalPreferences.plist 2> /dev/null); then
                         lang=$(python -c "from Foundation import NSLocale; print NSLocale.canonicalLanguageIdentifierFromString_('$rawlang')")
                         echo "LANGUAGE=$lang" > "$sparsemount/private/var/log/CDIS.custom"
+                        echo "IED:MSG:Setup Assistant language set to$lang"
+                    else
+                        echo "IED:MSG:Failed to retrieve language preference, letting Setup Assistant default to English"
                     fi
                 fi
             fi
