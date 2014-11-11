@@ -152,12 +152,7 @@ for package; do
             installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
             declare -i result=$?
             if [[ $result -ne 0 ]]; then
-                if [[ $pkgnum -eq 1 ]]; then
-                    pkgname="OS install"
-                else
-                    pkgname=$(basename "$package")
-                fi
-                echo "IED:FAILURE:$pkgname failed with return code $result"
+                echo "IED:FAILURE:$(basename "$package") failed with return code $result"
                 exit 102
             fi
         fi
