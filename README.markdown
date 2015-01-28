@@ -39,7 +39,7 @@ If you find a bug, please report it in the [issue tracker](https://github.com/Ma
 License
 -------
 
-    Copyright 2013-2014 Per Olofsson, University of Gothenburg. All rights reserved.
+    Copyright 2013-2015 Per Olofsson, University of Gothenburg. All rights reserved.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

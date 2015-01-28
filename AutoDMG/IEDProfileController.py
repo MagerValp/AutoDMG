@@ -4,7 +4,7 @@
 #  AutoDMG
 #
 #  Created by Per Olofsson on 2013-10-21.
-#  Copyright 2013-2014 Per Olofsson, University of Gothenburg. All rights reserved.
+#  Copyright 2013-2015 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
 from AppKit import *
