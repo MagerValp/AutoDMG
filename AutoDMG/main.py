@@ -134,7 +134,7 @@ def cli_main(argv):
                 else:
                     logFile = os.path.join(get_log_dir(), u"AutoDMG-%s.log" % get_date_string())
                 IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
-            except OSError as e:
+            except (IOError, OSError) as e:
                 print >>sys.stderr, (u"Couldn't open %s for writing" % logFile).encode(u"utf-8")
                 return os.EX_CANTCREAT
             IEDLog.IEDLogToFile = True
