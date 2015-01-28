@@ -8,8 +8,6 @@
 #
 
 from Foundation import *
-from Carbon.File import *
-import MacOS
 
 import os.path
 import subprocess
@@ -41,11 +39,23 @@ class IEDUtil(NSObject):
     @classmethod
     def resolvePath_(cls, path):
         """Expand symlinks and resolve aliases."""
-        try:
-            fsref, isFolder, wasAliased = FSResolveAliasFile(os.path.realpath(path), 1)
-            return os.path.abspath(fsref.as_pathname().decode(u"utf-8"))
-        except MacOS.Error as e:
-            return None
+        def target_of_alias(path):
+            url = NSURL.fileURLWithPath_(path)
+            bookmarkData, error = NSURL.bookmarkDataWithContentsOfURL_error_(url, None)
+            if bookmarkData is None:
+                return None
+            opts = NSURLBookmarkResolutionWithoutUI | NSURLBookmarkResolutionWithoutMounting
+            resolved, stale, error = NSURL.URLByResolvingBookmarkData_options_relativeToURL_bookmarkDataIsStale_error_(bookmarkData, opts, None, None, None)
+            return resolved.path()
+        while True:
+            alias_target = target_of_alias(path)
+            if alias_target:
+                path = alias_target
+                continue
+            if os.path.islink(path):
+                path = os.path.realpath(path)
+                continue
+            return path
     
     @classmethod
     def installESDPath_(cls, path):
