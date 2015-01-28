@@ -365,6 +365,8 @@ class IEDController(NSObject):
             template.setApplyUpdates_(True)
         else:
             template.setApplyUpdates_(False)
+        if self.volumeName.stringValue():
+            template.setVolumeName_(self.volumeName.stringValue())
         template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
         
         error = template.saveTemplateAndReturnError_(url.path())
