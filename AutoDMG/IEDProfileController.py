@@ -65,6 +65,7 @@ class IEDProfileController(NSObject):
         try:
             replacement = self.deprecatedInstallerBuilds[whyBuild]
             version, _, build = replacement.partition(u"-")
+            LogDebug(u"Installer deprecated by %s %s" % (version, build))
             return u"Installer deprecated by %s %s" % (version, build)
         except KeyError:
             pass
@@ -82,12 +83,20 @@ class IEDProfileController(NSObject):
             versionTuple = tuple(int(x) for x in version.split(u"."))
             major = versionTuple[1]
             supportedMajorVersions.add(major)
-            point = versionTuple[2] if len(versionTuple) > 2 else None
+            point = versionTuple[2] if len(versionTuple) > 2 else 0
             supportedPointReleases[major].add(point)
         
+        LogDebug(u"supported OS X versions: %@",
+                 u", ".join(u"10.%d" % x for x in sorted(supportedMajorVersions)))
+        LogDebug(u"supported point releases:")
+        for major, pointReleases in supportedPointReleases.items():
+            LogDebug(u"    " + u", ".join(u"10.%d.%d" % (major, x) for x in sorted(pointReleases)))
+        
         if whyMajor not in supportedMajorVersions:
-            return "10.%d is not supported" % whyMajor
+            LogDebug(u"10.%d is not supported", whyMajor)
+            return u"10.%d is not supported" % whyMajor
         elif whyVersion in buildsForVersion:
+            LogDebug(u"Unknown build %@", whyBuild)
             return u"Unknown build %s" % whyBuild
         else:
             # It's a supported OS X version, but we don't have a profile for
@@ -97,14 +106,17 @@ class IEDProfileController(NSObject):
             oldestSupportedPointRelease = sorted(pointReleases)[0]
             newestSupportedPointRelease = sorted(pointReleases)[-1]
             if whyPoint < oldestSupportedPointRelease:
+                LogDebug(u"Deprecated installer")
                 return u"Deprecated installer"
             elif whyPoint > newestSupportedPointRelease:
                 # If it's newer than any known release, just assume that we're
                 # behind on updates and that all is well.
-                return None
+                LogDebug(u"Installer newer than update profile")
+                return u"Installer newer than update profile"
             else:
                 # Well this is awkward.
-                return u"Deprecated installer"
+                LogDebug(u"Unknown %@ installer", whyVersion)
+                return u"Unknown %s installer" % whyVersion
     
     def updateUsersProfilesIfNewer_(self, plist):
         """Update the user's update profiles if plist is newer. Returns
