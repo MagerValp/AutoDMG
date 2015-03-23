@@ -114,6 +114,15 @@ class IEDLog(NSObject):
     
     
     def addMessage_level_(self, message, level):
+        # Log messages may come from background threads.
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(self.addMessageAndLevel_,
+                                                                   {u"message": message,
+                                                                    u"level": level},
+                                                                   False)
+    
+    def addMessageAndLevel_(self, messageAndLevel):
+        message = messageAndLevel[u"message"]
+        level = messageAndLevel[u"level"]
         logLine = IEDLogLine.alloc().initWithMessage_level_(message, level)
         self.logLines.append(logLine)
         if defaults.integerForKey_(u"LogLevel") >= level:
