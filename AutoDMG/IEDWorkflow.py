@@ -592,17 +592,13 @@ class IEDWorkflow(NSObject):
         
         # The script is wrapped with progresswatcher.py which parses script
         # output and sends it back as notifications to IEDSocketListener.
-        try:
-            groupName = grp.getgrgid(os.getgid()).gr_name.decode("utf-8")
-        except KeyError:
-            groupName = unicode(os.getgid())
         args = [
             NSBundle.mainBundle().pathForResource_ofType_(u"progresswatcher", u"py"),
             u"--cd", NSBundle.mainBundle().resourcePath(),
             u"--socket", self.listenerPath,
             u"installesdtodmg",
-            u"--user", NSUserName(),
-            u"--group", groupName,
+            u"--user", unicode(os.getuid()),
+            u"--group", unicode(os.getgid()),
             u"--output", self.outputPath(),
             u"--volume-name", self.volumeName(),
             u"--size", unicode(self.volumeSize()),
