@@ -263,11 +263,13 @@
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SWc-Vc-hQ7">
+                    <button toolTip="Command + B" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SWc-Vc-hQ7">
                         <rect key="frame" x="174" y="18" width="72" height="32"/>
                         <buttonCell key="cell" type="push" title="Build" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4Sl-nl-0gg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent">b</string>
+                            <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                         </buttonCell>
                         <connections>
                             <action selector="buildButtonClicked:" target="Fjw-V3-78e" id="GJ6-VE-wjJ"/>
