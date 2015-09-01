@@ -1,7 +1,7 @@
 AutoDMG
 =======
 
-AutoDMG takes an OS X installer and builds a system image, suitable for deployment with DeployStudio or Absolute Manage.
+AutoDMG takes an OS X installer and builds a system image, suitable for deployment with Imagr, DeployStudio, Absolute Manage, Casper, and other asr-based tools.
 
 ![Autodmg 1.0](http://magervalp.github.io/images/AutoDMG-1.0.png)
 
