@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6249" systemVersion="14A388a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6249"/>
+        <development version="6300" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8191"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication"/>
@@ -10,7 +11,7 @@
         <window title="AutoDMG" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="GmA-Xb-izQ">
             <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="196" y="240" width="420" height="623"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <value key="minSize" type="size" width="420" height="626"/>
             <view key="contentView" id="7Xs-ie-OZ7">
                 <rect key="frame" x="0.0" y="0.0" width="420" height="623"/>
@@ -83,7 +84,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="346" height="19"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                 <tableColumns>
                                                     <tableColumn identifier="image" editable="NO" width="40" minWidth="40" maxWidth="1000" id="UyL-mL-U53">
@@ -186,7 +187,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="333" height="19"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                 <tableColumns>
                                                     <tableColumn identifier="image" editable="NO" width="40" minWidth="40" maxWidth="1000" id="E9L-A4-9d9">
@@ -619,7 +620,7 @@
         <window title="output.dmg" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="Xho-YZ-fRH" userLabel="Window - Progress">
             <windowStyleMask key="styleMask" titled="YES"/>
             <rect key="contentRect" x="196" y="240" width="433" height="137"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <value key="minSize" type="size" width="433" height="137"/>
             <view key="contentView" id="fwl-hU-gDB">
                 <rect key="frame" x="0.0" y="0.0" width="433" height="137"/>
@@ -664,7 +665,7 @@
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="8By-CP-4fg">
             <windowStyleMask key="styleMask" titled="YES"/>
             <rect key="contentRect" x="196" y="240" width="433" height="137"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="G7f-Er-XjJ">
                 <rect key="frame" x="0.0" y="0.0" width="433" height="137"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -710,7 +711,7 @@ Gw
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="yRz-g8-9TZ">
             <windowStyleMask key="styleMask" titled="YES"/>
             <rect key="contentRect" x="913" y="598" width="433" height="137"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <value key="minSize" type="size" width="433" height="137"/>
             <value key="maxSize" type="size" width="433" height="137"/>
             <view key="contentView" id="O13-kg-1iT">
@@ -778,7 +779,7 @@ Gw
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="163" y="199" width="445" height="137"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <value key="minSize" type="size" width="420" height="77"/>
             <view key="contentView" id="Tj1-NS-du2">
                 <rect key="frame" x="0.0" y="0.0" width="445" height="137"/>
@@ -870,7 +871,7 @@ Gw
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="163" y="199" width="1065" height="576"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="JcL-bv-xO1">
                 <rect key="frame" x="0.0" y="0.0" width="1065" height="576"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -914,7 +915,7 @@ Gw
                     </popUpButton>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fs2-vb-8RG">
                         <rect key="frame" x="20" y="57" width="1025" height="499"/>
-                        <clipView key="contentView" misplaced="YES" id="zAm-5t-U4I">
+                        <clipView key="contentView" id="zAm-5t-U4I">
                             <rect key="frame" x="1" y="17" width="1023" height="481"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -922,7 +923,7 @@ Gw
                                     <rect key="frame" x="0.0" y="0.0" width="1023" height="19"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
                                         <tableColumn identifier="date" editable="NO" width="130" minWidth="130" maxWidth="130" id="u1t-JV-lMK">
@@ -1026,7 +1027,7 @@ Gw
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="359" height="92"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="KLu-Tn-rTn">
                 <rect key="frame" x="0.0" y="0.0" width="359" height="92"/>
                 <autoresizingMask key="autoresizingMask"/>
