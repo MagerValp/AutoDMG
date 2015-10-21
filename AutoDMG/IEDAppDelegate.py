@@ -23,6 +23,7 @@ class IEDAppDelegate(NSObject):
     
     mainWindowController = IBOutlet()
     appVersionController = IBOutlet()
+    helpMenuItem = IBOutlet()
     
     def init(self):
         self = super(IEDAppDelegate, self).init()
@@ -110,7 +111,10 @@ class IEDAppDelegate(NSObject):
         self.mainWindowController.openTemplate()
     
     def validateMenuItem_(self, menuItem):
-        return self.mainWindowController.validateMenuItem_(menuItem)
+        if menuItem == self.helpMenuItem:
+            return True
+        else:
+            return not self.mainWindowController.busy()
     
     def application_openFile_(self, application, filename):
         return self.mainWindowController.openTemplateAtURL_(NSURL.fileURLWithPath_(filename))

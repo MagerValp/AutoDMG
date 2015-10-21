@@ -37,11 +37,6 @@ class IEDController(NSObject):
     buildProgressBar = IBOutlet()
     buildProgressMessage = IBOutlet()
     
-    fileMenu = IBOutlet()
-    openMenuItem = IBOutlet()
-    saveMenuItem = IBOutlet()
-    saveAsMenuItem = IBOutlet()
-    
     advancedWindow = IBOutlet()
     volumeName = IBOutlet()
     volumeSize = IBOutlet()
@@ -93,12 +88,7 @@ class IEDController(NSObject):
     # Helper methods.
     
     def validateMenuItem_(self, menuItem):
-        if self.busy():
-            if menuItem in (self.openMenuItem,
-                            self.saveMenuItem,
-                            self.saveAsMenuItem):
-                return False
-        return True
+        return not self.busy()
     
     def displayAlert_text_(self, message, text):
         LogDebug(u"Displaying alert: %@ (%@)", message, text)

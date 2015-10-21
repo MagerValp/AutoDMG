@@ -590,6 +590,7 @@
         <customObject id="373" userLabel="IEDAppDelegate" customClass="IEDAppDelegate">
             <connections>
                 <outlet property="appVersionController" destination="W5T-eg-PpK" id="bwb-3e-vLn"/>
+                <outlet property="helpMenuItem" destination="111" id="JCh-sW-znc"/>
                 <outlet property="mainWindowController" destination="Fjw-V3-78e" id="qQk-1j-IFa"/>
             </connections>
         </customObject>
@@ -602,12 +603,8 @@
                 <outlet property="buildProgressMessage" destination="aFM-jG-IAT" id="Wbv-Ke-9p6"/>
                 <outlet property="buildProgressPhase" destination="PSc-ey-sYw" id="ZoT-hl-E5F"/>
                 <outlet property="buildProgressWindow" destination="Xho-YZ-fRH" id="c89-Hr-l1E"/>
-                <outlet property="fileMenu" destination="81" id="qee-MM-5gQ"/>
                 <outlet property="logController" destination="Ssv-D7-Tkv" id="Rnb-Ky-1XY"/>
                 <outlet property="mainWindow" destination="GmA-Xb-izQ" id="JNO-Fx-207"/>
-                <outlet property="openMenuItem" destination="72" id="Oyo-4c-wyf"/>
-                <outlet property="saveAsMenuItem" destination="80" id="JGu-LJ-kKm"/>
-                <outlet property="saveMenuItem" destination="75" id="dJr-y9-EBO"/>
                 <outlet property="sourceBox" destination="zyE-7U-hFC" id="zew-uO-2Pr"/>
                 <outlet property="sourceImage" destination="Cmr-I4-xoi" id="Ly3-Qh-J5h"/>
                 <outlet property="sourceLabel" destination="0RU-gN-IOh" id="EzK-O3-MsB"/>

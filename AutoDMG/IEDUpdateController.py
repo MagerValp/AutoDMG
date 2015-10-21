@@ -62,6 +62,9 @@ class IEDUpdateController(NSObject):
         self.updateTableLabel.setStringValue_(u"")
         self.updateTable.setDataSource_(self)
     
+    def validateMenuItem_(self, menuItem):
+        return not self.delegate.busy()
+    
     # Helper methods.
     
     def disableControls(self):
