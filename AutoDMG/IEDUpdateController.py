@@ -129,7 +129,16 @@ class IEDUpdateController(NSObject):
     @LogException
     @IBAction
     def checkForProfileUpdates_(self, sender):
+        self.silent = False
+        self.doCheckForProfileUpdates()
+    
+    def checkForProfileUpdatesSilently(self):
+        self.silent = True
+        self.doCheckForProfileUpdates()
+    
+    def doCheckForProfileUpdates(self):
         LogInfo(u"Checking for updates")
+        self.dateBeforeUpdating = self.profileController.publicationDate
         self.disableControls()
         defaults = NSUserDefaults.standardUserDefaults()
         url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
@@ -144,12 +153,25 @@ class IEDUpdateController(NSObject):
     
     def profileUpdateAllDone(self):
         self.enableControls()
+        if not self.silent:
+            alert = NSAlert.alloc().init()
+            formatter = NSDateFormatter.alloc().init()
+            formatter.setDateFormat_(u"yyyy-MM-dd HH.mm")
+            dateStr = formatter.stringFromDate_(self.profileController.publicationDate)
+            if self.dateBeforeUpdating != self.profileController.publicationDate:
+                alert.setMessageText_(u"Profile updated")
+                alert.setInformativeText_(u"Publication date: %s" % dateStr)
+            else:
+                alert.setMessageText_(u"No profile update available")
+                alert.setInformativeText_(u"Last update: %s" % dateStr)
+            alert.runModal()
     
     def profileUpdateFailed_(self, error):
         alert = NSAlert.alloc().init()
         alert.setMessageText_(error.localizedDescription())
         alert.setInformativeText_(error.userInfo()[NSErrorFailingURLStringKey])
         alert.runModal()
+        self.silent = True
     
     def profileUpdateSucceeded_(self, publicationDate):
         LogDebug(u"profileUpdateSucceeded:%@", publicationDate)

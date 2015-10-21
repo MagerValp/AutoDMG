@@ -55,7 +55,7 @@ class IEDAppDelegate(NSObject):
         if updateProfileInterval:
             lastCheck = defaults.objectForKey_(u"LastUpdateProfileCheck")
             if lastCheck.timeIntervalSinceNow() < -60 * 60 * 18:
-                self.mainWindowController.updateController.checkForProfileUpdates_(self)
+                self.mainWindowController.updateController.checkForProfileUpdatesSilently()
         
         appVersionCheckInterval = defaults.integerForKey_(u"AppVersionCheckInterval")
         if appVersionCheckInterval:
