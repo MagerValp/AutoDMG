@@ -201,6 +201,7 @@ class IEDWorkflow(NSObject):
             self.dmgHelper.detach_selector_(self.baseSystemMountedFromPath, self.handleDetachResult_)
         installerVersion = tuple(int(x) for x in version.split(u"."))
         runningVersion = tuple(int(x) for x in platform.mac_ver()[0].split(u"."))
+        LogNotice(u"Found source: %@ %@ %@", name, version, build)
         if installerVersion[:2] != runningVersion[:2]:
             self.delegate.ejectingSource()
             self.dmgHelper.detachAll_(self.rejectSource_)
