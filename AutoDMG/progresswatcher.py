@@ -318,8 +318,12 @@ def main(argv):
     asrparser.add_argument(u"image", help=u"DMG to scan")
     asrparser.set_defaults(func=imagescan)
     
-    args = p.parse_args([x.decode(u"utf-8") for x in argv[1:]])
-    args.func(args)
+    try:
+        args = p.parse_args([x.decode(u"utf-8") for x in argv[1:]])
+        args.func(args)
+    except:
+        NSLog(u"progresswatcher died with an uncaught exception: %@", traceback.format_exc())
+        return os.EX_SOFTWARE
     
     return 0
     
