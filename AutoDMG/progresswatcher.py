@@ -19,6 +19,9 @@ import traceback
 from Foundation import *
 
 
+MAX_MSG_SIZE = 32768 # See also IEDSL_MAX_MSG_SIZE in IEDSocketListener.
+
+
 class ProgressWatcher(NSObject):
     
     re_installerlog = re.compile(r'^.+? installer\[[0-9a-f:]+\] (<(?P<level>[^>]+)>:)?(?P<message>.*)$')
@@ -27,6 +30,7 @@ class ProgressWatcher(NSObject):
     
     def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, MAX_MSG_SIZE)
         self.sockPath = sockPath
         
         nc = NSNotificationCenter.defaultCenter()
@@ -261,6 +265,7 @@ class ProgressWatcher(NSObject):
                 self.sock.sendto(msg, self.sockPath)
             except socket.error, e:
                 NSLog(u"Socket at %@ failed: %@", self.sockPath, unicode(e))
+                NSLog(u"Failed socket message: %@", msg)
         else:
             NSLog(u"postNotification:%@", msgDict)
     

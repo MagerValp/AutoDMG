@@ -15,7 +15,8 @@ import glob
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
-IEDSL_MAX_MSG_SIZE = 4096
+IEDSL_MAX_MSG_SIZE = 32768
+IEDSL_MAX_MSG_COUNT = 2
 
 
 class IEDSocketListener(NSObject):
@@ -47,6 +48,7 @@ class IEDSocketListener(NSObject):
     def listenInBackground_(self, ignored):
         try:
             sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, (IEDSL_MAX_MSG_SIZE + 16) * IEDSL_MAX_MSG_COUNT)
             sock.bind(self.socketPath)
         except socket.error as e:
             LogError(u"Error creating datagram socket at %@: %@", self.socketPath, unicode(e))
