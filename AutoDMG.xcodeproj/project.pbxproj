@@ -279,7 +279,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = IED;
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "University of Gothenburg";
 				TargetAttributes = {
 					66EA72C817EB1585009B8350 = {
@@ -454,6 +454,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -516,6 +517,7 @@
 				GCC_PREFIX_HEADER = "AutoDMG/AutoDMG-Prefix.pch";
 				INFOPLIST_FILE = "AutoDMG/AutoDMG-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_BUNDLE_IDENTIFIER = "se.gu.it.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = AutoDMG;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -531,6 +533,7 @@
 				GCC_PREFIX_HEADER = "AutoDMG/AutoDMG-Prefix.pch";
 				INFOPLIST_FILE = "AutoDMG/AutoDMG-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_BUNDLE_IDENTIFIER = "se.gu.it.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = AutoDMG;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
