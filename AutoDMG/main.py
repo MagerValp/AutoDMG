@@ -210,6 +210,17 @@ def main():
             exceptionInfo = u"(no traceback available)"
         NSLog(u"AutoDMG died with an uncaught exception %@: %@", unicode(e), exceptionInfo)
         return os.EX_SOFTWARE
+    finally:
+        NSLog(u"Closing stdout/stderr")
+        # Explicitly close stdout/stderr to avoid Python issue 11380.
+        try:
+            sys.stdout.close()
+        except:
+            pass
+        try:
+            sys.stderr.close()
+        except:
+            pass
 
 
 if __name__ == '__main__':
