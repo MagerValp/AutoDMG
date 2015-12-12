@@ -84,9 +84,12 @@ class IEDDMGHelper(NSObject):
             self.tellDelegate_message_(selector, {u"success": True,
                                                   u"dmg-path": dmgPath,
                                                   u"mount-point": self.dmgs[dmgPath]})
-        except Exception:
-            exceptionInfo = traceback.format_exc()
-            msg = u"Attach of %s crashed with exception:\n%s" % (dmgPath, exceptionInfo)
+        except Exception as e:
+            try:
+                exceptionInfo = traceback.format_exc()
+            except:
+                exceptionInfo = u"(no traceback available)"
+            msg = u"Attach of %s crashed with exception %s:\n%s" % (dmgPath, e, exceptionInfo)
             self.tellDelegate_message_(selector, {u"success": False,
                                                   u"dmg-path": dmgPath,
                                                   u"error-message": msg})
@@ -118,7 +121,9 @@ class IEDDMGHelper(NSObject):
             del self.dmgs[dmgPath]
             maxtries = 5
             for tries in range(maxtries):
+                LogDebug(u"Detaching %@, attempt %d/%d", dmgPath, tries + 1, maxtries)
                 if tries == maxtries >> 1:
+                    LogDebug(u"Adding -force to detach arguments")
                     cmd.append(u"-force")
                 p = subprocess.Popen(cmd,
                                      bufsize=1,
@@ -141,9 +146,12 @@ class IEDDMGHelper(NSObject):
                                                                                  False)
                 else:
                     time.sleep(1)
-        except Exception:
-            exceptionInfo = traceback.format_exc()
-            msg = u"Detach of %s crashed with exception:\n%s" % (dmgPath, exceptionInfo)
+        except Exception as e:
+            try:
+                exceptionInfo = traceback.format_exc()
+            except:
+                exceptionInfo = u"(no traceback available)"
+            msg = u"Detach of %s crashed with exception %s:\n%s" % (dmgPath, e, exceptionInfo)
             target.performSelectorOnMainThread_withObject_waitUntilDone_(selector,
                                                                          {u"success": False,
                                                                           u"dmg-path": dmgPath,

@@ -24,6 +24,7 @@
 		66158EC3182149CC00E43508 /* Checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 66158EC1182149CC00E43508 /* Checkmark.png */; };
 		66158EC4182149CC00E43508 /* Checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 66158EC2182149CC00E43508 /* Checkmark@2x.png */; };
 		66320B411819C208006D3DA7 /* IEDWorkflow.py in Resources */ = {isa = PBXBuildFile; fileRef = 66320B401819C208006D3DA7 /* IEDWorkflow.py */; };
+		66359B521C19AABD005A94CE /* ExceptionHandling.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66359B511C19AABD005A94CE /* ExceptionHandling.framework */; };
 		664F6B0118BDD1C90071E951 /* IEDTemplate.py in Resources */ = {isa = PBXBuildFile; fileRef = 664F6B0018BDD1C90071E951 /* IEDTemplate.py */; };
 		6654DBF1181E55A0001861BA /* IEDLogLine.py in Resources */ = {isa = PBXBuildFile; fileRef = 6654DBF0181E55A0001861BA /* IEDLogLine.py */; };
 		665E928518159C1A00A8F683 /* IEDProfileController.py in Resources */ = {isa = PBXBuildFile; fileRef = 665E928418159C1A00A8F683 /* IEDProfileController.py */; };
@@ -69,6 +70,7 @@
 		66158EC1182149CC00E43508 /* Checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Checkmark.png; sourceTree = "<group>"; };
 		66158EC2182149CC00E43508 /* Checkmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Checkmark@2x.png"; sourceTree = "<group>"; };
 		66320B401819C208006D3DA7 /* IEDWorkflow.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDWorkflow.py; sourceTree = "<group>"; };
+		66359B511C19AABD005A94CE /* ExceptionHandling.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExceptionHandling.framework; path = System/Library/Frameworks/ExceptionHandling.framework; sourceTree = SDKROOT; };
 		664F6B0018BDD1C90071E951 /* IEDTemplate.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDTemplate.py; sourceTree = "<group>"; };
 		6654DBF0181E55A0001861BA /* IEDLogLine.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDLogLine.py; sourceTree = "<group>"; };
 		665E928418159C1A00A8F683 /* IEDProfileController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDProfileController.py; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66359B521C19AABD005A94CE /* ExceptionHandling.framework in Frameworks */,
 				66EA72CF17EB1586009B8350 /* Python.framework in Frameworks */,
 				66EA72CD17EB1586009B8350 /* Cocoa.framework in Frameworks */,
 			);
@@ -193,6 +196,7 @@
 		66EA72CB17EB1586009B8350 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				66359B511C19AABD005A94CE /* ExceptionHandling.framework */,
 				66EA72CC17EB1586009B8350 /* Cocoa.framework */,
 				66EA72CE17EB1586009B8350 /* Python.framework */,
 				66EA72D017EB1586009B8350 /* Other Frameworks */,

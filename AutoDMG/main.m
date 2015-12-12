@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Python/Python.h>
+#import <ExceptionHandling/ExceptionHandling.h>
 
 
 int gSysExit;
@@ -20,12 +21,23 @@ void checkSysExit(void)
 }
 
 
+void exceptionHandler(NSException *exception)
+{
+    NSLog(@"UncaughtExceptionHandler:");
+    NSLog(@"%@", [exception reason]);
+    NSLog(@"User info: %@", [exception userInfo]);
+    NSLog(@"Strack trace: %@", [[exception userInfo] objectForKey:NSStackTraceKey]);
+}
+
+
 int main(int argc, const char *argv[])
 {
     int result;
     
     gSysExit = 1;
     atexit(checkSysExit);
+    
+    NSSetUncaughtExceptionHandler(&exceptionHandler);
     
     @autoreleasepool {
         

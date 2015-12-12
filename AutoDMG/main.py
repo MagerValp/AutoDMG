@@ -39,8 +39,11 @@ def get_log_dir():
 
 
 def gui_unexpected_error_alert():
-    exceptionInfo = traceback.format_exc()
-    NSLog(u"AutoDMG died with an uncaught exception, %@", exceptionInfo)
+    try:
+        exceptionInfo = traceback.format_exc()
+    except:
+        exceptionInfo = u"(no traceback available)"
+    NSLog(u"AutoDMG died with an uncaught exception: %@", exceptionInfo)
     from AppKit import NSAlertSecondButtonReturn
     alert = NSAlert.alloc().init()
     alert.setMessageText_(u"AutoDMG died with an uncaught exception")
@@ -193,12 +196,19 @@ def main():
             return gui_main()
         # Otherwise parse the command line arguments.
         else:
-            return cli_main(decoded_argv)
+            status = cli_main(decoded_argv)
+            NSLog(u"main() returning with code %d", status)
+            return status
     
     except SystemExit as e:
+        NSLog(u"main() exited with code %d", e.code)
         return e.code
-    except Exception:
-        NSLog(u"AutoDMG died with an uncaught exception, %@", traceback.format_exc())
+    except Exception as e:
+        try:
+            exceptionInfo = traceback.format_exc()
+        except:
+            exceptionInfo = u"(no traceback available)"
+        NSLog(u"AutoDMG died with an uncaught exception %@: %@", unicode(e), exceptionInfo)
         return os.EX_SOFTWARE
 
 
