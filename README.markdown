@@ -31,7 +31,7 @@ Support
 
 Documentation and help is in the [AutoDMG wiki](https://github.com/MagerValp/AutoDMG/wiki).
 
-If you have questions or need help, you can join us in `#autodmg` on [Slack MacAdmins](https://macadmins.org ).
+If you have questions or need help, you can join us in [`#autodmg`](https://macadmins.slack.com/archives/autodmg) on [Slack MacAdmins](http://macadmins.org ).
 
 If you find a bug, please report it in the [issue tracker](https://github.com/MagerValp/AutoDMG/issues).
 
