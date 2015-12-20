@@ -118,7 +118,7 @@ class IEDUtil(NSObject):
             else:
                 return size
         else:
-            LogError(u"Don't know how to calculate installed size for '%s'",
+            LogError(u"Don't know how to calculate installed size for '%@'",
                      pkgPath)
             return None
     
