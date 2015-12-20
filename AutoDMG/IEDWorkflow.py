@@ -631,13 +631,28 @@ class IEDWorkflow(NSObject):
         else:
             scriptLines.append(u'do shell script %s with administrator privileges' % shellscript)
         applescript = u"\n".join(scriptLines)
+        LogDebug(u"Initializing NSAppleScript")
         trampoline = NSAppleScript.alloc().initWithSource_(applescript)
+        if trampoline is None:
+            self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, None, False)
+        LogDebug(u"Executing AppleScript snippet")
         evt, error = trampoline.executeAndReturnError_(None)
+        if evt:
+            try:
+                LogDebug(u"AppleScript result: '%@'", evt.stringValue())
+            except:
+                LogDebug(u"AppleScript result: %@", evt)
+        if error:
+            LogDebug(u"AppleScript error: %@", error)
         if evt is None:
             self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, error, False)
     
     def handleLaunchScriptError_(self, error):
+        if error is None:
+            self.fail_details_(u"Build failed", u"Unknown AppleScript error")
+            return
         if error.get(NSAppleScriptErrorNumber) == -128:
+            # User cancelled.
             self.stop()
         else:
             self.fail_details_(u"Build failed", error.get(NSAppleScriptErrorMessage,
