@@ -664,7 +664,21 @@ class IEDWorkflow(NSObject):
         LogInfo(u"Launching finalize with arguments:")
         for arg in args:
             LogInfo(u"    '%@'", arg)
-        subprocess.Popen(args)
+        try:
+            p = subprocess.Popen(args,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
+            out = p.communicate()[0].decode(u"utf-8")
+            LogDebug(u"Finalize exited with status %d and output '%@'",
+                     p.returncode,
+                     out)
+            if p.returncode != 0:
+                errMsg = u"Finalize task failed with status %d" % p.returncode
+                LogError(u"%@: %@", errMsg, out)
+                self.fail_details_(errMsg, out)
+        except BaseException as e:
+            LogError(u"Failed to launch finalize task: %@", unicode(e))
+            self.fail_details_(u"Failed to launch finalize task", unicode(e))
     
     
     
