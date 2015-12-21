@@ -133,6 +133,10 @@ class IEDTemplate(NSObject):
             if not os.path.exists(path):
                 LogError(u"Package '%@' not found", packagePath)
                 return False
+            name, ext = os.path.splitext(path)
+            if ext.lower() not in IEDUtil.PACKAGE_EXTENSIONS:
+                LogError(u"'%@' is not valid installer package or app", packagePath)
+                return False
             if path not in self.additionalPackages:
                 LogInfo(u"Adding '%@' to additional packages", path)
                 self.additionalPackages.append(IEDUtil.resolvePath_(path))

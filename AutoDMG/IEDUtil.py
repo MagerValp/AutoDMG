@@ -20,6 +20,7 @@ from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessag
 class IEDUtil(NSObject):
     
     VERSIONPLIST_PATH = u"System/Library/CoreServices/SystemVersion.plist"
+    PACKAGE_EXTENSIONS = [u".pkg", u".mpkg", u".app", u".dmg"]
     
     @classmethod
     def readSystemVersion_(cls, rootPath):

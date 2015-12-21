@@ -121,9 +121,9 @@ class IEDAddPkgController(NSObject):
             # Don't allow multiple copies.
             if path in self.packagePaths:
                 return NSDragOperationNone
-            # Ensure the file extension is pkg or mpkg.
+            # Ensure the file extension is valid for additonal packages.
             name, ext = os.path.splitext(path)
-            if ext.lower() not in (u".pkg", u".mpkg", u".app", u".dmg"):
+            if ext.lower() not in IEDUtil.PACKAGE_EXTENSIONS:
                 return NSDragOperationNone
         return NSDragOperationCopy
     
