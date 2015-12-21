@@ -110,7 +110,7 @@ class IEDCLIController(NSObject):
             template.setApplyUpdates_(True)
         if args.packages:
             if not template.setAdditionalPackages_(args.packages):
-                self.failWithMessage_(u"Additional packages failed verification")
+                self.failWithMessage_(u"Additional packages failed verification: %s" % template.additionalPackageError)
                 return os.EX_DATAERR
         
         if not template.sourcePath:

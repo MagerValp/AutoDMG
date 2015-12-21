@@ -245,7 +245,7 @@ class IEDController(NSObject):
             template.setApplyUpdates_(False)
         if not template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()]):
             self.displayAlert_text_(u"Additional packages failed verification",
-                                    u"Check the log for details.")
+                                    template.additionalPackageError)
             return
         template.setOutputPath_(panel.URL().path())
         if self.volumeName.stringValue():

@@ -28,6 +28,7 @@ class IEDTemplate(NSObject):
         self.outputPath = None
         self.applyUpdates = False
         self.additionalPackages = NSMutableArray.alloc().init()
+        self.additionalPackageError = None
         self.volumeName = u"Macintosh HD"
         self.volumeSize = None
         self.packagesToInstall = None
@@ -104,7 +105,10 @@ class IEDTemplate(NSObject):
                 self.setApplyUpdates_(plist[u"ApplyUpdates"])
             elif key == u"AdditionalPackages":
                 if not self.setAdditionalPackages_(plist[u"AdditionalPackages"]):
-                    return u"Additional packages failed verification"
+                    msg = u"Additional packages failed verification"
+                    if self.additionalPackageError:
+                        msg += u":\n" + self.additionalPackageError
+                    return msg
             elif key == u"OutputPath":
                 self.setOutputPath_(plist[u"OutputPath"])
             elif key == u"VolumeName":
@@ -128,14 +132,17 @@ class IEDTemplate(NSObject):
         self.applyUpdates = shouldApplyUpdates
     
     def setAdditionalPackages_(self, packagePaths):
+        self.additionalPackageError = None
         for packagePath in packagePaths:
             path = IEDUtil.resolvePath_(os.path.expanduser(packagePath))
             if not os.path.exists(path):
-                LogError(u"Package '%@' not found", packagePath)
+                self.additionalPackageError = u"Package '%s' not found" % packagePath
+                LogError(u"'%@'", self.additionalPackageError)
                 return False
             name, ext = os.path.splitext(path)
             if ext.lower() not in IEDUtil.PACKAGE_EXTENSIONS:
-                LogError(u"'%@' is not valid installer package or app", packagePath)
+                self.additionalPackageError = u"'%s' is not valid software package" % packagePath
+                LogError(u"'%@'", self.additionalPackageError)
                 return False
             if path not in self.additionalPackages:
                 LogInfo(u"Adding '%@' to additional packages", path)
