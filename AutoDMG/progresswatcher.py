@@ -6,7 +6,7 @@
 #  AutoDMG
 #
 #  Created by Per Olofsson on 2013-09-26.
-#  Copyright 2013-2015 Per Olofsson, University of Gothenburg. All rights reserved.
+#  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
 
