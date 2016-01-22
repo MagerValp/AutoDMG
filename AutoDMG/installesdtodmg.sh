@@ -84,7 +84,7 @@ else
 fi
 
 # Get a work directory and check free space.
-tempdir=$(mktemp -d -t installesdtodmg)
+tempdir=$(mktemp -d "${TMPDIR:-/tmp/}installesdtodmg.XXXXXXXX")
 tempdirs+=("$tempdir")
 freespace=$(df -g "$tempdir" | tail -1 | awk '{print $4}')
 if [[ "$freespace" -lt 15 ]]; then
