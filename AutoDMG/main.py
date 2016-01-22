@@ -197,7 +197,6 @@ def main():
         # Otherwise parse the command line arguments.
         else:
             status = cli_main(decoded_argv)
-            NSLog(u"main() returning with code %d", status)
             return status
     
     except SystemExit as e:
@@ -211,7 +210,6 @@ def main():
         NSLog(u"AutoDMG died with an uncaught exception %@: %@", unicode(e), exceptionInfo)
         return os.EX_SOFTWARE
     finally:
-        NSLog(u"Closing stdout/stderr")
         # Explicitly close stdout/stderr to avoid Python issue 11380.
         try:
             sys.stdout.close()
