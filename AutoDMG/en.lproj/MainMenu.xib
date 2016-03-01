@@ -631,6 +631,7 @@
                 <outlet property="buildProgressWindow" destination="Xho-YZ-fRH" id="c89-Hr-l1E"/>
                 <outlet property="logController" destination="Ssv-D7-Tkv" id="Rnb-Ky-1XY"/>
                 <outlet property="mainWindow" destination="GmA-Xb-izQ" id="JNO-Fx-207"/>
+                <outlet property="skipAsrImagescan" destination="h4b-3I-aGw" id="Hyg-Xb-Jp4"/>
                 <outlet property="sourceBox" destination="zyE-7U-hFC" id="zew-uO-2Pr"/>
                 <outlet property="sourceImage" destination="Cmr-I4-xoi" id="Ly3-Qh-J5h"/>
                 <outlet property="sourceLabel" destination="0RU-gN-IOh" id="EzK-O3-MsB"/>
@@ -1141,6 +1142,26 @@ Gw
                         <rect key="frame" x="208" y="22" width="23" height="17"/>
                         <animations/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="GB" id="8uI-Uf-hdQ">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h4b-3I-aGw">
+                        <rect key="frame" x="159" y="-2" width="18" height="18"/>
+                        <animations/>
+                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="only" inset="2" id="7eW-Be-EqX">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                    </button>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bgt-SK-Cry">
+                        <rect key="frame" x="10" y="-1" width="145" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="133" id="Ju3-8P-8fc"/>
+                        </constraints>
+                        <animations/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Don't Scan for Restore:" id="lwf-jk-y1I">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

@@ -40,6 +40,7 @@ class IEDController(NSObject):
     advancedWindow = IBOutlet()
     volumeName = IBOutlet()
     volumeSize = IBOutlet()
+    skipAsrImagescan = IBOutlet()
     
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
@@ -254,6 +255,11 @@ class IEDController(NSObject):
         if self.volumeSize.stringValue():
             template.setVolumeSize_(self.volumeSize.intValue())
             self.workflow.setVolumeSize_(self.volumeSize.intValue())
+
+        skip_asr = bool(self.skipAsrImagescan.state())
+        template.setSkipAsrImagescan_(skip_asr)
+        self.workflow.setSkipAsrImagescan_(skip_asr)
+
         self.workflow.setTemplate_(template)
         
         self.workflow.setPackagesToInstall_(self.updateController.packagesToInstall() +

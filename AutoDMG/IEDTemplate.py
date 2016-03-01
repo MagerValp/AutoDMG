@@ -31,6 +31,7 @@ class IEDTemplate(NSObject):
         self.additionalPackageError = None
         self.volumeName = u"Macintosh HD"
         self.volumeSize = None
+        self.skipAsrImagescan = False
         self.packagesToInstall = None
         
         self.loadedTemplates = set()
@@ -68,6 +69,8 @@ class IEDTemplate(NSObject):
             plist[u"OutputPath"] = self.outputPath
         if self.volumeSize:
             plist[u"VolumeSize"] = self.volumeSize
+        if self.skipAsrImagescan:
+            plist[u"SkipAsrImagescan"] = self.skipAsrImagescan
         if plist.writeToFile_atomically_(path, False):
             return None
         else:
@@ -115,6 +118,8 @@ class IEDTemplate(NSObject):
                 self.setVolumeName_(plist[u"VolumeName"])
             elif key == u"VolumeSize":
                 self.setVolumeSize_(plist[u"VolumeSize"])
+            elif key == u"SkipAsrImagescan":
+                self.setSkipAsrImagescan_(plist[u"SkipAsrImagescan"])
             elif key == u"TemplateFormat":
                 pass
             
@@ -163,6 +168,10 @@ class IEDTemplate(NSObject):
         LogInfo(u"Setting volume size to '%d'", size)
         self.volumeSize = size
     
+    def setSkipAsrImagescan_(self, skipAsrImagescan):
+        LogInfo(u"Setting 'Don\'t Scan for Restore to '%@'", skipAsrImagescan)
+        self.skipAsrImagescan = skipAsrImagescan
+
     def resolvePackages(self):
         self.packagesToInstall = list()
         for path in self.additionalPackages:
