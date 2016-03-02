@@ -46,6 +46,7 @@ class IEDTemplate(NSObject):
                           "    additionalPackages=(%s)" % ", ".join(repr(x) for x in self.additionalPackages),
                           "    volumeName=%s" % repr(self.volumeName),
                           "    volumeSize=%s" % repr(self.volumeSize),
+                          "    skipAsrImagescan=%s" % repr(self.skipAsrImagescan),
                           ">"))
     
     def initWithSourcePath_(self, path):
