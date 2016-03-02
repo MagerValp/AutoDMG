@@ -365,6 +365,8 @@ class IEDController(NSObject):
             template.setVolumeName_(self.volumeName.stringValue())
         if self.volumeSize.intValue():
             template.setVolumeSize_(self.volumeSize.intValue())
+        if self.skipAsrImagescan.state() == NSOnState:
+            template.setSkipAsrImagescan_(True)
         template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
         
         error = template.saveTemplateAndReturnError_(url.path())
@@ -412,6 +414,11 @@ class IEDController(NSObject):
         if template.volumeSize:
             LogDebug(u"Setting volume size to %@", template.volumeSize)
             self.volumeSize.setIntValue_(template.volumeSize)
+        # Skip ASR imagescan.
+        self.skipAsrImagescan.setState_(NSOffState)
+        if template.skipAsrImagescan:
+            LogDebug(u"Setting 'Don\'t Scan for Restore' to %@", template.skipAsrImagescan)
+            self.skipAsrImagescan.setState_(NSOnState)
         # SourcePath.
         if template.sourcePath:
             LogDebug(u"Setting source to %@", template.sourcePath)
