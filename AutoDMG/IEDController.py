@@ -40,7 +40,7 @@ class IEDController(NSObject):
     advancedWindow = IBOutlet()
     volumeName = IBOutlet()
     volumeSize = IBOutlet()
-    skipAsrImagescan = IBOutlet()
+    finalizeAsrImagescan = IBOutlet()
     
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
@@ -256,9 +256,9 @@ class IEDController(NSObject):
             template.setVolumeSize_(self.volumeSize.intValue())
             self.workflow.setVolumeSize_(self.volumeSize.intValue())
 
-        skip_asr = bool(self.skipAsrImagescan.state())
-        template.setSkipAsrImagescan_(skip_asr)
-        self.workflow.setSkipAsrImagescan_(skip_asr)
+        finalize_asr_imagescan = bool(self.finalizeAsrImagescan.state())
+        template.setFinalizeAsrImagescan_(finalize_asr_imagescan)
+        self.workflow.setFinalizeAsrImagescan_(finalize_asr_imagescan)
 
         self.workflow.setTemplate_(template)
         
@@ -365,8 +365,8 @@ class IEDController(NSObject):
             template.setVolumeName_(self.volumeName.stringValue())
         if self.volumeSize.intValue():
             template.setVolumeSize_(self.volumeSize.intValue())
-        if self.skipAsrImagescan.state() == NSOnState:
-            template.setSkipAsrImagescan_(True)
+        if self.finalizeAsrImagescan.state() == NSOffState:
+            template.setFinalizeAsrImagescan_(False)
         template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
         
         error = template.saveTemplateAndReturnError_(url.path())
@@ -414,11 +414,11 @@ class IEDController(NSObject):
         if template.volumeSize:
             LogDebug(u"Setting volume size to %@", template.volumeSize)
             self.volumeSize.setIntValue_(template.volumeSize)
-        # Skip ASR imagescan.
-        self.skipAsrImagescan.setState_(NSOffState)
-        if template.skipAsrImagescan:
-            LogDebug(u"Setting 'Don\'t Scan for Restore' to %@", template.skipAsrImagescan)
-            self.skipAsrImagescan.setState_(NSOnState)
+        # Finalize task: ASR imagescan.
+        self.finalizeAsrImagescan.setState_(NSOnState)
+        if template.finalizeAsrImagescan :
+            LogDebug(u"Setting 'Finalize: Scan for restore' to %@", template.finalizeAsrImagescan)
+            self.finalizeAsrImagescan.setState_(NSOffState)
         # SourcePath.
         if template.sourcePath:
             LogDebug(u"Setting source to %@", template.sourcePath)

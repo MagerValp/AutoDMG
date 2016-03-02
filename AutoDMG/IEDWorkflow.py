@@ -57,7 +57,7 @@ class IEDWorkflow(NSObject):
         self._authPassword = None
         self._volumeSize = None
         self._template = None
-        self._skipAsrImagescan = False
+        self._finalizeAsrImagescan = True
         self.tempDir = None
         self.templatePath = None
         
@@ -290,13 +290,13 @@ class IEDWorkflow(NSObject):
     def setVolumeSize_(self, size):
         self._volumeSize = size
     
-    # Skip ASR imagescan.
+    # Finalize task: ASR imagescan.
     
-    def skipAsrImagescan(self):
-        return self._skipAsrImagescan
+    def finalizeAsrImagescan(self):
+        return self._finalizeAsrImagescan
     
-    def setSkipAsrImagescan_(self, skipAsrImagescan):
-        self._skipAsrImagescan = skipAsrImagescan
+    def setFinalizeAsrImagescan_(self, finalizeAsrImagescan):
+        self._finalizeAsrImagescan = finalizeAsrImagescan
     
     # Template to save in image.
     
@@ -397,8 +397,8 @@ class IEDWorkflow(NSObject):
             u"phases": installerPhases,
         })
 
-        # Finalize image. (Skip adding this task if Scan for Restore is skipped)
-        if not self._skipAsrImagescan:
+        # Finalize image. (Skip adding this task if Finalize: Scan for restore is unchecked.)
+        if self._finalizeAsrImagescan:
             self.tasks.append({
                 u"method": self.taskFinalize,
                 u"phases": [
