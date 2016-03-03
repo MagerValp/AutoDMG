@@ -416,7 +416,7 @@ class IEDController(NSObject):
             self.volumeSize.setIntValue_(template.volumeSize)
         # Finalize task: ASR imagescan.
         self.finalizeAsrImagescan.setState_(NSOnState)
-        if template.finalizeAsrImagescan :
+        if template.finalizeAsrImagescan == False:
             LogDebug(u"Setting 'Finalize: Scan for restore' to %@", template.finalizeAsrImagescan)
             self.finalizeAsrImagescan.setState_(NSOffState)
         # SourcePath.
