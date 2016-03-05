@@ -107,7 +107,7 @@ class IEDCLIController(NSObject):
         if args.size:
             template.setVolumeSize_(args.size)
         if args.skip_asr_imagescan:
-            template.setSkipAsrImagescan_(True)
+            template.setFinalizeAsrImagescan_(False)
         if args.updates is not None:
             template.setApplyUpdates_(True)
         if args.packages:
@@ -220,7 +220,7 @@ class IEDCLIController(NSObject):
         self.workflow.setOutputPath_(template.outputPath)
         self.workflow.setVolumeName_(template.volumeName)
         self.workflow.setVolumeSize_(template.volumeSize)
-        self.workflow.setSkipAsrImagescan_(template.skipAsrImagescan)
+        self.workflow.setFinalizeAsrImagescan_(template.finalizeAsrImagescan)
         self.workflow.setTemplate_(template)
         self.workflow.start()
         self.waitBusy()
