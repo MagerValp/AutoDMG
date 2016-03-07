@@ -40,6 +40,7 @@ class IEDController(NSObject):
     advancedWindow = IBOutlet()
     volumeName = IBOutlet()
     volumeSize = IBOutlet()
+    finalizeAsrImagescan = IBOutlet()
     
     def awakeFromNib(self):
         LogDebug(u"awakeFromNib")
@@ -254,6 +255,11 @@ class IEDController(NSObject):
         if self.volumeSize.stringValue():
             template.setVolumeSize_(self.volumeSize.intValue())
             self.workflow.setVolumeSize_(self.volumeSize.intValue())
+
+        finalize_asr_imagescan = bool(self.finalizeAsrImagescan.state())
+        template.setFinalizeAsrImagescan_(finalize_asr_imagescan)
+        self.workflow.setFinalizeAsrImagescan_(finalize_asr_imagescan)
+
         self.workflow.setTemplate_(template)
         
         self.workflow.setPackagesToInstall_(self.updateController.packagesToInstall() +
@@ -359,6 +365,8 @@ class IEDController(NSObject):
             template.setVolumeName_(self.volumeName.stringValue())
         if self.volumeSize.intValue():
             template.setVolumeSize_(self.volumeSize.intValue())
+        if self.finalizeAsrImagescan.state() == NSOffState:
+            template.setFinalizeAsrImagescan_(False)
         template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
         
         error = template.saveTemplateAndReturnError_(url.path())
@@ -406,6 +414,11 @@ class IEDController(NSObject):
         if template.volumeSize:
             LogDebug(u"Setting volume size to %@", template.volumeSize)
             self.volumeSize.setIntValue_(template.volumeSize)
+        # Finalize task: ASR imagescan.
+        self.finalizeAsrImagescan.setState_(NSOnState)
+        if template.finalizeAsrImagescan == False:
+            LogDebug(u"Setting 'Finalize: Scan for restore' to %@", template.finalizeAsrImagescan)
+            self.finalizeAsrImagescan.setState_(NSOffState)
         # SourcePath.
         if template.sourcePath:
             LogDebug(u"Setting source to %@", template.sourcePath)

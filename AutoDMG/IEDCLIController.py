@@ -106,6 +106,8 @@ class IEDCLIController(NSObject):
             template.setVolumeName_(args.name)
         if args.size:
             template.setVolumeSize_(args.size)
+        if args.skip_asr_imagescan:
+            template.setFinalizeAsrImagescan_(False)
         if args.updates is not None:
             template.setApplyUpdates_(True)
         if args.packages:
@@ -218,6 +220,7 @@ class IEDCLIController(NSObject):
         self.workflow.setOutputPath_(template.outputPath)
         self.workflow.setVolumeName_(template.volumeName)
         self.workflow.setVolumeSize_(template.volumeSize)
+        self.workflow.setFinalizeAsrImagescan_(template.finalizeAsrImagescan)
         self.workflow.setTemplate_(template)
         self.workflow.start()
         self.waitBusy()
@@ -243,6 +246,7 @@ class IEDCLIController(NSObject):
         argparser.add_argument(u"-i", u"--installer", help=u"Override installer in template")
         argparser.add_argument(u"-n", u"--name", help=u"Installed system volume name")
         argparser.add_argument(u"-s", u"--size", type=int, help=u"Installed system volume size, in GB")
+        argparser.add_argument(u"--skip-asr-imagescan", action=u"store_true", help=u"Skip `asr imagescan` (Scan for Restore) phase")
         argparser.add_argument(u"-u", u"--updates", action=u"store_const", const=True, help=u"Apply updates")
         argparser.add_argument(u"-U", u"--download-updates", action=u"store_true", help=u"Download missing updates")
         argparser.add_argument(u"-f", u"--force", action=u"store_true", help=u"Overwrite output")

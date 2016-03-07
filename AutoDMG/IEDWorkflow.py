@@ -57,6 +57,7 @@ class IEDWorkflow(NSObject):
         self._authPassword = None
         self._volumeSize = None
         self._template = None
+        self._finalizeAsrImagescan = True
         self.tempDir = None
         self.templatePath = None
         
@@ -289,6 +290,14 @@ class IEDWorkflow(NSObject):
     def setVolumeSize_(self, size):
         self._volumeSize = size
     
+    # Finalize task: ASR imagescan.
+    
+    def finalizeAsrImagescan(self):
+        return self._finalizeAsrImagescan
+    
+    def setFinalizeAsrImagescan_(self, finalizeAsrImagescan):
+        self._finalizeAsrImagescan = finalizeAsrImagescan
+    
     # Template to save in image.
     
     def template(self):
@@ -387,17 +396,18 @@ class IEDWorkflow(NSObject):
             u"method": self.taskInstall,
             u"phases": installerPhases,
         })
-        
-        # Finalize image.
-        self.tasks.append({
-            u"method": self.taskFinalize,
-            u"phases": [
-                {u"title": u"Scanning disk image", u"weight":   2 * 1024 * 1024},
-                {u"title": u"Scanning disk image", u"weight":   1 * 1024 * 1024},
-                {u"title": u"Scanning disk image", u"weight": 150 * 1024 * 1024},
-                {u"title": u"Scanning disk image", u"weight":  17 * 1024 * 1024, u"optional": True},
-            ],
-        })
+
+        # Finalize image. (Skip adding this task if Finalize: Scan for restore is unchecked.)
+        if self._finalizeAsrImagescan:
+            self.tasks.append({
+                u"method": self.taskFinalize,
+                u"phases": [
+                    {u"title": u"Scanning disk image", u"weight":   2 * 1024 * 1024},
+                    {u"title": u"Scanning disk image", u"weight":   1 * 1024 * 1024},
+                    {u"title": u"Scanning disk image", u"weight": 150 * 1024 * 1024},
+                    {u"title": u"Scanning disk image", u"weight":  17 * 1024 * 1024, u"optional": True},
+                ],
+            })
         
         # Finish build.
         self.tasks.append({

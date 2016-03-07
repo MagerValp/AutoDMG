@@ -31,6 +31,7 @@ class IEDTemplate(NSObject):
         self.additionalPackageError = None
         self.volumeName = u"Macintosh HD"
         self.volumeSize = None
+        self.finalizeAsrImagescan = True
         self.packagesToInstall = None
         
         self.loadedTemplates = set()
@@ -45,6 +46,7 @@ class IEDTemplate(NSObject):
                           "    additionalPackages=(%s)" % ", ".join(repr(x) for x in self.additionalPackages),
                           "    volumeName=%s" % repr(self.volumeName),
                           "    volumeSize=%s" % repr(self.volumeSize),
+                          "    finalizeAsrImagescan=%s" % repr(self.finalizeAsrImagescan),
                           ">"))
     
     def initWithSourcePath_(self, path):
@@ -68,6 +70,8 @@ class IEDTemplate(NSObject):
             plist[u"OutputPath"] = self.outputPath
         if self.volumeSize:
             plist[u"VolumeSize"] = self.volumeSize
+        if not self.finalizeAsrImagescan:
+            plist[u"FinalizeAsrImagescan"] = self.finalizeAsrImagescan
         if plist.writeToFile_atomically_(path, False):
             return None
         else:
@@ -115,6 +119,8 @@ class IEDTemplate(NSObject):
                 self.setVolumeName_(plist[u"VolumeName"])
             elif key == u"VolumeSize":
                 self.setVolumeSize_(plist[u"VolumeSize"])
+            elif key == u"FinalizeAsrImagescan":
+                self.setFinalizeAsrImagescan_(plist[u"FinalizeAsrImagescan"])
             elif key == u"TemplateFormat":
                 pass
             
@@ -163,6 +169,10 @@ class IEDTemplate(NSObject):
         LogInfo(u"Setting volume size to '%d'", size)
         self.volumeSize = size
     
+    def setFinalizeAsrImagescan_(self, finalizeAsrImagescan):
+        LogInfo(u"Setting 'Finalize: Scan for restore to '%@'", finalizeAsrImagescan)
+        self.finalizeAsrImagescan = finalizeAsrImagescan
+
     def resolvePackages(self):
         self.packagesToInstall = list()
         for path in self.additionalPackages:
