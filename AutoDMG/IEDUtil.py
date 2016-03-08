@@ -73,6 +73,18 @@ class IEDUtil(NSObject):
             return path
         else:
             return None
+
+    @classmethod
+    def systemImagePath_(cls, path):
+        u"""Resolve aliases and return path to a system image."""
+        path = cls.resolvePath_(path)
+        if not path:
+            return None
+        if os.path.basename(path).lower().endswith(u".dmg") and \
+            os.path.exists(path):
+            return path
+        else:
+            return None
     
     @classmethod
     def getPackageSize_(cls, path):

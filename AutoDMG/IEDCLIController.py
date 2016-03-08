@@ -79,14 +79,15 @@ class IEDCLIController(NSObject):
         
         # Parse arguments.
         
-        sourcePath = IEDUtil.installESDPath_(args.source)
+        sourcePath = IEDUtil.installESDPath_(args.source) or \
+                        IEDUtil.systemImagePath_(args.source)
         if sourcePath:
             templatePath = None
         else:
             templatePath = self.checkTemplate_(args.source)
         
         if not sourcePath and not templatePath:
-            self.failWithMessage_(u"'%s' is not a valid OS X installer or AutoDMG template" % args.source)
+            self.failWithMessage_(u"'%s' is not a valid OS X installer, OS X system image or AutoDMG template" % args.source)
             return os.EX_DATAERR
         
         if templatePath:
@@ -241,7 +242,7 @@ class IEDCLIController(NSObject):
         return path
     
     def addargsBuild_(self, argparser):
-        argparser.add_argument(u"source", help=u"OS X installer or AutoDMG template")
+        argparser.add_argument(u"source", help=u"OS X installer, OS X system image or AutoDMG template")
         argparser.add_argument(u"-o", u"--output", help=u"DMG output path")
         argparser.add_argument(u"-i", u"--installer", help=u"Override installer in template")
         argparser.add_argument(u"-n", u"--name", help=u"Installed system volume name")
