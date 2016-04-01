@@ -140,7 +140,7 @@ class IEDTemplate(NSObject):
     def setAdditionalPackages_(self, packagePaths):
         self.additionalPackageError = None
         for packagePath in packagePaths:
-            path = IEDUtil.resolvePath_(os.path.expanduser(packagePath))
+            path = IEDUtil.resolvePath_(os.path.abspath(os.path.expanduser(packagePath)))
             if not os.path.exists(path):
                 self.additionalPackageError = u"Package '%s' not found" % packagePath
                 LogError(u"'%@'", self.additionalPackageError)
