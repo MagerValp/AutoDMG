@@ -42,10 +42,55 @@ class IEDDMGHelper(NSObject):
     def tellDelegate_message_(self, selector, message):
         if self.delegate.respondsToSelector_(selector):
             self.delegate.performSelectorOnMainThread_withObject_waitUntilDone_(selector, message, False)
+
+    def attachedDMGs(self):
+        dmgMounts = dict()
+        
+        LogDebug(u"Finding already attached dmgs")
+        p = subprocess.Popen([u"/usr/bin/hdiutil",
+                              u"info",
+                              u"-plist"],
+                             bufsize=1,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            errstr = u"hdiutil info failed with return code %d" % p.returncode
+            if err:
+                errstr += u": %s" % err.decode(u"utf-8")
+            LogWarning("%@", errstr)
+            return dmgMounts
+        
+        # Strip EULA text.
+        xmlStartIndex = out.find("<?xml")
+        plist = plistlib.readPlistFromString(out[xmlStartIndex:])
+        for dmgInfo in plist[u"images"]:
+            for entity in dmgInfo.get(u"system-entities", []):
+                try:
+                    dmgMounts[dmgInfo[u"image-path"]] = entity[u"mount-point"]
+                    LogDebug(u"'%@' is already mounted at '%@'", dmgInfo[u"image-path"], entity[u"mount-point"])
+                    break
+                except IndexError:
+                    pass
+                except KeyError:
+                    pass
+
+        return dmgMounts
     
     def hdiutilAttach_(self, args):
         try:
             dmgPath, selector = args
+            
+            # If the dmg is already mounted, reuse that.
+            attached = self.attachedDMGs()
+            if dmgPath in attached:
+                LogDebug(u"%@ is already mounted, no need to attach", dmgPath)
+                self.tellDelegate_message_(selector, {u"success": True,
+                                                      u"dmg-path": dmgPath,
+                                                      u"mount-point": attached[dmgPath]})
+                return
+            
             LogDebug(u"Attaching %@", dmgPath)
             p = subprocess.Popen([u"/usr/bin/hdiutil",
                                   u"attach",
