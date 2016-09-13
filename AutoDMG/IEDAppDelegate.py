@@ -49,6 +49,7 @@ class IEDAppDelegate(NSObject):
         defaults.registerDefaults_(defaultsDict)
     
     def applicationDidFinishLaunching_(self, sender):
+        NSApplication.sharedApplication().disableRelaunchOnLogin()
         version, build = IEDUtil.getAppVersion()
         if version.lower().endswith(u"b"):
             NSApplication.sharedApplication().dockTile().setBadgeLabel_(u"beta")
