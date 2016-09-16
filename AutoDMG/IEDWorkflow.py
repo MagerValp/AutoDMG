@@ -205,7 +205,13 @@ class IEDWorkflow(NSObject):
         LogNotice(u"Found source: %@ %@ %@", name, version, build)
         if installerVersion[:2] != runningVersion[:2]:
             self.delegate.ejectingSource()
-            self.dmgHelper.detachAll_(self.rejectSource_)
+            majorVersion = u".".join(unicode(x) for x in installerVersion[:2])
+            self.delegate.sourceFailed_text_(u"OS version mismatch",
+                                             u"The major version of the installer and the current OS must match.\n\n" + \
+                                             u"%s %s %s installer requires running %s.x to build an image." % (
+                                                name, version, build,
+                                                majorVersion))
+            self.dmgHelper.detachAll_(self.alertFailedUnmounts_)
             return
         LogNotice(u"Accepted source %@: %@ %@ %@", self.newSourcePath, name, version, build)
         self._source = self.newSourcePath
@@ -236,11 +242,6 @@ class IEDWorkflow(NSObject):
             LogWarning(u"Error reading %@ from image: %@", os.path.basename(path), error)
             return None
         return template
-    
-    def rejectSource_(self, failedUnmounts):
-        self.delegate.sourceFailed_text_(u"Version mismatch",
-                                         u"The major version of the installer and the current OS must match.")
-        self.alertFailedUnmounts_(failedUnmounts)
     
     def ejectSystemImage_(self, failedUnmounts):
         self.alertFailedUnmounts_(failedUnmounts)
