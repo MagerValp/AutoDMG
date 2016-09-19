@@ -36,8 +36,11 @@
 			<string>15E65</string>
 			<string>15F34</string>
 		</array>
-		<key>10.12-16A319</key>
+		<key>10.12-16A323</key>
 		<array>
+			<string>10.12-16A322</string>
+			<string>10.12-16A319</string>
+			<string>10.12-16A320</string>
 			<string>10.12-16A304a</string>
 			<string>10.12-16A201w</string>
 			<string>10.12-16A239m</string>
@@ -108,8 +111,9 @@
 			<string>iTunes</string>
 			<string>SecurityElCap</string>
 		</array>
-		<key>10.12-16A319</key>
+		<key>10.12-16A323</key>
 		<array>
+			<string>iTunes</string>
 		</array>
 		<key>10.9.5-13F34</key>
 		<array>
@@ -122,7 +126,7 @@
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2016-09-15T15:07:50Z</date>
+	<date>2016-09-19T14:52:09Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>BookKit</key>
