@@ -627,47 +627,71 @@ class IEDWorkflow(NSObject):
     def launchScript_(self, args):
         LogDebug(u"launchScript:")
         
-        def escape(s):
-            return s.replace(u"\\", u"\\\\").replace(u'"', u'\\"')
-        
-        # Generate an AppleScript snippet to launch a shell command with
-        # administrator privileges.
-        shellscript = u' & " " & '.join(u"quoted form of arg%d" % i for i in range(len(args)))
-        scriptLines = list(u'set arg%d to "%s"' % (i, escape(arg)) for i, arg in enumerate(args))
-        if self.authPassword() is not None:
-            scriptLines.append(u'do shell script %s user name "%s" password "%s" '
-                               u'with administrator privileges' % (shellscript,
-                                                                   escape(self.authUsername()),
-                                                                   escape(self.authPassword())))
+        if self.authPassword() is None:
+            # Use GUI dialog to elevate privileges.
+            task = STPrivilegedTask.alloc().init()
+            task.setLaunchPath_(args[0])
+            task.setArguments_(args[1:])
+            status = task.launch()
+            LogNotice(u"Install task launched with return code: %d", status)
+            if status:
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, status, False)
         else:
-            scriptLines.append(u'do shell script %s with administrator privileges' % shellscript)
-        applescript = u"\n".join(scriptLines)
-        LogDebug(u"Initializing NSAppleScript")
-        trampoline = NSAppleScript.alloc().initWithSource_(applescript)
-        if trampoline is None:
-            self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, None, False)
-        LogDebug(u"Executing AppleScript snippet")
-        evt, error = trampoline.executeAndReturnError_(None)
-        if evt:
+            # Use sudo to elevate privileges.
+            task = NSTask.alloc().init()
+            task.setLaunchPath_(u"/usr/bin/sudo")
+            task.setArguments_([u"-kS"] + args)
+            passwordpipe = NSPipe.alloc().init()
+            task.setStandardInput_(passwordpipe.fileHandleForReading())
+            task.setStandardOutput_(NSFileHandle.fileHandleWithNullDevice())
+            task.setStandardError_(NSFileHandle.fileHandleWithNullDevice())
+            writer = passwordpipe.fileHandleForWriting()
+            pwd = NSString.stringWithString_(self.authPassword() + u"\n")
+            writer.writeData_(pwd.dataUsingEncoding_(NSUTF8StringEncoding))
+            writer.closeFile()
             try:
-                LogDebug(u"AppleScript result: '%@'", evt.stringValue())
-            except:
-                LogDebug(u"AppleScript result: %@", evt)
-        if error:
-            LogDebug(u"AppleScript error: %@", error)
-        if evt is None:
-            self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, error, False)
+                task.launch()
+                LogNotice(u"Install task launched with sudo")
+            except BaseException as e:
+                LogWarning(u"Install task launch failed with exception")
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, unicode(e), False)
+                return
+            task.waitUntilExit()
+            LogNotice(u"Install task finished with exit status %d", task.terminationStatus())
+            if task.terminationStatus() != 0:
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_,
+                                                                           u"Install task failed with status %d" % task.terminationStatus(),
+                                                                           False)
     
     def handleLaunchScriptError_(self, error):
-        if error is None:
-            self.fail_details_(u"Build failed", u"Unknown AppleScript error")
-            return
-        if error.get(NSAppleScriptErrorNumber) == -128:
+        if isinstance(error, int):
+            try:
+                msg = {
+                    -60001: u"The authorization rights are invalid.",
+                    -60002: u"The authorization reference is invalid.",
+                    -60003: u"The authorization tag is invalid.",
+                    -60004: u"The returned authorization is invalid.",
+                    -60005: u"The authorization was denied.",
+                    -60006: u"The authorization was cancelled by the user.",
+                    -60007: u"The authorization was denied since no user interaction was possible.",
+                    -60008: u"Unable to obtain authorization for this operation.",
+                    -60009: u"The authorization is not allowed to be converted to an external format.",
+                    -60010: u"The authorization is not allowed to be created from an external format.",
+                    -60011: u"The provided option flag(s) are invalid for this authorization operation.",
+                    -60031: u"The specified program could not be executed.",
+                    -60032: u"An invalid status was returned during execution of a privileged tool.",
+                    -60033: u"The requested socket address is invalid (must be 0-1023 inclusive).",
+                }[error]
+            except KeyError:
+                msg = u"Unknown error (%d)." % error
+        else:
+            msg = error
+        if error == -60006:
+            LogDebug(u"User cancelled auth.")
             # User cancelled.
             self.stop()
         else:
-            self.fail_details_(u"Build failed", error.get(NSAppleScriptErrorMessage,
-                                                          u"Unknown AppleScript error"))
+            self.fail_details_(u"Build failed", msg)
     
     
     

@@ -198,7 +198,10 @@ class ProgressWatcher(NSObject):
             self.watchLogHandle.readInBackgroundAndNotify()
         elif cmd == u"STOP":
             if self.watchLogHandle:
-                self.watchLogHandle.close()
+                try:
+                    self.watchLogHandle.close()
+                except AttributeError:
+                    pass
             self.watchLogHandle = None
         else:
             NSLog(u"(Unknown watchLog command: %@)", repr(string))
@@ -279,6 +282,9 @@ def run(args, sockPath, mode):
 
 
 def installesdtodmg(args):
+    if (os.geteuid() == 0) and (os.getuid() != 0):
+        os.setuid(0)
+    NSLog(u"progresswatcher uid: %d, euid: %d", os.getuid(), os.geteuid())
     if args.cd:
         os.chdir(args.cd)
     if args.baseimage:
@@ -303,6 +309,10 @@ def imagescan(args):
 
 
 def main(argv):
+    NSLog(u"progresswatcher launching")
+    NSLog(u"progresswatcher arguments: %@", argv)
+    NSLog(u"progresswatcher uid: %d, euid: %d", os.getuid(), os.geteuid())
+    
     p = argparse.ArgumentParser()
     p.add_argument(u"-d", u"--cd", help=u"Set current directory")
     p.add_argument(u"-s", u"--socket", help=u"Communications socket")
