@@ -52,3 +52,7 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+AutoDMG uses [STPrivilegedTask](https://github.com/sveinbjornt/STPrivilegedTask),
+an NSTask-like wrapper around AuthorizationExecuteWithPrivileges.
+Copyright &copy; 2009-2016 Sveinbjörn Þórðarson <sveinbjornt@gmail.com>
