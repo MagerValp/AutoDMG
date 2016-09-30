@@ -726,21 +726,31 @@ class IEDWorkflow(NSObject):
         LogInfo(u"Launching finalize with arguments:")
         for arg in args:
             LogInfo(u"    '%@'", arg)
+        self.performSelectorInBackground_withObject_(self.launchFinalize_, args)
+    
+    def launchFinalize_(self, args):
         try:
-            p = subprocess.Popen(args,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
-            out = p.communicate()[0].decode(u"utf-8")
-            LogDebug(u"Finalize exited with status %d and output '%@'",
-                     p.returncode,
-                     out)
-            if p.returncode != 0:
-                errMsg = u"Finalize task failed with status %d" % p.returncode
-                LogError(u"%@: %@", errMsg, out)
-                self.fail_details_(errMsg, out)
+            task = NSTask.alloc().init()
+            task.setLaunchPath_(args[0])
+            task.setArguments_(args[1:])
+            task.launch()
+            task.waitUntilExit()
+            if task.terminationStatus() == 0:
+                LogDebug(u"Finalize exited with status %d", task.terminationStatus())
+            else:
+                errMsg = u"Finalize task failed with status %d" % task.terminationStatus()
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleFinalizeError_,
+                                                                           errMsg,
+                                                                           False)
         except BaseException as e:
-            LogError(u"Failed to launch finalize task: %@", unicode(e))
-            self.fail_details_(u"Failed to launch finalize task", unicode(e))
+            errMsg = u"Failed to launch finalize task: %s" % unicode(e)
+            self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleFinalizeError_,
+                                                                       errMsg,
+                                                                       False)
+    
+    def handleFinalizeError_(self, errMsg):
+        LogError(u"Finalize failed: %@", errMsg)
+        self.fail_details_(u"Finalize failed", errMsg)
     
     
     
