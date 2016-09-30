@@ -8,7 +8,7 @@
 #
 
 from Foundation import *
-import os.path
+import os
 import platform
 import glob
 import grp
@@ -627,7 +627,7 @@ class IEDWorkflow(NSObject):
     def launchScript_(self, args):
         LogDebug(u"launchScript:")
         
-        if self.authPassword() is None:
+        if (self.authPassword() is None) and (os.getuid() != 0):
             # Use GUI dialog to elevate privileges.
             task = STPrivilegedTask.alloc().init()
             task.setLaunchPath_(args[0])
@@ -637,21 +637,27 @@ class IEDWorkflow(NSObject):
             if status:
                 self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, status, False)
         else:
-            # Use sudo to elevate privileges.
             task = NSTask.alloc().init()
-            task.setLaunchPath_(u"/usr/bin/sudo")
-            task.setArguments_([u"-kS"] + args)
-            passwordpipe = NSPipe.alloc().init()
-            task.setStandardInput_(passwordpipe.fileHandleForReading())
-            task.setStandardOutput_(NSFileHandle.fileHandleWithNullDevice())
-            task.setStandardError_(NSFileHandle.fileHandleWithNullDevice())
-            writer = passwordpipe.fileHandleForWriting()
-            pwd = NSString.stringWithString_(self.authPassword() + u"\n")
-            writer.writeData_(pwd.dataUsingEncoding_(NSUTF8StringEncoding))
-            writer.closeFile()
+            if os.getuid() == 0:
+                # No privilege elevation necessary.
+                task.setLaunchPath_(args[0])
+                task.setArguments_(args[1:])
+            else:
+                # Use sudo to elevate privileges.
+                task.setLaunchPath_(u"/usr/bin/sudo")
+                task.setArguments_([u"-kS"] + args)
+                # Send password to sudo on stdin.
+                passwordpipe = NSPipe.alloc().init()
+                task.setStandardInput_(passwordpipe.fileHandleForReading())
+                task.setStandardOutput_(NSFileHandle.fileHandleWithNullDevice())
+                task.setStandardError_(NSFileHandle.fileHandleWithNullDevice())
+                writer = passwordpipe.fileHandleForWriting()
+                pwd = NSString.stringWithString_(self.authPassword() + u"\n")
+                writer.writeData_(pwd.dataUsingEncoding_(NSUTF8StringEncoding))
+                writer.closeFile()
             try:
                 task.launch()
-                LogNotice(u"Install task launched with sudo")
+                LogNotice(u"Install task launched%@", u" with sudo" if os.getuid() != 0 else u"")
             except BaseException as e:
                 LogWarning(u"Install task launch failed with exception")
                 self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleLaunchScriptError_, unicode(e), False)
