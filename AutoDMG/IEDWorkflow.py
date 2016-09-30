@@ -367,6 +367,7 @@ class IEDWorkflow(NSObject):
         
         # Prepare for install.
         self.tasks.append({
+            u"title": u"Prepare",
             u"method": self.taskPrepare,
             u"phases": [
                 {u"title": u"Preparing", u"weight": 34 * 1024 * 1024},
@@ -394,6 +395,7 @@ class IEDWorkflow(NSObject):
             {u"title": u"Converting disk image", u"weight": 313 * 1024 * 1024},
         ])
         self.tasks.append({
+            u"title": u"Install",
             u"method": self.taskInstall,
             u"phases": installerPhases,
         })
@@ -401,6 +403,7 @@ class IEDWorkflow(NSObject):
         # Finalize image. (Skip adding this task if Finalize: Scan for restore is unchecked.)
         if self._finalizeAsrImagescan:
             self.tasks.append({
+                u"title": u"Finalize",
                 u"method": self.taskFinalize,
                 u"phases": [
                     {u"title": u"Scanning disk image", u"weight":   2 * 1024 * 1024},
@@ -412,6 +415,7 @@ class IEDWorkflow(NSObject):
         
         # Finish build.
         self.tasks.append({
+            u"title": u"Finish",
             u"method": self.taskFinish,
             u"phases": [
                 {u"title": u"Finishing", u"weight": 1 * 1024 * 1024},
@@ -449,9 +453,11 @@ class IEDWorkflow(NSObject):
                         return
         if self.tasks:
             self.currentTask = self.tasks.pop(0)
-            LogNotice(u"Starting task with %d phases", len(self.currentTask[u"phases"]))
+            LogNotice(u"Starting task %@ with %d phases", self.currentTask[u"title"], len(self.currentTask[u"phases"]))
             self.nextPhase()
+            LogDebug(u"Calling %@()", self.currentTask[u"title"])
             self.currentTask[u"method"]()
+            LogDebug(u"Returned from %@()", self.currentTask[u"title"])
         else:
             LogNotice(u"Build finished successfully, image saved to %@", self.outputPath())
             self.delegate.buildSucceeded()
