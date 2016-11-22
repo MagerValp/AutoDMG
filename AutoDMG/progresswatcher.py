@@ -312,6 +312,7 @@ def main(argv):
     NSLog(u"progresswatcher launching")
     NSLog(u"progresswatcher arguments: %@", argv)
     NSLog(u"progresswatcher uid: %d, euid: %d", os.getuid(), os.geteuid())
+    NSLog(u"progresswatcher language: %@", NSLocale.currentLocale().objectForKey_(NSLocaleLanguageCode))
     
     p = argparse.ArgumentParser()
     p.add_argument(u"-d", u"--cd", help=u"Set current directory")

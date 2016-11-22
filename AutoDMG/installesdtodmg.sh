@@ -155,17 +155,22 @@ for package; do
                 echo "IED:FAILURE:$(basename "$package") failed with return code $result"
                 exit 102
             fi
-            # Fix language choice on 10.10 (github issue #93).
-            if [[ $(sw_vers -productVersion | cut -d. -f2) -ge 10 ]]; then
-                if [[ $(basename "$package") == "OSInstall.mpkg" ]]; then
-                    if rawlang=$(/usr/libexec/PlistBuddy -c "print :AppleLanguages:0" /Library/Preferences/.GlobalPreferences.plist 2> /dev/null); then
-                        lang=$(python -c "from Foundation import NSLocale; print NSLocale.canonicalLanguageIdentifierFromString_('$rawlang')")
-                        echo "LANGUAGE=$lang" > "$sparsemount/private/var/log/CDIS.custom"
-                        echo "IED:MSG:Setup Assistant language set to$lang"
-                    else
-                        echo "IED:MSG:Failed to retrieve language preference, letting Setup Assistant default to English"
-                    fi
+        fi
+        # Detect system language on 10.10+. Default to Finnish if detection fails.
+        if [[ $(sw_vers -productVersion | cut -d. -f2) -ge 10 ]]; then
+            if [[ $(basename "$package") == "OSInstall.mpkg" ]]; then
+                mkdir -p -m 0755 "$sparsemount/private/var/log"
+                chown root:wheel "$sparsemount/private"
+                chown root:wheel "$sparsemount/private/var"
+                chown root:wheel "$sparsemount/private/var/log"
+                if lang=$(python -c "from Foundation import NSLocale, NSLocaleLanguageCode; print NSLocale.currentLocale().objectForKey_(NSLocaleLanguageCode)" 2>/dev/null); then
+                    echo "LANGUAGE=$lang" > "$sparsemount/private/var/log/CDIS.custom"
+                    echo "IED:MSG:Setup Assistant language set to '$lang'"
+                else
+                    echo "IED:MSG:Failed to retrieve language preference, setting Setup Assistant to Finnish"
+                    echo "LANGUAGE=fi" > "$sparsemount/private/var/log/CDIS.custom"
                 fi
+                chown root:wheel "$sparsemount/private/var/log/CDIS.custom"
             fi
         fi
     fi
