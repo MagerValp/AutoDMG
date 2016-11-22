@@ -367,6 +367,7 @@ class IEDWorkflow(NSObject):
         
         # Prepare for install.
         self.tasks.append({
+            u"title": u"Prepare",
             u"method": self.taskPrepare,
             u"phases": [
                 {u"title": u"Preparing", u"weight": 34 * 1024 * 1024},
@@ -394,6 +395,7 @@ class IEDWorkflow(NSObject):
             {u"title": u"Converting disk image", u"weight": 313 * 1024 * 1024},
         ])
         self.tasks.append({
+            u"title": u"Install",
             u"method": self.taskInstall,
             u"phases": installerPhases,
         })
@@ -401,6 +403,7 @@ class IEDWorkflow(NSObject):
         # Finalize image. (Skip adding this task if Finalize: Scan for restore is unchecked.)
         if self._finalizeAsrImagescan:
             self.tasks.append({
+                u"title": u"Finalize",
                 u"method": self.taskFinalize,
                 u"phases": [
                     {u"title": u"Scanning disk image", u"weight":   2 * 1024 * 1024},
@@ -412,6 +415,7 @@ class IEDWorkflow(NSObject):
         
         # Finish build.
         self.tasks.append({
+            u"title": u"Finish",
             u"method": self.taskFinish,
             u"phases": [
                 {u"title": u"Finishing", u"weight": 1 * 1024 * 1024},
@@ -449,9 +453,11 @@ class IEDWorkflow(NSObject):
                         return
         if self.tasks:
             self.currentTask = self.tasks.pop(0)
-            LogNotice(u"Starting task with %d phases", len(self.currentTask[u"phases"]))
+            LogNotice(u"Starting task %@ with %d phases", self.currentTask[u"title"], len(self.currentTask[u"phases"]))
             self.nextPhase()
+            LogDebug(u"Calling %@()", self.currentTask[u"title"])
             self.currentTask[u"method"]()
+            LogDebug(u"Returned from %@()", self.currentTask[u"title"])
         else:
             LogNotice(u"Build finished successfully, image saved to %@", self.outputPath())
             self.delegate.buildSucceeded()
@@ -720,21 +726,31 @@ class IEDWorkflow(NSObject):
         LogInfo(u"Launching finalize with arguments:")
         for arg in args:
             LogInfo(u"    '%@'", arg)
+        self.performSelectorInBackground_withObject_(self.launchFinalize_, args)
+    
+    def launchFinalize_(self, args):
         try:
-            p = subprocess.Popen(args,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
-            out = p.communicate()[0].decode(u"utf-8")
-            LogDebug(u"Finalize exited with status %d and output '%@'",
-                     p.returncode,
-                     out)
-            if p.returncode != 0:
-                errMsg = u"Finalize task failed with status %d" % p.returncode
-                LogError(u"%@: %@", errMsg, out)
-                self.fail_details_(errMsg, out)
+            task = NSTask.alloc().init()
+            task.setLaunchPath_(args[0])
+            task.setArguments_(args[1:])
+            task.launch()
+            task.waitUntilExit()
+            if task.terminationStatus() == 0:
+                LogDebug(u"Finalize exited with status %d", task.terminationStatus())
+            else:
+                errMsg = u"Finalize task failed with status %d" % task.terminationStatus()
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleFinalizeError_,
+                                                                           errMsg,
+                                                                           False)
         except BaseException as e:
-            LogError(u"Failed to launch finalize task: %@", unicode(e))
-            self.fail_details_(u"Failed to launch finalize task", unicode(e))
+            errMsg = u"Failed to launch finalize task: %s" % unicode(e)
+            self.performSelectorOnMainThread_withObject_waitUntilDone_(self.handleFinalizeError_,
+                                                                       errMsg,
+                                                                       False)
+    
+    def handleFinalizeError_(self, errMsg):
+        LogError(u"Finalize failed: %@", errMsg)
+        self.fail_details_(u"Finalize failed", errMsg)
     
     
     
