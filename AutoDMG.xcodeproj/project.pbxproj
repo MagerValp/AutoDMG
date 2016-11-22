@@ -30,6 +30,7 @@
 		665E928518159C1A00A8F683 /* IEDProfileController.py in Resources */ = {isa = PBXBuildFile; fileRef = 665E928418159C1A00A8F683 /* IEDProfileController.py */; };
 		665E92871815B07A00A8F683 /* UpdateProfiles.plist in Resources */ = {isa = PBXBuildFile; fileRef = 665E92861815B07A00A8F683 /* UpdateProfiles.plist */; };
 		667F176B181BB6570076EF63 /* IEDPackage.py in Resources */ = {isa = PBXBuildFile; fileRef = 667F176A181BB6570076EF63 /* IEDPackage.py */; };
+		669051BF1D9D64730024A561 /* STPrivilegedTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 669051BE1D9D64730024A561 /* STPrivilegedTask.m */; };
 		669ADA3D18126E1D002CE331 /* IEDDMGHelper.py in Resources */ = {isa = PBXBuildFile; fileRef = 669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */; };
 		669DBBF718069EEC001F909B /* IEDSocketListener.py in Resources */ = {isa = PBXBuildFile; fileRef = 669DBBF618069EEC001F909B /* IEDSocketListener.py */; };
 		66B29338182137310076C397 /* Download.png in Resources */ = {isa = PBXBuildFile; fileRef = 66B29336182137310076C397 /* Download.png */; };
@@ -76,6 +77,8 @@
 		665E928418159C1A00A8F683 /* IEDProfileController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDProfileController.py; sourceTree = "<group>"; };
 		665E92861815B07A00A8F683 /* UpdateProfiles.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = UpdateProfiles.plist; sourceTree = "<group>"; };
 		667F176A181BB6570076EF63 /* IEDPackage.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDPackage.py; sourceTree = "<group>"; };
+		669051BD1D9D64730024A561 /* STPrivilegedTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPrivilegedTask.h; sourceTree = "<group>"; };
+		669051BE1D9D64730024A561 /* STPrivilegedTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPrivilegedTask.m; sourceTree = "<group>"; };
 		669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDDMGHelper.py; sourceTree = "<group>"; };
 		669DBBF618069EEC001F909B /* IEDSocketListener.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDSocketListener.py; sourceTree = "<group>"; };
 		66B29336182137310076C397 /* Download.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Download.png; sourceTree = "<group>"; };
@@ -133,6 +136,15 @@
 				05429D751816715300CD61E6 /* Package@2x.png */,
 			);
 			name = Icons;
+			sourceTree = "<group>";
+		};
+		669051C01D9D64790024A561 /* STPrivilegedTask */ = {
+			isa = PBXGroup;
+			children = (
+				669051BD1D9D64730024A561 /* STPrivilegedTask.h */,
+				669051BE1D9D64730024A561 /* STPrivilegedTask.m */,
+			);
+			name = STPrivilegedTask;
 			sourceTree = "<group>";
 		};
 		66D24F21181711B40042F227 /* Graphics */ = {
@@ -248,6 +260,7 @@
 				66D24F21181711B40042F227 /* Graphics */,
 				66D24F22181711D00042F227 /* Scripts */,
 				66D24F23181712320042F227 /* Resources */,
+				669051C01D9D64790024A561 /* STPrivilegedTask */,
 				66D24F24181712D20042F227 /* ObjC */,
 			);
 			name = "Supporting Files";
@@ -407,6 +420,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				669051BF1D9D64730024A561 /* STPrivilegedTask.m in Sources */,
 				66EA72DB17EB1586009B8350 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
