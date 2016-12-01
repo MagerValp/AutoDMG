@@ -163,7 +163,7 @@ for package; do
                 chown root:wheel "$sparsemount/private"
                 chown root:wheel "$sparsemount/private/var"
                 chown root:wheel "$sparsemount/private/var/log"
-                if lang=$(python -c "from Foundation import NSLocale, NSLocaleLanguageCode; print NSLocale.currentLocale().objectForKey_(NSLocaleLanguageCode)" 2>/dev/null); then
+                if lang=$(python -c "from Foundation import NSLocale, NSLocaleLanguageCode; print NSLocale.currentLocale()[NSLocaleLanguageCode]" 2>/dev/null); then
                     echo "LANGUAGE=$lang" > "$sparsemount/private/var/log/CDIS.custom"
                     echo "IED:MSG:Setup Assistant language set to '$lang'"
                 else
