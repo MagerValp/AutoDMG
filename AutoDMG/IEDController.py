@@ -48,6 +48,7 @@ class IEDController(NSObject):
         # Initialize UI.
         self.buildProgressBar.setMaxValue_(100.0)
         self.buildProgressMessage.setStringValue_(u"")
+        self.setSourcePlaceholder()
         
         # We're a delegate for the drag and drop target, protocol:
         #   (void)acceptInstaller:(NSString *)path
@@ -87,6 +88,15 @@ class IEDController(NSObject):
             self.enableMainWindowControls()
     
     # Helper methods.
+    
+    def setSourcePlaceholder(self):
+        self.sourceLabel.setStringValue_(u"Drop %s Installer Here" % (IEDUtil.hostOSName()))
+        osMajor = IEDUtil.hostVersionTuple()[1]
+        image = NSImage.imageNamed_(u"Installer Placeholder 10.%d" % osMajor)
+        if not image:
+            image = NSImage.imageNamed_(u"Installer Placeholder")
+        self.sourceImage.animator().setImage_(image)
+        self.sourceImage.animator().setAlphaValue_(1.0)
     
     def validateMenuItem_(self, menuItem):
         return not self.busy()
@@ -183,9 +193,7 @@ class IEDController(NSObject):
     
     def sourceFailed_text_(self, message, text):
         self.displayAlert_text_(message, text)
-        self.sourceImage.animator().setImage_(NSImage.imageNamed_(u"Installer Placeholder"))
-        self.sourceImage.animator().setAlphaValue_(1.0)
-        self.sourceLabel.setStringValue_(u"Drop OS X Installer Here")
+        self.setSourcePlaceholder()
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
         self.setBusy_(False)
     
