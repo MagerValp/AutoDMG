@@ -96,7 +96,7 @@ class IEDAppVersionController(NSObject):
                 return
         
         # Convert latest version into a tuple with (major, minor, rev, build).
-        latestTuple = tuple(int(x.strip(u"ab")) for x in latestVersionBuild.split(u"."))
+        latestTuple = IEDUtil.splitVersion(latestVersionBuild, strip=u"ab")
         
         # Get the current version and convert it to a tuple.
         displayVersion, build = IEDUtil.getAppVersion()
@@ -105,7 +105,7 @@ class IEDAppVersionController(NSObject):
         else:
             paddedVersion = displayVersion
         versionBuild = u"%s.%s" % (paddedVersion, build)
-        currentTuple = tuple(int(x.strip(u"ab")) for x in versionBuild.split(u"."))
+        currentTuple = IEDUtil.splitVersion(versionBuild, strip=u"ab")
         
         # Compare and notify
         if latestTuple > currentTuple:

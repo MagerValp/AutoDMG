@@ -13,6 +13,7 @@ import os.path
 import subprocess
 import tempfile
 import shutil
+import platform
 from xml.etree import ElementTree
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
@@ -24,11 +25,32 @@ class IEDUtil(NSObject):
     
     @classmethod
     def readSystemVersion_(cls, rootPath):
+        """Read SystemVersion.plist on the specified volume."""
         plist = NSDictionary.dictionaryWithContentsOfFile_(os.path.join(rootPath, cls.VERSIONPLIST_PATH))
         name = plist[u"ProductName"]
         version = plist[u"ProductUserVisibleVersion"]
         build = plist[u"ProductBuildVersion"]
         return (name, version, build)
+    
+    @classmethod
+    def splitVersion(cls, versionString, strip=u""):
+        """Split version string into a tuple of ints."""
+        return tuple(int(x.strip(strip)) for x in versionString.split(u"."))
+    
+    @classmethod
+    def hostVersionTuple(cls):
+        version = platform.mac_ver()[0]
+        return cls.splitVersion(version)
+    
+    @classmethod
+    def hostOSName(cls):
+        osMajor = cls.hostVersionTuple()[1]
+        if osMajor <= 7:
+            return u"Mac OS X"
+        elif osMajor >= 12:
+            return u"macOS"
+        else:
+            return u"OS X"
     
     @classmethod
     def getAppVersion(cls):

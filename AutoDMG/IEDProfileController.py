@@ -14,6 +14,7 @@ from objc import IBOutlet
 import os.path
 from collections import defaultdict
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+from IEDUtil import *
 
 
 class IEDProfileController(NSObject):
@@ -62,6 +63,7 @@ class IEDProfileController(NSObject):
         provide a helpful explanation as to why that might be."""
         
         # Check if it has been deprecated.
+        LogDebug(u"Checking if %@ has been deprecated", whyBuild)
         try:
             replacement = self.deprecatedInstallerBuilds[whyBuild]
             version, _, build = replacement.partition(u"-")
@@ -70,7 +72,7 @@ class IEDProfileController(NSObject):
         except KeyError:
             pass
         
-        whyVersionTuple = tuple(int(x) for x in whyVersion.split(u"."))
+        whyVersionTuple = IEDUtil.splitVersion(whyVersion)
         whyMajor = whyVersionTuple[1]
         whyPoint = whyVersionTuple[2] if len(whyVersionTuple) > 2 else None
         
@@ -80,7 +82,7 @@ class IEDProfileController(NSObject):
         for versionBuild in self.profiles.keys():
             version, _, build = versionBuild.partition(u"-")
             buildsForVersion[version].add(build)
-            versionTuple = tuple(int(x) for x in version.split(u"."))
+            versionTuple = IEDUtil.splitVersion(version)
             major = versionTuple[1]
             supportedMajorVersions.add(major)
             point = versionTuple[2] if len(versionTuple) > 2 else 0
