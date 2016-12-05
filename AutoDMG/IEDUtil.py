@@ -109,6 +109,16 @@ class IEDUtil(NSObject):
             return None
     
     @classmethod
+    def mightBeSource_(cls, path):
+        if os.path.exists(os.path.join(path,
+                          u"Contents/SharedSupport/InstallESD.dmg")):
+            return True
+        elif path.lower().endswith(u".dmg"):
+            return True
+        else:
+            return False
+    
+    @classmethod
     def getPackageSize_(cls, path):
         p = subprocess.Popen([u"/usr/bin/du", u"-sk", path],
                              stdout=subprocess.PIPE,
