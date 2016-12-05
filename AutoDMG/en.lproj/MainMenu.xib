@@ -54,14 +54,14 @@
                             <constraint firstItem="0RU-gN-IOh" firstAttribute="leading" secondItem="zyE-7U-hFC" secondAttribute="leading" constant="11" id="gWy-MT-PXE"/>
                         </constraints>
                     </box>
-                    <box autoresizesSubviews="NO" borderType="line" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Fbr-D2-Qq0">
-                        <rect key="frame" x="17" y="264" width="386" height="184"/>
+                    <box autoresizesSubviews="NO" borderType="line" title="Update Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Fbr-D2-Qq0">
+                        <rect key="frame" x="17" y="300" width="386" height="148"/>
                         <view key="contentView" id="QGz-b9-vG9">
-                            <rect key="frame" x="1" y="1" width="384" height="182"/>
+                            <rect key="frame" x="1" y="1" width="384" height="146"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button translatesAutoresizingMaskIntoConstraints="NO" id="McB-JN-3Nl">
-                                    <rect key="frame" x="16" y="154" width="352" height="18"/>
+                                    <rect key="frame" x="16" y="118" width="352" height="18"/>
                                     <buttonCell key="cell" type="check" title="Apply updates" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Peq-5t-XRB">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -71,13 +71,13 @@
                                     </connections>
                                 </button>
                                 <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jNT-8Q-ytB">
-                                    <rect key="frame" x="18" y="41" width="348" height="107"/>
+                                    <rect key="frame" x="18" y="41" width="348" height="71"/>
                                     <clipView key="contentView" id="Lia-gx-2d5">
-                                        <rect key="frame" x="1" y="1" width="346" height="105"/>
+                                        <rect key="frame" x="1" y="1" width="346" height="69"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" id="n3O-FC-EWE">
-                                                <rect key="frame" x="0.0" y="0.0" width="346" height="105"/>
+                                            <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" id="n3O-FC-EWE">
+                                                <rect key="frame" x="0.0" y="0.0" width="346" height="69"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -154,6 +154,7 @@
                             <constraint firstItem="McB-JN-3Nl" firstAttribute="leading" secondItem="Fbr-D2-Qq0" secondAttribute="leading" constant="16" id="6yh-Za-tBE"/>
                             <constraint firstItem="OHd-Ex-bAG" firstAttribute="leading" secondItem="4rx-Ot-vuB" secondAttribute="trailing" constant="7" id="9xU-lq-Uo7"/>
                             <constraint firstItem="4rx-Ot-vuB" firstAttribute="leading" secondItem="o9m-qm-VAq" secondAttribute="trailing" constant="7" id="C3N-PY-IPU"/>
+                            <constraint firstAttribute="height" constant="142" identifier="UpdateBoxHeight" id="EvK-IX-GWW"/>
                             <constraint firstAttribute="trailing" secondItem="jNT-8Q-ytB" secondAttribute="trailing" constant="16" id="FiP-De-sTi"/>
                             <constraint firstItem="o9m-qm-VAq" firstAttribute="leading" secondItem="Fbr-D2-Qq0" secondAttribute="leading" constant="16" id="RrH-As-1Ke"/>
                             <constraint firstAttribute="trailing" secondItem="OHd-Ex-bAG" secondAttribute="trailing" constant="16" id="Vv8-p7-Z9K"/>
@@ -166,19 +167,19 @@
                         </constraints>
                     </box>
                     <box autoresizesSubviews="NO" borderType="line" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="CmE-wB-0SN">
-                        <rect key="frame" x="17" y="66" width="386" height="184"/>
+                        <rect key="frame" x="17" y="66" width="386" height="220"/>
                         <view key="contentView" id="NwI-a0-hcJ">
-                            <rect key="frame" x="1" y="1" width="384" height="182"/>
+                            <rect key="frame" x="1" y="1" width="384" height="218"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Log-sV-g4w">
-                                    <rect key="frame" x="18" y="43" width="348" height="105"/>
+                                    <rect key="frame" x="18" y="43" width="348" height="141"/>
                                     <clipView key="contentView" id="5bp-hh-9Ms">
-                                        <rect key="frame" x="1" y="1" width="346" height="103"/>
+                                        <rect key="frame" x="1" y="1" width="346" height="139"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" alternatingRowBackgroundColors="YES" columnReordering="NO" columnResizing="NO" autosaveColumns="NO" typeSelect="NO" id="6Sp-nj-RjN">
-                                                <rect key="frame" x="0.0" y="0.0" width="346" height="103"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="346" height="139"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -219,7 +220,7 @@
                                     </scroller>
                                 </scrollView>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3O3-bG-GP2">
-                                    <rect key="frame" x="16" y="155" width="350" height="17"/>
+                                    <rect key="frame" x="16" y="191" width="350" height="17"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Additional software:" id="1dz-ud-6qY">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -273,7 +274,6 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="CmE-wB-0SN" firstAttribute="top" secondItem="Fbr-D2-Qq0" secondAttribute="bottom" constant="20" id="1Oe-h6-cdU"/>
-                    <constraint firstItem="CmE-wB-0SN" firstAttribute="height" secondItem="Fbr-D2-Qq0" secondAttribute="height" id="6aI-wd-PMH"/>
                     <constraint firstAttribute="trailing" secondItem="CmE-wB-0SN" secondAttribute="trailing" constant="20" id="FiS-Dh-Tth"/>
                     <constraint firstItem="zyE-7U-hFC" firstAttribute="leading" secondItem="7Xs-ie-OZ7" secondAttribute="leading" constant="20" id="Gz7-0R-mD8"/>
                     <constraint firstItem="CmE-wB-0SN" firstAttribute="leading" secondItem="7Xs-ie-OZ7" secondAttribute="leading" constant="20" id="H72-Pt-CKD"/>
@@ -769,6 +769,8 @@ Gw
                 <outlet property="downloadStopButton" destination="116-BH-7he" id="wAI-wD-twQ"/>
                 <outlet property="downloadWindow" destination="yRz-g8-9TZ" id="EYO-vF-O7W"/>
                 <outlet property="profileController" destination="ole-mw-OQ3" id="9SN-Bm-mIp"/>
+                <outlet property="updateBox" destination="Fbr-D2-Qq0" id="8V3-er-lu1"/>
+                <outlet property="updateBoxHeight" destination="EvK-IX-GWW" id="c55-KW-5KO"/>
                 <outlet property="updateTable" destination="n3O-FC-EWE" id="Vy4-Sa-3Id"/>
                 <outlet property="updateTableImage" destination="o9m-qm-VAq" id="WFT-Hk-QHz"/>
                 <outlet property="updateTableLabel" destination="4rx-Ot-vuB" id="ZvU-xd-AoT"/>
