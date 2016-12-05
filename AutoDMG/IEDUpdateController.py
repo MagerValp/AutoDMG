@@ -9,6 +9,7 @@
 
 from Foundation import *
 from objc import IBAction, IBOutlet
+import Quartz
 
 from IEDProfileController import *
 from IEDUpdateCache import *
@@ -21,6 +22,8 @@ class IEDUpdateController(NSObject):
     
     profileController = IBOutlet()
     
+    updateBox = IBOutlet()
+    
     applyUpdatesCheckbox = IBOutlet()
     updateTable = IBOutlet()
     updateTableImage = IBOutlet()
@@ -31,6 +34,8 @@ class IEDUpdateController(NSObject):
     downloadLabel = IBOutlet()
     downloadProgressBar = IBOutlet()
     downloadStopButton = IBOutlet()
+    
+    updateBoxHeight = IBOutlet()
     
     def init(self):
         self = super(IEDUpdateController, self).init()
@@ -45,6 +50,7 @@ class IEDUpdateController(NSObject):
         self.version = None
         self.build = None
         self.profileWarning = None
+        self.boxTableSizeDelta = 0
         
         return self
     
@@ -61,11 +67,28 @@ class IEDUpdateController(NSObject):
         self.updateTableImage.setImage_(None)
         self.updateTableLabel.setStringValue_(u"")
         self.updateTable.setDataSource_(self)
+        
+        self.boxTableSizeDelta = self.updateBox.frame().size.height - self.updateTable.frame().size.height
+        
+        self.updateHeight()
     
     def validateMenuItem_(self, menuItem):
         return not self.delegate.busy()
     
     # Helper methods.
+    
+    def updateHeight(self):
+        rowHeight = 18
+        rows = self.numberOfRowsInTableView_(self.updateTable)
+        height = rows * rowHeight
+        height = max(min(height, int(6.5 * rowHeight)), 3.5 * rowHeight)
+        NSAnimationContext.beginGrouping()
+        NSAnimationContext.currentContext().setDuration_(0.15)
+        easeInEaseOut = Quartz.CAMediaTimingFunction.functionWithName_(Quartz.kCAMediaTimingFunctionEaseInEaseOut)
+        NSAnimationContext.currentContext().setTimingFunction_(easeInEaseOut)
+        self.updateBoxHeight.animator().setConstant_(height + self.boxTableSizeDelta)
+        NSAnimationContext.endGrouping()
+        
     
     def disableControls(self):
         LogDebug(u"disableControls")
@@ -112,6 +135,7 @@ class IEDUpdateController(NSObject):
                 self.downloads.append(package)
         self.updateTable.reloadData()
         self.showRemainingDownloads()
+        self.updateHeight()
     
     # External state of controller.
     
