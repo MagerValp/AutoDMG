@@ -197,6 +197,27 @@ class IEDController(NSObject):
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
         self.setBusy_(False)
     
+    # Opening installer via menu.
+    
+    @LogException
+    @IBAction
+    def locateInstaller_(self, sender):
+        panel = NSOpenPanel.openPanel()
+        panel.setDelegate_(self)
+        panel.setExtensionHidden_(False)
+        panel.setAllowedFileTypes_([u"app", u"dmg"])
+        
+        result = panel.runModal()
+        if result != NSFileHandlingPanelOKButton:
+            return
+        
+        self.acceptSource_(panel.URL().path())
+    
+    # NSOpenSavePanelDelegate.
+    
+    def panel_shouldEnableURL_(self, sender, url):
+        return IEDUtil.mightBeSource_(url.path())
+    
     
     
     # Act on update controller changing.
