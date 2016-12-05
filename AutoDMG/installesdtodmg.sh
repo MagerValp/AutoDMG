@@ -31,21 +31,37 @@ remove_tempdirs() {
 
 eject_dmg() {
     local mountpath="$1"
+    local result="failure"
     if [[ -d "$mountpath" ]]; then
-        if ! hdiutil eject "$mountpath"; then
+        if ! hdiutil eject -verbose "$mountpath"; then
             for tries in {1..10}; do
-                sleep $tries
-                if hdiutil eject "$mountpath" -force 2>/dev/null; then
-                    break
+                if [[ -d "$mountpath" ]]; then
+                    echo "IED:MSG:Ejecting '$mountpath' failed, force attempt $tries…"
+                    sleep $tries
+                    if hdiutil eject -verbose "$mountpath" -force; then
+                        echo "IED:MSG:Forcefully ejected '$mountpath'"
+                        result="success"
+                        break
+                    fi
+                else
+                    echo "IED:MSG:'$mountpath' disappeared"
+                    hdiutil info
                 fi
             done
+        else
+            echo "IED:MSG:Ejected '$mountpath'"
+            result="success"
         fi
+    fi
+    if [[ "$result" != "success" ]]; then
+        echo "IED:MSG:Ejecting '$mountpath' failed, giving up!"
     fi
 }
 
 declare -a dmgmounts
 unmount_dmgs() {
     for mountpath in "${dmgmounts[@]}"; do
+        echo "IED:MSG:Ejecting '$mountpath'"
         eject_dmg "$mountpath"
     done
     unset dmgmounts
