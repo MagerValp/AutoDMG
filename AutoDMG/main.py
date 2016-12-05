@@ -191,6 +191,22 @@ def main():
                 decoded_argv.append(arg)
             i += 1
         
+        # Ensure trailing slash on TMPDIR.
+        try:
+            tmpdir = os.getenv("TMPDIR")
+            if tmpdir:
+                if os.path.isdir(tmpdir):
+                    if not tmpdir.endswith("/"):
+                        NSLog(u"Fixing trailing slash on TMPDIR '%@'", tmpdir)
+                        os.environ["TMPDIR"] = tmpdir + "/"
+                        NSLog(u"TMPDIR is now '%@'", os.getenv("TMPDIR"))
+                else:
+                    NSLog(u"TMPDIR is not a valid directory: '%@'", tmpdir)
+            else:
+                NSLog(u"TMPDIR is not set")
+        except Exception as e:
+            NSLog(u"TMPDIR trailing slash fix failed with exception: %@", unicode(e))
+        
         # If no arguments are supplied, assume the GUI should be started.
         if len(decoded_argv) == 0:
             return gui_main()
