@@ -340,6 +340,7 @@ class IEDWorkflow(NSObject):
         LogNotice(u"Starting build")
         LogNotice(u"Using installer: %@ %@ %@", self.installerName, self.installerVersion, self.installerBuild)
         LogNotice(u"Using output path: %@", self.outputPath())
+        LogNotice(u"TMPDIR is set to: %@", os.getenv("TMPDIR"))
         self.delegate.buildStartingWithOutput_(self.outputPath())
         
         self.createTempDir()
@@ -651,7 +652,7 @@ class IEDWorkflow(NSObject):
             else:
                 # Use sudo to elevate privileges.
                 task.setLaunchPath_(u"/usr/bin/sudo")
-                task.setArguments_([u"-kS"] + args)
+                task.setArguments_([u"-kSE"] + args)
                 # Send password to sudo on stdin.
                 passwordpipe = NSPipe.alloc().init()
                 task.setStandardInput_(passwordpipe.fileHandleForReading())
