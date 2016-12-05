@@ -36,15 +36,16 @@
 			<string>15E65</string>
 			<string>15F34</string>
 		</array>
-		<key>10.12.1-16B2657</key>
+		<key>10.12.1-16B2659</key>
 		<array>
-			<string>10.12-16A323</string>
-			<string>10.12-16A322</string>
-			<string>10.12-16A319</string>
-			<string>10.12-16A320</string>
-			<string>10.12-16A304a</string>
-			<string>10.12-16A201w</string>
-			<string>10.12-16A239m</string>
+			<string>16A323</string>
+			<string>16A322</string>
+			<string>16A319</string>
+			<string>16A320</string>
+			<string>16A304a</string>
+			<string>16A201w</string>
+			<string>16A239m</string>
+			<string>16B2657</string>
 		</array>
 		<key>10.7.5-11G63</key>
 		<array>
@@ -113,10 +114,6 @@
 			<string>SafariElCap</string>
 			<string>SecurityElCap</string>
 		</array>
-		<key>10.12.1-16B2657</key>
-		<array>
-			<string>iTunes</string>
-		</array>
 		<key>10.12.1-16B2659</key>
 		<array>
 			<string>iTunes</string>
@@ -132,7 +129,7 @@
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2016-11-17T15:27:23Z</date>
+	<date>2016-12-03T17:13:18Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>BookKit</key>
