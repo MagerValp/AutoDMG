@@ -793,6 +793,9 @@ class IEDWorkflow(NSObject):
         elif action == u"notify_failure":
             self.fail_details_(u"Build failed", msg[u"message"])
         
+        elif action == u"notify_success":
+            LogNotice(u"Build success: %@", msg[u"message"])
+        
         elif action == u"task_done":
             status = msg[u"termination_status"]
             if status == 0:

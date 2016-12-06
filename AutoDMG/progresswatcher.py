@@ -173,6 +173,9 @@ class ProgressWatcher(NSObject):
         elif string.startswith(u"FAILURE:"):
             message = string[8:]
             self.postNotification_({u"action": u"notify_failure", u"message": message})
+        elif string.startswith(u"SUCCESS:"):
+            message = string[8:]
+            self.postNotification_({u"action": u"notify_success", u"message": message})
         elif string.startswith(u"WATCHLOG:"):
             self.watchLog_(string[9:])
         else:
