@@ -13,6 +13,7 @@ from AppKit import *
 from objc import IBAction, IBOutlet
 
 from IEDLogLine import *
+from IEDPanelPathManager import *
 import inspect
 import syslog
 import sys
@@ -175,6 +176,8 @@ class IEDLog(NSObject):
     @LogException
     @IBAction
     def saveLog_(self, sender):
+        IEDPanelPathManager.loadPathForName_(u"Log")
+        
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"log", u"txt"])
@@ -185,6 +188,8 @@ class IEDLog(NSObject):
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
+        
+        IEDPanelPathManager.savePathForName_(u"Log")
         
         exists, error = panel.URL().checkResourceIsReachableAndReturnError_(None)
         if exists:

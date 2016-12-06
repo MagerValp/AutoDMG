@@ -9,7 +9,8 @@
 
 from Foundation import *
 
-from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+# No logging here, since IEDLog uses us.
+#from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
 
 
 defaults = NSUserDefaults.standardUserDefaults()
@@ -21,13 +22,13 @@ class IEDPanelPathManager(NSObject):
     def loadPathForName_(cls, name):
         path = defaults.stringForKey_(u"Last%sDir" % name)
         if path:
-            LogDebug(u"Load path for %@ = '%@'", name, path)
+            #LogDebug(u"Load path for %@ = '%@'", name, path)
             defaults.setObject_forKey_(path, u"NSNavLastRootDirectory")
     
     @classmethod
     def savePathForName_(cls, name):
         path = defaults.stringForKey_(u"NSNavLastRootDirectory")
         if path:
-            LogDebug(u"Save path for %@ = '%@'", name, path)
+            #LogDebug(u"Save path for %@ = '%@'", name, path)
             defaults.setObject_forKey_(path, u"Last%sDir" % name)
     
