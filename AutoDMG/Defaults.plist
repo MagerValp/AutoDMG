@@ -22,7 +22,13 @@
 	<integer>1</integer>
 	<key>NotifiedAppVersion</key>
 	<string>none</string>
-	<key>NSNavLastRootDirectory</key>
+	<key>LastInstallerDir</key>
 	<string>/Applications</string>
+	<key>LastTemplateDir</key>
+	<string>~/Documents</string>
+	<key>LastImageDir</key>
+	<string>~/Downloads</string>
+	<key>LastLogDir</key>
+	<string>~/Documents</string>
 </dict>
 </plist>
