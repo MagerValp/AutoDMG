@@ -109,6 +109,24 @@ if [[ "$freespace" -lt 15 ]]; then
 fi
 
 
+# Keep track of version and build numbers before and after installing updates.
+read_nvb() {
+    local root="$1"
+    if [[ "$root" == "/" ]]; then
+        root=""
+    fi
+    local path="$root/System/Library/CoreServices/SystemVersion.plist"
+    if [[ -f "$path" ]]; then
+        name=$(/usr/libexec/PlistBuddy -c "print :ProductName" /System/Library/CoreServices/SystemVersion.plist)
+        version=$(/usr/libexec/PlistBuddy -c "print :ProductUserVisibleVersion" /System/Library/CoreServices/SystemVersion.plist)
+        build=$(/usr/libexec/PlistBuddy -c "print :ProductBuildVersion" /System/Library/CoreServices/SystemVersion.plist)
+        echo "$name/$version/$build"
+    fi
+}
+
+start_nvb=""
+
+
 # Create and mount a sparse image.
 echo "IED:PHASE:sparseimage"
 echo "IED:MSG:Creating disk image"
@@ -125,8 +143,12 @@ else
     echo "IED:MSG:Renaming volume"
     diskutil rename "$shadowdev" "$volname"
     sparsemount=$(hdiutil info | grep "^$shadowdev" | cut -f3)
+    # If we're using a system image as the source, read the version and build
+    # numbers before the first install.
+    start_nvb=$(read_nvb "$sparsemount")
 fi
 dmgmounts+=("$sparsemount")
+
 
 # Install OS and packages.
 export COMMAND_LINE_INSTALL=1
@@ -190,7 +212,16 @@ for package; do
             fi
         fi
     fi
+    if [[ -z "$start_nvb" ]]; then
+        start_nvb=$(read_nvb "$sparsemount")
+    fi
 done
+if [[ $TESTING == "yes" ]]; then
+    start_nvb="Mac OS X/9.0/53X248"
+    end_nvb="macOS/10.64.1/64X738"
+else
+    end_nvb=$(read_nvb "$sparsemount")
+fi
 # Stop watching /var/log/install.log.
 echo "IED:WATCHLOG:STOP"
 
@@ -223,6 +254,19 @@ echo "IED:MSG:Changing owner"
 if ! chown "${user}:$group" "$compresseddmg"; then
     echo "IED:FAILURE:Ownership change failed"
     exit 105
+fi
+
+
+# Report result.
+echo "IED:SUCCESS:OUTPUT_PATH='$compresseddmg'"
+name=$(echo "$end_nvb" | cut -d/ -f1)
+version=$(echo "$end_nvb" | cut -d/ -f2)
+build=$(echo "$end_nvb" | cut -d/ -f3)
+echo "IED:SUCCESS:OUTPUT_OSNAME='$name'"
+echo "IED:SUCCESS:OUTPUT_OSVERSION='$version'"
+echo "IED:SUCCESS:OUTPUT_OSBUILD='$build'"
+if [[ "$start_nvb" != "$end_nvb" ]]; then
+    echo "IED:SUCCESS:Notice: OS version changed from $(echo $start_nvb | tr "/" " ") to $(echo $end_nvb | tr "/" " ")"
 fi
 
 exit 0
