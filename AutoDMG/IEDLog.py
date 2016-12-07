@@ -105,6 +105,8 @@ class IEDLog(NSObject):
         global defaults
         self.levelSelector.selectItemAtIndex_(defaults.integerForKey_(u"LogLevel"))
         self.logTableView.setDataSource_(self)
+        self.logTableView.setDelegate_(self)
+        self.messageColumnWidth = self.logTableView.tableColumnWithIdentifier_(u"message").width()
         nc = NSNotificationCenter.defaultCenter()
         nc.addObserver_selector_name_object_(self,
                                              self.logViewScrolled_,
@@ -231,6 +233,31 @@ class IEDLog(NSObject):
             return IEDLogLevelName(self.visibleLogLines[row].level())
         elif column.identifier() == u"message":
             return self.visibleLogLines[row].message()
+        else:
+            LogDebug(u"Unexpected column identifier '%@'", column.identifier())
+    
+    
+    
+    # We're an NSTableViewDelegate.
+    
+    def tableViewColumnDidResize_(self, notification):
+        self.messageColumnWidth = self.logTableView.tableColumnWithIdentifier_(u"message").width()
+        changeRange = NSMakeRange(0, self.logTableView.numberOfRows())
+        changeSet = NSIndexSet.indexSetWithIndexesInRange_(changeRange)
+        NSAnimationContext.beginGrouping()
+        NSAnimationContext.currentContext().setDuration_(0.0)
+        self.logTableView.noteHeightOfRowsWithIndexesChanged_(changeSet)
+        NSAnimationContext.endGrouping()
+    
+    def tableView_heightOfRow_(self, tableView, row):
+        text = NSString.stringWithString_(self.visibleLogLines[row].message())
+        font = NSFont.userFixedPitchFontOfSize_(11.0)
+        rect = text.boundingRectWithSize_options_attributes_context_(NSMakeSize(self.messageColumnWidth - 4, 1000),
+                                                                     NSStringDrawingUsesLineFragmentOrigin,
+                                                                     {NSFontAttributeName: font},
+                                                                     None)
+        return rect.size.height
+
 
 
 timestampFormatter = NSDateFormatter.alloc().init()
