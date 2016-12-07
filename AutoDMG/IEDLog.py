@@ -28,6 +28,16 @@ IEDLogLevelWarning   = 4
 IEDLogLevelNotice    = 5
 IEDLogLevelInfo      = 6
 IEDLogLevelDebug     = 7
+IEDColorForLevel = [
+    NSColor.redColor(),
+    NSColor.redColor(),
+    NSColor.redColor(),
+    NSColor.redColor(),
+    NSColor.orangeColor(),
+    NSColor.blackColor(),
+    NSColor.blackColor(),
+    NSColor.grayColor(),
+]
 
 # Control which output channels are active.
 IEDLogToController  = True
@@ -226,13 +236,18 @@ class IEDLog(NSObject):
     def numberOfRowsInTableView_(self, tableView):
         return len(self.visibleLogLines)
     
+    def attrString_forRow_(self, s, row):
+        color = IEDColorForLevel[self.visibleLogLines[row].level()]
+        attr = {NSForegroundColorAttributeName: color}
+        return NSAttributedString.alloc().initWithString_attributes_(s, attr)
+    
     def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
         if column.identifier() == u"date":
             return self.visibleLogLines[row].date()
         elif column.identifier() == u"level":
-            return IEDLogLevelName(self.visibleLogLines[row].level())
+            return self.attrString_forRow_(IEDLogLevelName(self.visibleLogLines[row].level()), row)
         elif column.identifier() == u"message":
-            return self.visibleLogLines[row].message()
+            return self.attrString_forRow_(self.visibleLogLines[row].message(), row)
         else:
             LogDebug(u"Unexpected column identifier '%@'", column.identifier())
     
