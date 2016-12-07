@@ -387,6 +387,12 @@
                                     <action selector="locateInstaller:" target="Fjw-V3-78e" id="jvF-1V-8DJ"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="I'm feeling lucky!" alternate="YES" keyEquivalent="i" id="bXh-WW-pkm">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="locateInstaller:" target="Fjw-V3-78e" id="UUB-YS-eXk"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="79">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>

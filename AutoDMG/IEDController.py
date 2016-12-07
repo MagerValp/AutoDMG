@@ -12,10 +12,12 @@ from AppKit import *
 from objc import IBAction, IBOutlet
 
 import os.path
+import glob
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
 from IEDUpdateController import *
 from IEDWorkflow import *
 from IEDTemplate import *
+from IEDPanelPathManager import *
 
 
 class IEDController(NSObject):
@@ -201,17 +203,31 @@ class IEDController(NSObject):
     
     @LogException
     @IBAction
-    def locateInstaller_(self, sender):
-        panel = NSOpenPanel.openPanel()
-        panel.setDelegate_(self)
-        panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_([u"app", u"dmg"])
-        
-        result = panel.runModal()
-        if result != NSFileHandlingPanelOKButton:
-            return
-        
-        self.acceptSource_(panel.URL().path())
+    def locateInstaller_(self, menuItem):
+        if menuItem.isAlternate():
+            try:
+                path = glob.glob(u"/Applications/Install*OS*.app")[-1]
+                if IEDUtil.mightBeSource_(path):
+                    self.acceptSource_(path)
+                else:
+                    NSBeep()
+            except IndexError:
+                NSBeep()
+        else:
+            IEDPanelPathManager.loadPathForName_(u"Installer")
+            
+            panel = NSOpenPanel.openPanel()
+            panel.setDelegate_(self)
+            panel.setExtensionHidden_(False)
+            panel.setAllowedFileTypes_([u"app", u"dmg"])
+            
+            result = panel.runModal()
+            if result != NSFileHandlingPanelOKButton:
+                return
+            
+            IEDPanelPathManager.savePathForName_(u"Installer")
+            
+            self.acceptSource_(panel.URL().path())
     
     # NSOpenSavePanelDelegate.
     
@@ -242,6 +258,8 @@ class IEDController(NSObject):
     @LogException
     @IBAction
     def buildButtonClicked_(self, sender):
+        IEDPanelPathManager.loadPathForName_(u"Image")
+        
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"dmg"])
@@ -258,6 +276,8 @@ class IEDController(NSObject):
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
+        
+        IEDPanelPathManager.savePathForName_(u"Image")
         
         exists, error = panel.URL().checkResourceIsReachableAndReturnError_(None)
         if exists:
@@ -357,6 +377,8 @@ class IEDController(NSObject):
             self.saveTemplateAs()
     
     def saveTemplateAs(self):
+        IEDPanelPathManager.loadPathForName_(u"Template")
+        
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"adtmpl"])
@@ -367,6 +389,8 @@ class IEDController(NSObject):
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
+        
+        IEDPanelPathManager.savePathForName_(u"Template")
         
         exists, error = panel.URL().checkResourceIsReachableAndReturnError_(None)
         if exists:
@@ -403,6 +427,8 @@ class IEDController(NSObject):
             self.displayAlert_text_(u"Couldn't save template", error)
     
     def openTemplate(self):
+        IEDPanelPathManager.loadPathForName_(u"Template")
+        
         panel = NSOpenPanel.openPanel()
         panel.setExtensionHidden_(False)
         panel.setAllowedFileTypes_([u"adtmpl"])
@@ -410,6 +436,8 @@ class IEDController(NSObject):
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
+        
+        IEDPanelPathManager.savePathForName_(u"Template")
         
         return self.openTemplateAtURL_(panel.URL())
     
