@@ -30,39 +30,39 @@ remove_tempdirs() {
 }
 
 eject_dmg() {
-    local mountpath="$1"
+    local mountdev="$1"
     local result="failure"
-    if [[ -d "$mountpath" ]]; then
-        if ! hdiutil eject -verbose "$mountpath"; then
+    if [[ -e "$mountdev" ]]; then
+        if ! hdiutil eject -verbose "$mountdev"; then
             for tries in {1..10}; do
-                if [[ -d "$mountpath" ]]; then
-                    echo "IED:MSG:Ejecting '$mountpath' failed, force attempt $tries…"
+                if [[ -e "$mountdev" ]]; then
+                    echo "IED:MSG:Ejecting '$mountdev' failed, force attempt $tries…"
                     sleep $tries
-                    if hdiutil eject -verbose "$mountpath" -force; then
-                        echo "IED:MSG:Forcefully ejected '$mountpath'"
+                    if hdiutil eject -verbose "$mountdev" -force; then
+                        echo "IED:MSG:Forcefully ejected '$mountdev'"
                         result="success"
                         break
                     fi
                 else
-                    echo "IED:MSG:'$mountpath' disappeared"
+                    echo "IED:MSG:'$mountdev' disappeared"
                     hdiutil info
                 fi
             done
         else
-            echo "IED:MSG:Ejected '$mountpath'"
+            echo "IED:MSG:Ejected '$mountdev'"
             result="success"
         fi
     fi
     if [[ "$result" != "success" ]]; then
-        echo "IED:MSG:Ejecting '$mountpath' failed, giving up!"
+        echo "IED:MSG:Ejecting '$mountdev' failed, giving up!"
     fi
 }
 
 declare -a dmgmounts
 unmount_dmgs() {
-    for mountpath in "${dmgmounts[@]}"; do
-        echo "IED:MSG:Ejecting '$mountpath'"
-        eject_dmg "$mountpath"
+    for mountdev in "${dmgmounts[@]}"; do
+        echo "IED:MSG:Ejecting '$mountdev'"
+        eject_dmg "$mountdev"
     done
     unset dmgmounts
 }
@@ -133,7 +133,9 @@ echo "IED:MSG:Creating disk image"
 if [[ -z "$sysimg" ]]; then
     sparsedmg="$tempdir/os.sparseimage"
     hdiutil create -size "${size}g" -type SPARSE -fs HFS+J -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
-    sparsemount=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS | cut -f3)
+    mountresult=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS)
+    sparsemount=$(echo "$mountresult" | cut -f3)
+    dmgmounts+=( $(echo "$mountresult" | cut -f1) )
 else
     shadowfile="$tempdir/autodmg.shadow"
     shadowdev=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg" \
@@ -142,12 +144,12 @@ else
     echo "IED:MSG:Renaming $shadowdev to $volname"
     echo "IED:MSG:Renaming volume"
     diskutil rename "$shadowdev" "$volname"
+    dmgmounts+=("$shadowdev")
     sparsemount=$(hdiutil info | grep "^$shadowdev" | cut -f3)
     # If we're using a system image as the source, read the version and build
     # numbers before the first install.
     start_nvb=$(read_nvb "$sparsemount")
 fi
-dmgmounts+=("$sparsemount")
 
 
 # Install OS and packages.
