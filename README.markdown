@@ -1,15 +1,15 @@
 AutoDMG
 =======
 
-The award winning AutoDMG takes an OS X installer and builds a system image, suitable for deployment with Imagr, DeployStudio, Absolute Manage, Jamf Pro, and other asr-based imaging tools.
+The award winning AutoDMG takes a macOS installer (10.9 or newer) and builds a system image suitable for deployment with Imagr, DeployStudio, LANrev, Jamf Pro, and other asr-based imaging tools.
 
 ![Autodmg 1.7.1](https://magervalp.github.io/images/AutoDMG-1.7.1.png)
 
 
-System Requirements
--------------------
+Documentation
+-------------
 
-AutoDMG requires Mac OS X 10.9 or newer.
+Documentation and help is in the [AutoDMG wiki](https://github.com/MagerValp/AutoDMG/wiki).
 
 
 Presentation
@@ -28,8 +28,6 @@ The latest release can be found on the [release page](https://github.com/MagerVa
 
 Support
 -------
-
-Documentation and help is in the [AutoDMG wiki](https://github.com/MagerValp/AutoDMG/wiki).
 
 If you have questions or need help, you can join us in [`#autodmg`](https://macadmins.slack.com/archives/autodmg) on [Slack MacAdmins](http://macadmins.org ).
 
