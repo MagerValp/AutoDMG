@@ -72,8 +72,20 @@ class IEDDMGHelper(NSObject):
         for dmgInfo in plist[u"images"]:
             for entity in dmgInfo.get(u"system-entities", []):
                 try:
-                    dmgMounts[dmgInfo[u"image-path"]] = entity[u"mount-point"]
-                    LogDebug(u"'%@' is already mounted at '%@'", dmgInfo[u"image-path"], entity[u"mount-point"])
+                    image_path = dmgInfo[u"image-path"]
+                    alias_path = u""
+                    bookmark = CFURLCreateBookmarkDataFromAliasRecord(kCFAllocatorDefault, dmgInfo[u"image-alias"])
+                    if bookmark:
+                        url, stale, error = CFURLCreateByResolvingBookmarkData(None, bookmark,
+                                                                               kCFBookmarkResolutionWithoutUIMask,
+                                                                               None, None, None, None)
+                        if url:
+                            alias_path = url.path()
+                        else:
+                            LogDebug(u"Couldn't resolve bookmark: %@", error.localizedDescription())
+                    for path in set(x for x in (image_path, alias_path) if x):
+                        dmgMounts[path] = entity[u"mount-point"]
+                        LogDebug(u"'%@' is already mounted at '%@'", path, entity[u"mount-point"])
                     break
                 except IndexError:
                     pass
