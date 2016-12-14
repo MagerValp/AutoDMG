@@ -9,7 +9,6 @@
 
 from Foundation import *
 import subprocess
-import plistlib
 import time
 import traceback
 
@@ -63,8 +62,13 @@ class IEDDMGHelper(NSObject):
             return dmgMounts
         
         # Strip EULA text.
-        xmlStartIndex = out.find("<?xml")
-        plist = plistlib.readPlistFromString(out[xmlStartIndex:])
+        outXML = out[out.find("<?xml"):]
+        outData = NSData.dataWithBytes_length_(outXML, len(outXML))
+        plist, format, error = \
+            NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
+                                                                                   NSPropertyListImmutable,
+                                                                                   None,
+                                                                                   None)
         for dmgInfo in plist[u"images"]:
             for entity in dmgInfo.get(u"system-entities", []):
                 try:
@@ -114,8 +118,13 @@ class IEDDMGHelper(NSObject):
                                                       u"error-message": errstr})
                 return
             # Strip EULA text.
-            xmlStartIndex = out.find("<?xml")
-            plist = plistlib.readPlistFromString(out[xmlStartIndex:])
+            outXML = out[out.find("<?xml"):]
+            outData = NSData.dataWithBytes_length_(outXML, len(outXML))
+            plist, format, error = \
+                NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
+                                                                                       NSPropertyListImmutable,
+                                                                                       None,
+                                                                                       None)
             for partition in plist[u"system-entities"]:
                 if partition.get(u"potentially-mountable") == 1:
                     if u"mount-point" in partition:
