@@ -146,24 +146,43 @@ class IEDProfileController(NSObject):
         """Load UpdateProfiles from a plist dictionary."""
         
         LogInfo(u"Loading update profiles with PublicationDate %@", plist[u"PublicationDate"])
+        
         self.profiles = dict()
         for name, updates in plist[u"Profiles"].iteritems():
             profile = list()
             for update in updates:
                 profile.append(plist[u"Updates"][update])
             self.profiles[name] = profile
+        
         self.publicationDate = plist[u"PublicationDate"]
+        
         self.updatePaths = dict()
         for name, update in plist[u"Updates"].iteritems():
             filename, ext = os.path.splitext(os.path.basename(update[u"url"]))
             self.updatePaths[update[u"sha1"]] = u"%s(%s)%s" % (filename, update[u"sha1"][:7], ext)
+        
         self.deprecatedInstallerBuilds = dict()
         try:
             for replacement, builds in plist[u"DeprecatedInstallers"].iteritems():
                 for build in builds:
                     self.deprecatedInstallerBuilds[build] = replacement
         except KeyError:
-            LogWarning(u"No deprecated installers")
+            LogWarning(u"No deprecated installers in profile")
+        
+        self.deprecatedOS = False
+        try:
+            hostVerMajor = IEDUtil.hostVersionTuple()[1]
+            LogError(u"%@", plist[u"DeprecatedOSVersions"])
+            for osVerStr in plist[u"DeprecatedOSVersions"]:
+                LogError(u"Deprecating %@", osVerStr)
+                deprecatedVerMajor = IEDUtil.splitVersion(osVerStr)[1]
+                if hostVerMajor <= deprecatedVerMajor:
+                    self.deprecatedOS = True
+                    LogWarning(u"%@ is no longer being updated by Apple", osVerStr)
+                    break
+        except KeyError:
+            LogWarning(u"No deprecated OS versions in profile")
+        
         if self.delegate:
             self.delegate.profilesUpdated()
     

@@ -223,7 +223,10 @@ class IEDUpdateController(NSObject):
             # No update profile for this build, try to figure out why.
             self.profileWarning = self.profileController.whyNoProfileForVersion_build_(version, build)
         else:
-            self.profileWarning = None
+            if self.profileController.deprecatedOS:
+                self.profileWarning = u"No longer updated by Apple"
+            else:
+                self.profileWarning = None
             for update in profile:
                 package = IEDPackage.alloc().init()
                 package.setName_(update[u"name"])
