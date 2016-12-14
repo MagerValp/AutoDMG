@@ -172,9 +172,7 @@ class IEDProfileController(NSObject):
         self.deprecatedOS = False
         try:
             hostVerMajor = IEDUtil.hostVersionTuple()[1]
-            LogError(u"%@", plist[u"DeprecatedOSVersions"])
             for osVerStr in plist[u"DeprecatedOSVersions"]:
-                LogError(u"Deprecating %@", osVerStr)
                 deprecatedVerMajor = IEDUtil.splitVersion(osVerStr)[1]
                 if hostVerMajor <= deprecatedVerMajor:
                     self.deprecatedOS = True
