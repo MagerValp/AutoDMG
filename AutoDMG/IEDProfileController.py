@@ -124,15 +124,31 @@ class IEDProfileController(NSObject):
         """Update the user's update profiles if plist is newer. Returns
            whichever was the newest."""
         
+        LogDebug(u"Update user's profile if needed")
+        
         # Load UpdateProfiles from the user's application support directory.
         userUpdateProfiles = NSDictionary.dictionaryWithContentsOfFile_(self.userUpdateProfilesPath)
         
-        # If the bundle's plist is newer, update the user's.
-        if (not userUpdateProfiles) or (userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0):
+        # Ensure profile in plist supports current OS.
+        plistVersions = list(x.partition(u"-")[0] for x in plist[u"Profiles"].keys())
+        plistMajors = sorted(IEDUtil.splitVersion(x)[1] for x in plistVersions)
+        osMajor = IEDUtil.hostVersionTuple()[1]
+        plistSupportsOS = osMajor in plistMajors
+        LogDebug(u"Profile %@ 10.%d",
+                 u"supports" if plistSupportsOS else u"does not support",
+                 osMajor)
+        
+        # If the plist is newer, update the user's.
+        userIsEmpty = not userUpdateProfiles
+        LogDebug(u"User profile %@", u"is empty" if userIsEmpty else u"is not empty")
+        userIsOlder = userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0
+        LogDebug(u"User profile %@", u"is older" if userIsOlder else u"is not older")
+        if userIsEmpty or (userIsOlder and plistSupportsOS):
             LogDebug(u"Saving updated UpdateProfiles.plist")
             self.saveUsersProfiles_(plist)
             return plist
         else:
+            LogDebug(u"Keeping previous UpdateProfiles.plist")
             return userUpdateProfiles
     
     def saveUsersProfiles_(self, plist):
