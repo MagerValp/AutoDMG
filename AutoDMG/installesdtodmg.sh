@@ -132,18 +132,34 @@ echo "IED:PHASE:sparseimage"
 echo "IED:MSG:Creating disk image"
 if [[ -z "$sysimg" ]]; then
     sparsedmg="$tempdir/os.sparseimage"
-    hdiutil create -size "${size}g" -type SPARSE -fs HFS+J -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"
-    mountresult=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg" | grep Apple_HFS)
+    if ! hdiutil create -size "${size}g" -type SPARSE -fs HFS+J -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"; then
+        echo "IED:FAILURE:Failed to create disk image for install"
+        exit 101
+    fi
+    mountoutput=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg")
+    declare -i result=$?
+    if [[ $result -ne 0 ]]; then
+        echo "IED:FAILURE:Failed to mount disk image for install, return code $result"
+        exit 101
+    fi
+    mountresult=$(grep Apple_HFS <<< "$mountoutput")
     sparsemount=$(echo "$mountresult" | cut -f3)
     dmgmounts+=( $(echo "$mountresult" | cut -f1) )
 else
     shadowfile="$tempdir/autodmg.shadow"
-    shadowdev=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg" \
-                | grep Apple_HFS \
-                | awk '{print $1}')
+    shadowoutput=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg")
+    declare -i result=$?
+    if [[ $result -ne 0 ]]; then
+        echo "IED:FAILURE:Failed to create shadow image for install, return code $result"
+        exit 101
+    fi
+    shadowdev=$(echo "$shadowoutput" | grep Apple_HFS | awk '{print $1}')
     echo "IED:MSG:Renaming $shadowdev to $volname"
     echo "IED:MSG:Renaming volume"
-    diskutil rename "$shadowdev" "$volname"
+    if ! diskutil rename "$shadowdev" "$volname"; then
+        echo "IED:FAILURE:Failed to rename install volume"
+        exit 101
+    fi
     dmgmounts+=("$shadowdev")
     sparsemount=$(hdiutil info | grep "^$shadowdev" | cut -f3)
     # If we're using a system image as the source, read the version and build
