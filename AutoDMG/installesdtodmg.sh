@@ -117,9 +117,9 @@ read_nvb() {
     fi
     local path="$root/System/Library/CoreServices/SystemVersion.plist"
     if [[ -f "$path" ]]; then
-        name=$(/usr/libexec/PlistBuddy -c "print :ProductName" /System/Library/CoreServices/SystemVersion.plist)
-        version=$(/usr/libexec/PlistBuddy -c "print :ProductUserVisibleVersion" /System/Library/CoreServices/SystemVersion.plist)
-        build=$(/usr/libexec/PlistBuddy -c "print :ProductBuildVersion" /System/Library/CoreServices/SystemVersion.plist)
+        name=$(/usr/libexec/PlistBuddy -c "print :ProductName" "$path")
+        version=$(/usr/libexec/PlistBuddy -c "print :ProductUserVisibleVersion" "$path")
+        build=$(/usr/libexec/PlistBuddy -c "print :ProductBuildVersion" "$path")
         echo "$name/$version/$build"
     fi
 }
