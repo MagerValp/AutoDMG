@@ -141,8 +141,11 @@ class IEDProfileController(NSObject):
         # If the plist is newer, update the user's.
         userIsEmpty = not userUpdateProfiles
         LogDebug(u"User profile %@", u"is empty" if userIsEmpty else u"is not empty")
-        userIsOlder = userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0
-        LogDebug(u"User profile %@", u"is older" if userIsOlder else u"is not older")
+        if userUpdateProfiles:
+            userIsOlder = userUpdateProfiles[u"PublicationDate"].timeIntervalSinceDate_(plist[u"PublicationDate"]) < 0
+            LogDebug(u"User profile %@", u"is older" if userIsOlder else u"is not older")
+        else:
+            userIsOlder = True
         if userIsEmpty or (userIsOlder and plistSupportsOS):
             LogDebug(u"Saving updated UpdateProfiles.plist")
             self.saveUsersProfiles_(plist)
