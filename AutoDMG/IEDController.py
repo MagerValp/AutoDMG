@@ -136,13 +136,6 @@ class IEDController(NSObject):
     
     
     
-    # Common workflow delegate methods.
-    
-    def detachFailed_details_(self, dmgPath, details):
-        self.displayAlert_text_(u"Failed to detach %s" % dmgPath, details)
-    
-    
-    
     # Act on user dropping an installer.
     
     def acceptSource_(self, path):
@@ -150,6 +143,9 @@ class IEDController(NSObject):
         self.workflow.setSource_(path)
     
     # Workflow delegate methods.
+    
+    def detachFailed_details_(self, dmgPath, details):
+        self.displayAlert_text_(u"Failed to detach %s" % dmgPath, details)
     
     def ejectingSource(self):
         self.sourceImage.animator().setAlphaValue_(0.5)

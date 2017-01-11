@@ -342,6 +342,9 @@ class IEDCLIController(NSObject):
     
     # Workflow delegate methods.
     
+    def detachFailed_details_(self, dmgPath, details):
+        LogError(u"Failed to detach '%@': %@", dmgPath, details)
+    
     def ejectingSource(self):
         LogInfo("%@", u"Ejecting source…")
     
