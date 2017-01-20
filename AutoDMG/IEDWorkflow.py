@@ -340,7 +340,7 @@ class IEDWorkflow(NSObject):
         LogNotice(u"Starting build")
         LogNotice(u"Using installer: %@ %@ %@", self.installerName, self.installerVersion, self.installerBuild)
         LogNotice(u"Using output path: %@", self.outputPath())
-        LogNotice(u"TMPDIR is set to: %@", os.getenv("TMPDIR"))
+        LogNotice(u"TMPDIR is set to: %@", os.getenv(u"TMPDIR"))
         self.delegate.buildStartingWithOutput_(self.outputPath())
         
         self.createTempDir()
@@ -351,7 +351,7 @@ class IEDWorkflow(NSObject):
                                u"A template for inclusion in the image is required.")
             return
         
-        datestamp = datetime.datetime.today().strftime("%Y%m%d")
+        datestamp = datetime.datetime.today().strftime(u"%Y%m%d")
         self.templatePath = os.path.join(self.tempDir, u"AutoDMG-%s.adtmpl" % datestamp)
         LogDebug(u"Saving template to %@", self.templatePath)
         error = self.template().saveTemplateAndReturnError_(self.templatePath)
@@ -547,10 +547,10 @@ class IEDWorkflow(NSObject):
                 mountPoint = self.attachedPackageDMGs[package.path()]
                 LogDebug(u"Looking for packages and applications in %@: %@",
                          mountPoint,
-                         glob.glob(os.path.join(mountPoint, "*")))
-                packagePaths = glob.glob(os.path.join(mountPoint, "*.mpkg"))
-                packagePaths += glob.glob(os.path.join(mountPoint, "*.pkg"))
-                packagePaths += glob.glob(os.path.join(mountPoint, "*.app"))
+                         glob.glob(os.path.join(mountPoint, u"*")))
+                packagePaths = glob.glob(os.path.join(mountPoint, u"*.mpkg"))
+                packagePaths += glob.glob(os.path.join(mountPoint, u"*.pkg"))
+                packagePaths += glob.glob(os.path.join(mountPoint, u"*.app"))
                 if len(packagePaths) == 0:
                     self.fail_details_(u"Nothing found to install",
                                        u"No package or application found in %s" % package.name())

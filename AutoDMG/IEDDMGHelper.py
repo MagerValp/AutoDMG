@@ -58,11 +58,11 @@ class IEDDMGHelper(NSObject):
             errstr = u"hdiutil info failed with return code %d" % p.returncode
             if err:
                 errstr += u": %s" % err.decode(u"utf-8")
-            LogWarning("%@", errstr)
+            LogWarning(u"%@", errstr)
             return dmgMounts
         
         # Strip EULA text.
-        outXML = out[out.find("<?xml"):]
+        outXML = out[out.find(b"<?xml"):]
         outData = NSData.dataWithBytes_length_(outXML, len(outXML))
         plist, format, error = \
             NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
@@ -130,7 +130,7 @@ class IEDDMGHelper(NSObject):
                                                       u"error-message": errstr})
                 return
             # Strip EULA text.
-            outXML = out[out.find("<?xml"):]
+            outXML = out[out.find(b"<?xml"):]
             outData = NSData.dataWithBytes_length_(outXML, len(outXML))
             plist, format, error = \
                 NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,

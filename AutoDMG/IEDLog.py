@@ -287,7 +287,7 @@ def timestamp(dt=None):
 
 
 def LogToSyslog(level, message):
-    syslog.syslog(level, message.encode("utf-8"))
+    syslog.syslog(level, message.encode(u"utf-8"))
 
 
 def LogToStdOut(level, message):

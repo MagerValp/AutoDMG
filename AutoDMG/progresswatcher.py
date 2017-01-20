@@ -24,9 +24,9 @@ MAX_MSG_SIZE = 32768 # See also IEDSL_MAX_MSG_SIZE in IEDSocketListener.
 
 class ProgressWatcher(NSObject):
     
-    re_installerlog = re.compile(r'^.+? installer\[[0-9a-f:]+\] (<(?P<level>[^>]+)>:)?(?P<message>.*)$')
-    re_number = re.compile(r'^(\d+)')
-    re_watchlog = re.compile(r'^.+? (?P<sender>install(d|_monitor))(\[\d+\]): (?P<message>.*)$')
+    re_installerlog = re.compile(ur'^.+? installer\[[0-9a-f:]+\] (<(?P<level>[^>]+)>:)?(?P<message>.*)$')
+    re_number = re.compile(ur'^(\d+)')
+    re_watchlog = re.compile(ur'^.+? (?P<sender>install(d|_monitor))(\[\d+\]): (?P<message>.*)$')
     
     def watchTask_socket_mode_(self, args, sockPath, mode):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -125,8 +125,8 @@ class ProgressWatcher(NSObject):
     
     def appendOutput_(self, string):
         self.outputBuffer += string
-        while "\n" in self.outputBuffer:
-            line, newline, self.outputBuffer = self.outputBuffer.partition("\n")
+        while u"\n" in self.outputBuffer:
+            line, newline, self.outputBuffer = self.outputBuffer.partition(u"\n")
             self.parseProgress_(line)
     
     def parseProgress_(self, string):
@@ -234,8 +234,8 @@ class ProgressWatcher(NSObject):
     
     def appendWatchLog_(self, string):
         self.watchLogBuffer += string
-        while "\n" in self.watchLogBuffer:
-            line, newline, self.watchLogBuffer = self.watchLogBuffer.partition("\n")
+        while u"\n" in self.watchLogBuffer:
+            line, newline, self.watchLogBuffer = self.watchLogBuffer.partition(u"\n")
             self.parseWatchLog_(line)
     
     def parseWatchLog_(self, string):

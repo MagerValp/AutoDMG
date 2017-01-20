@@ -193,13 +193,13 @@ def main():
         
         # Ensure trailing slash on TMPDIR.
         try:
-            tmpdir = os.getenv("TMPDIR")
+            tmpdir = os.getenv(u"TMPDIR")
             if tmpdir:
                 if os.path.isdir(tmpdir):
-                    if not tmpdir.endswith("/"):
+                    if not tmpdir.endswith(u"/"):
                         NSLog(u"Fixing trailing slash on TMPDIR '%@'", tmpdir)
-                        os.environ["TMPDIR"] = tmpdir + "/"
-                        NSLog(u"TMPDIR is now '%@'", os.getenv("TMPDIR"))
+                        os.environ[u"TMPDIR"] = tmpdir + u"/"
+                        NSLog(u"TMPDIR is now '%@'", os.getenv(u"TMPDIR"))
                 else:
                     NSLog(u"TMPDIR is not a valid directory: '%@'", tmpdir)
             else:

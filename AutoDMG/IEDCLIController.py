@@ -346,10 +346,10 @@ class IEDCLIController(NSObject):
         LogError(u"Failed to detach '%@': %@", dmgPath, details)
     
     def ejectingSource(self):
-        LogInfo("%@", u"Ejecting source…")
+        LogInfo(u"%@", u"Ejecting source…")
     
     def examiningSource_(self, path):
-        LogInfo("%@", u"Examining source…")
+        LogInfo(u"%@", u"Examining source…")
     
     def foundSourceForIcon_(self, path):
         pass

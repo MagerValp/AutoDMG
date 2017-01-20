@@ -30,7 +30,7 @@ class IEDSocketListener(NSObject):
                 os.unlink(oldsocket)
             except:
                 pass
-        self.socketPath = NSString.stringWithFormat_(u"%@.%@", path, os.urandom(8).encode("hex"))
+        self.socketPath = NSString.stringWithFormat_(u"%@.%@", path, os.urandom(8).encode(u"hex"))
         LogDebug(u"Creating socket at %@", self.socketPath)
         self.delegate = delegate
         self.watchThread = NSThread.alloc().initWithTarget_selector_object_(self, u"listenInBackground:", None)

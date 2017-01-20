@@ -183,7 +183,7 @@ class IEDTemplate(NSObject):
             package.setImage_(NSWorkspace.sharedWorkspace().iconForFile_(path))
             self.packagesToInstall.append(package)
     
-    re_keyref = re.compile(r'%(?P<key>[A-Z][A-Z_0-9]*)%')
+    re_keyref = re.compile(ur'%(?P<key>[A-Z][A-Z_0-9]*)%')
     
     def resolveVariables_(self, variables):
         formatter = NSDateFormatter.alloc().init()
@@ -194,10 +194,10 @@ class IEDTemplate(NSObject):
         
         def getvar(m):
             try:
-                return variables[m.group("key")]
+                return variables[m.group(u"key")]
             except KeyError as err:
-                LogWarning("Template references undefined variable: %%%@%%", m.group("key"))
-                return u"%%%s%%" % m.group("key")
+                LogWarning(u"Template references undefined variable: %%%@%%", m.group(u"key"))
+                return u"%%%s%%" % m.group(u"key")
         
         self.volumeName = self.re_keyref.sub(getvar, self.volumeName)
         self.outputPath = self.re_keyref.sub(getvar, self.outputPath)
