@@ -98,7 +98,7 @@ class IEDTemplate(NSObject):
         if templateFormat != "1.0":
             LogWarning("Unknown format version %@", templateFormat)
         
-        for key in plist.keys():
+        for key in plist.iterkeys():
             if key == "IncludeTemplates":
                 for includePath in plist["IncludeTemplates"]:
                     LogInfo("Including template %@", includePath)

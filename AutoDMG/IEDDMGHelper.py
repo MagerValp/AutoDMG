@@ -243,7 +243,7 @@ class IEDDMGHelper(NSObject):
         self.detachAllRemaining = len(self.dmgs)
         self.detachAllSelector = selector
         if self.dmgs:
-            for dmgPath in self.dmgs.keys():
+            for dmgPath in self.dmgs.iterkeys():
                 self.performSelectorInBackground_withObject_(self.hdiutilDetach_, [dmgPath, self, self.handleDetachAllResult_])
         else:
             if self.delegate.respondsToSelector_(selector):

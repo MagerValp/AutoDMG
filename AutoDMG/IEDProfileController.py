@@ -81,7 +81,7 @@ class IEDProfileController(NSObject):
         buildsForVersion = defaultdict(set)
         supportedMajorVersions = set()
         supportedPointReleases = defaultdict(set)
-        for versionBuild in self.profiles.keys():
+        for versionBuild in self.profiles.iterkeys():
             version, _, build = versionBuild.partition("-")
             buildsForVersion[version].add(build)
             versionTuple = IEDUtil.splitVersion(version)
@@ -93,7 +93,7 @@ class IEDProfileController(NSObject):
         LogDebug("supported OS X versions: %@",
                  ", ".join("10.%d" % x for x in sorted(supportedMajorVersions)))
         LogDebug("supported point releases:")
-        for major, pointReleases in supportedPointReleases.items():
+        for major, pointReleases in supportedPointReleases.iteritems():
             LogDebug("    " + ", ".join("10.%d.%d" % (major, x) for x in sorted(pointReleases)))
         
         if whyMajor not in supportedMajorVersions:
@@ -132,7 +132,7 @@ class IEDProfileController(NSObject):
         userUpdateProfiles = NSDictionary.dictionaryWithContentsOfFile_(self.userUpdateProfilesPath)
         
         # Ensure profile in plist supports current OS.
-        plistVersions = list(x.partition("-")[0] for x in plist["Profiles"].keys())
+        plistVersions = list(x.partition("-")[0] for x in plist["Profiles"].iterkeys())
         plistMajors = sorted(IEDUtil.splitVersion(x)[1] for x in plistVersions)
         osMajor = IEDUtil.hostVersionTuple()[1]
         plistSupportsOS = osMajor in plistMajors
