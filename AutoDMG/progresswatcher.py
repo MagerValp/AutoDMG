@@ -269,7 +269,7 @@ class ProgressWatcher(NSObject):
         if self.sockPath:
             try:
                 self.sock.sendto(msg, self.sockPath)
-            except socket.error, e:
+            except socket.error as e:
                 NSLog(u"Socket at %@ failed: %@", self.sockPath, unicode(e))
                 NSLog(u"Failed socket message: %@", msg)
         else:
