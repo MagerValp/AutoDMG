@@ -34,7 +34,7 @@ def get_log_dir():
         try:
             os.makedirs(logDir)
         except OSError as e:
-            LogWarning(u"Couldn't create %s" % (logDir))
+            LogWarning(u"Couldn't create %@", logDir)
     return logDir
 
 
@@ -65,7 +65,7 @@ def gui_main():
         IEDLog.IEDLogToFile = True
     except IOError as e:
         IEDLog.IEDLogToFile = False
-        LogWarning(u"Couldn't open %s for writing" % (logFile))
+        LogWarning(u"Couldn't open %@ for writing", logFile)
     
     import AppKit
     from PyObjCTools import AppHelper

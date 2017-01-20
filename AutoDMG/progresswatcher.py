@@ -149,7 +149,7 @@ class ProgressWatcher(NSObject):
                 else:
                     self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": string})
         except BaseException as e:
-            NSLog(u"Progress parsing failed: %s" % traceback.format_exc())
+            NSLog(u"Progress parsing failed: %@", traceback.format_exc())
     
     def parseInstallerProgress_(self, string):
         if string.startswith(u"%"):

@@ -358,7 +358,7 @@ class IEDCLIController(NSObject):
         self.installerName = info[u"name"]
         self.installerVersion = info[u"version"]
         self.installerBuild = info[u"build"]
-        LogNotice(u"Found installer: %s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
+        LogNotice(u"Found installer: %@ %@ %@", info[u"name"], info[u"version"], info[u"build"])
         self.busy = False
     
     def sourceFailed_text_(self, message, text):

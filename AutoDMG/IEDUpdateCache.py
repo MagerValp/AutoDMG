@@ -66,10 +66,10 @@ class IEDUpdateCache(NSObject):
             try:
                 itempath = os.path.join(self.updateDir, item)
                 if item not in filenames:
-                    LogInfo(u"Removing %s" % item)
+                    LogInfo(u"Removing %@", item)
                     os.unlink(itempath)
             except OSError as e:
-                LogWarning(u"Cache pruning of %s failed: %s" % (item, unicode(e)))
+                LogWarning(u"Cache pruning of %@ failed: %@", item, unicode(e))
         for sha1 in symlinks.iterkeys():
             sha1Path = self.cachePath_(sha1)
             linkPath = self.updatePath_(sha1)
@@ -77,23 +77,23 @@ class IEDUpdateCache(NSObject):
             if os.path.exists(sha1Path):
                 if os.path.lexists(linkPath):
                     if os.readlink(linkPath) == sha1:
-                        LogInfo(u"Found %s -> %s" % (name, sha1))
+                        LogInfo(u"Found %@ -> %@", name, sha1)
                         continue
-                    LogInfo(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
+                    LogInfo(u"Removing stale link %@ -> %@", name, os.readlink(linkPath))
                     try:
                         os.unlink(linkPath)
                     except OSError as e:
-                        LogWarning(u"Cache pruning of %s failed: %s" % (name, unicode(c)))
+                        LogWarning(u"Cache pruning of %@ failed: %@", name, unicode(c))
                         continue
-                LogInfo(u"Creating %s -> %s" % (name, sha1))
+                LogInfo(u"Creating %@ -> %@", name, sha1)
                 os.symlink(sha1, linkPath)
             else:
                 if os.path.lexists(linkPath):
-                    LogInfo(u"Removing stale link %s -> %s" % (name, os.readlink(linkPath)))
+                    LogInfo(u"Removing stale link %@ -> %@", name, os.readlink(linkPath))
                     try:
                         os.unlink(linkPath)
                     except OSError as e:
-                        LogWarning(u"Cache pruning of %s failed: %s" % (name, unicode(c)))
+                        LogWarning(u"Cache pruning of %@ failed: %@", name, unicode(c))
             
     
     def isCached_(self, sha1):

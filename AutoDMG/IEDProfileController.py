@@ -67,7 +67,7 @@ class IEDProfileController(NSObject):
         try:
             replacement = self.deprecatedInstallerBuilds[whyBuild]
             version, _, build = replacement.partition(u"-")
-            LogDebug(u"Installer deprecated by %s %s" % (version, build))
+            LogDebug(u"Installer deprecated by %@ %@", version, build)
             return u"Installer deprecated by %s %s" % (version, build)
         except KeyError:
             pass
