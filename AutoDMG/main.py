@@ -8,6 +8,7 @@
 #
 
 from __future__ import unicode_literals
+from __future__ import print_function
 
 import os
 import sys
@@ -140,7 +141,7 @@ def cli_main(argv):
                     logFile = os.path.join(get_log_dir(), "AutoDMG-%s.log" % get_date_string())
                 IEDLog.IEDLogFileHandle = open(logFile, "a", buffering=1)
             except (IOError, OSError) as e:
-                print >>sys.stderr, ("Couldn't open %s for writing" % logFile).encode("utf-8")
+                print(("Couldn't open %s for writing" % logFile).encode("utf-8"), file=sys.stderr)
                 return os.EX_CANTCREAT
             IEDLog.IEDLogToFile = True
         

@@ -8,6 +8,7 @@
 #
 
 from __future__ import unicode_literals
+from __future__ import print_function
 
 from Foundation import *
 from AppKit import *
@@ -292,16 +293,16 @@ def LogToSyslog(level, message):
 
 
 def LogToStdOut(level, message):
-    print >>sys.stdout, message.encode("utf-8")
+    print(message.encode("utf-8"), file=sys.stdout)
 
 
 def LogToFile(level, message):
     global IEDLogFileHandle
     if IEDLogFileHandle is not None:
-        print >>IEDLogFileHandle, \
-            NSString.stringWithFormat_("%@  %@",
-                                       timestamp(),
-                                       message).encode("utf-8")
+        print(NSString.stringWithFormat_("%@  %@",
+                                         timestamp(),
+                                         message).encode("utf-8"),
+                                         file=IEDLogFileHandle)
     else:
         NSLog("IEDLogFileHandle not open")
 
