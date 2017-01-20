@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 from Foundation import *
 from objc import IBAction, IBOutlet
 import Quartz
@@ -58,14 +60,14 @@ class IEDUpdateController(NSObject):
         self.delegate = delegate
     
     def awakeFromNib(self):
-        self.cachedImage = NSImage.imageNamed_(u"Package")
-        self.uncachedImage = NSImage.imageNamed_(u"Package blue arrow")
+        self.cachedImage = NSImage.imageNamed_("Package")
+        self.uncachedImage = NSImage.imageNamed_("Package blue arrow")
         
-        self.updatesAllOKImage = NSImage.imageNamed_(u"Checkmark")
-        self.updatesToDownloadImage = NSImage.imageNamed_(u"Download")
-        self.updatesWarningImage = NSImage.imageNamed_(u"Exclamation")
+        self.updatesAllOKImage = NSImage.imageNamed_("Checkmark")
+        self.updatesToDownloadImage = NSImage.imageNamed_("Download")
+        self.updatesWarningImage = NSImage.imageNamed_("Exclamation")
         self.updateTableImage.setImage_(None)
-        self.updateTableLabel.setStringValue_(u"")
+        self.updateTableLabel.setStringValue_("")
         self.updateTable.setDataSource_(self)
         
         self.boxTableSizeDelta = self.updateBox.frame().size.height - self.updateTable.frame().size.height
@@ -91,13 +93,13 @@ class IEDUpdateController(NSObject):
         
     
     def disableControls(self):
-        LogDebug(u"disableControls")
+        LogDebug("disableControls")
         self.applyUpdatesCheckbox.setEnabled_(False)
         self.updateTable.setEnabled_(False)
         self.downloadButton.setEnabled_(False)
     
     def enableControls(self):
-        LogDebug(u"enableControls")
+        LogDebug("enableControls")
         self.applyUpdatesCheckbox.setEnabled_(len(self.updates) > 0)
         self.updateTable.setEnabled_(len(self.updates) > 0)
         self.downloadButton.setEnabled_(len(self.downloads) > 0)
@@ -110,20 +112,20 @@ class IEDUpdateController(NSObject):
             return
         
         if len(self.downloads) == 0:
-            self.updateTableLabel.setStringValue_(u"All updates downloaded")
+            self.updateTableLabel.setStringValue_("All updates downloaded")
             self.updateTableLabel.setTextColor_(NSColor.disabledControlTextColor())
             self.updateTableImage.setImage_(self.updatesAllOKImage)
         else:
             sizeStr = IEDUtil.formatByteSize_(self.downloadTotalSize)
-            plurals = u"s" if len(self.downloads) >= 2 else u""
-            downloadLabel = u"%d update%s to download (%s)" % (len(self.downloads), plurals, sizeStr)
+            plurals = "s" if len(self.downloads) >= 2 else ""
+            downloadLabel = "%d update%s to download (%s)" % (len(self.downloads), plurals, sizeStr)
             self.updateTableLabel.setStringValue_(downloadLabel)
             self.updateTableLabel.setEnabled_(True)
             self.updateTableLabel.setTextColor_(NSColor.controlTextColor())
             self.updateTableImage.setImage_(self.updatesToDownloadImage)
     
     def countDownloads(self):
-        LogDebug(u"countDownloads")
+        LogDebug("countDownloads")
         self.downloads = list()
         self.downloadTotalSize = 0
         for package in self.updates:
@@ -164,11 +166,11 @@ class IEDUpdateController(NSObject):
         self.doCheckForProfileUpdates()
     
     def doCheckForProfileUpdates(self):
-        LogInfo(u"Checking for updates")
+        LogInfo("Checking for updates")
         self.dateBeforeUpdating = self.profileController.publicationDate
         self.disableControls()
         defaults = NSUserDefaults.standardUserDefaults()
-        url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
+        url = NSURL.URLWithString_(defaults.stringForKey_("UpdateProfilesURL"))
         self.profileController.updateFromURL_(url)
     
     @LogException
@@ -183,14 +185,14 @@ class IEDUpdateController(NSObject):
         if not self.silent:
             alert = NSAlert.alloc().init()
             formatter = NSDateFormatter.alloc().init()
-            formatter.setDateFormat_(u"yyyy-MM-dd HH.mm")
+            formatter.setDateFormat_("yyyy-MM-dd HH.mm")
             dateStr = formatter.stringFromDate_(self.profileController.publicationDate)
             if self.dateBeforeUpdating != self.profileController.publicationDate:
-                alert.setMessageText_(u"Profile updated")
-                alert.setInformativeText_(u"Publication date: %s" % dateStr)
+                alert.setMessageText_("Profile updated")
+                alert.setInformativeText_("Publication date: %s" % dateStr)
             else:
-                alert.setMessageText_(u"No profile update available")
-                alert.setInformativeText_(u"Last update: %s" % dateStr)
+                alert.setMessageText_("No profile update available")
+                alert.setInformativeText_("Last update: %s" % dateStr)
             alert.runModal()
     
     def profileUpdateFailed_(self, error):
@@ -201,12 +203,12 @@ class IEDUpdateController(NSObject):
         self.silent = True
     
     def profileUpdateSucceeded_(self, publicationDate):
-        LogDebug(u"profileUpdateSucceeded:%@", publicationDate)
+        LogDebug("profileUpdateSucceeded:%@", publicationDate)
         defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
+        defaults.setObject_forKey_(NSDate.date(), "LastUpdateProfileCheck")
     
     def profilesUpdated(self):
-        LogDebug(u"profilesUpdated")
+        LogDebug("profilesUpdated")
         self.cache.pruneAndCreateSymlinks(self.profileController.updatePaths)
         if self.version or self.build:
             self.loadProfileForVersion_build_(self.version, self.build)
@@ -214,7 +216,7 @@ class IEDUpdateController(NSObject):
     # Load update profile.
     
     def loadProfileForVersion_build_(self, version, build):
-        LogDebug(u"loadProfileForVersion:%@ build:%@", version, build)
+        LogDebug("loadProfileForVersion:%@ build:%@", version, build)
         self.version = version
         self.build = build
         self.updates = list()
@@ -224,16 +226,16 @@ class IEDUpdateController(NSObject):
             self.profileWarning = self.profileController.whyNoProfileForVersion_build_(version, build)
         else:
             if self.profileController.deprecatedOS:
-                self.profileWarning = u"No longer updated by Apple"
+                self.profileWarning = "No longer updated by Apple"
             else:
                 self.profileWarning = None
             for update in profile:
                 package = IEDPackage.alloc().init()
-                package.setName_(update[u"name"])
-                package.setPath_(self.cache.updatePath_(update[u"sha1"]))
-                package.setSize_(update[u"size"])
-                package.setUrl_(update[u"url"])
-                package.setSha1_(update[u"sha1"])
+                package.setName_(update["name"])
+                package.setPath_(self.cache.updatePath_(update["sha1"]))
+                package.setSize_(update["size"])
+                package.setUrl_(update["url"])
+                package.setSha1_(update["sha1"])
                 # Image is set by countDownloads().
                 self.updates.append(package)
         self.countDownloads()
@@ -256,7 +258,7 @@ class IEDUpdateController(NSObject):
     @IBAction
     def downloadButtonClicked_(self, sender):
         self.disableControls()
-        self.downloadLabel.setStringValue_(u"")
+        self.downloadLabel.setStringValue_("")
         self.downloadProgressBar.setIndeterminate_(True)
         self.downloadWindow.makeKeyAndOrderFront_(self)
         self.downloadCounter = 0
@@ -273,7 +275,7 @@ class IEDUpdateController(NSObject):
     # UpdateCache delegate methods.
     
     def downloadAllDone(self):
-        LogDebug(u"downloadAllDone")
+        LogDebug("downloadAllDone")
         self.downloadWindow.orderOut_(self)
         self.countDownloads()
         self.enableControls()
@@ -281,34 +283,34 @@ class IEDUpdateController(NSObject):
             self.delegate.updateControllerChanged()
     
     def downloadStarting_(self, package):
-        LogDebug(u"downloadStarting:")
+        LogDebug("downloadStarting:")
         self.downloadProgressBar.setIndeterminate_(False)
         self.downloadProgressBar.setDoubleValue_(0.0)
         self.downloadProgressBar.setMaxValue_(package.size())
         self.downloadCounter += 1
-        self.downloadLabel.setStringValue_(u"%s (%s)" % (package.name(), IEDUtil.formatByteSize_(package.size())))
+        self.downloadLabel.setStringValue_("%s (%s)" % (package.name(), IEDUtil.formatByteSize_(package.size())))
     
     def downloadStarted_(self, package):
-        LogDebug(u"downloadStarted:")
+        LogDebug("downloadStarted:")
         self.downloadStopButton.setEnabled_(True)
     
     def downloadStopped_(self, package):
-        LogDebug(u"downloadStopped:")
+        LogDebug("downloadStopped:")
         self.downloadStopButton.setEnabled_(False)
     
     def downloadGotData_bytesRead_(self, package, bytes):
         self.downloadProgressBar.setDoubleValue_(bytes)
     
     def downloadSucceeded_(self, package):
-        LogDebug(u"downloadSucceeded:")
+        LogDebug("downloadSucceeded:")
         self.countDownloads()
         if self.delegate:
             self.delegate.updateControllerChanged()
     
     def downloadFailed_withError_(self, package, message):
-        LogDebug(u"downloadFailed:withError:")
+        LogDebug("downloadFailed:withError:")
         alert = NSAlert.alloc().init()
-        alert.setMessageText_(u"Download failed")
+        alert.setMessageText_("Download failed")
         alert.setInformativeText_(message)
         alert.runModal()
     
@@ -321,7 +323,7 @@ class IEDUpdateController(NSObject):
     
     def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
         # FIXME: Use bindings.
-        if column.identifier() == u"image":
+        if column.identifier() == "image":
             return self.updates[row].image()
-        elif column.identifier() == u"name":
+        elif column.identifier() == "name":
             return self.updates[row].name()

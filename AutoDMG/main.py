@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 import os
 import sys
 import argparse
@@ -25,16 +27,16 @@ import platform
 
 def get_date_string():
     formatter = NSDateFormatter.alloc().init()
-    formatter.setDateFormat_(u"yyyy-MM-dd")
+    formatter.setDateFormat_("yyyy-MM-dd")
     return formatter.stringFromDate_(NSDate.date())
 
 def get_log_dir():
-    logDir = os.path.expanduser(u"~/Library/Logs/AutoDMG")
+    logDir = os.path.expanduser("~/Library/Logs/AutoDMG")
     if not os.path.exists(logDir):
         try:
             os.makedirs(logDir)
         except OSError as e:
-            LogWarning(u"Couldn't create %@", logDir)
+            LogWarning("Couldn't create %@", logDir)
     return logDir
 
 
@@ -42,14 +44,14 @@ def gui_unexpected_error_alert():
     try:
         exceptionInfo = traceback.format_exc()
     except:
-        exceptionInfo = u"(no traceback available)"
-    NSLog(u"AutoDMG died with an uncaught exception: %@", exceptionInfo)
+        exceptionInfo = "(no traceback available)"
+    NSLog("AutoDMG died with an uncaught exception: %@", exceptionInfo)
     from AppKit import NSAlertSecondButtonReturn
     alert = NSAlert.alloc().init()
-    alert.setMessageText_(u"AutoDMG died with an uncaught exception")
+    alert.setMessageText_("AutoDMG died with an uncaught exception")
     alert.setInformativeText_(exceptionInfo)
-    alert.addButtonWithTitle_(u"Quit")
-    alert.addButtonWithTitle_(u"Save Log…")
+    alert.addButtonWithTitle_("Quit")
+    alert.addButtonWithTitle_("Save Log…")
     while alert.runModal() == NSAlertSecondButtonReturn:
         IEDLog.IEDLog.saveLog_(IEDLog.IEDLog, None)
     sys.exit(os.EX_SOFTWARE)
@@ -59,13 +61,13 @@ def gui_main():
     IEDLog.IEDLogToSyslog      = True
     IEDLog.IEDLogToStdOut      = True
     IEDLog.IEDLogStdOutLogLevel = IEDLog.IEDLogLevelDebug
-    logFile = os.path.join(get_log_dir(), u"AutoDMG-%s.log" % get_date_string())
+    logFile = os.path.join(get_log_dir(), "AutoDMG-%s.log" % get_date_string())
     try:
-        IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
+        IEDLog.IEDLogFileHandle = open(logFile, "a", buffering=1)
         IEDLog.IEDLogToFile = True
     except IOError as e:
         IEDLog.IEDLogToFile = False
-        LogWarning(u"Couldn't open %@ for writing", logFile)
+        LogWarning("Couldn't open %@ for writing", logFile)
     
     import AppKit
     from PyObjCTools import AppHelper
@@ -95,23 +97,23 @@ def cli_main(argv):
     try:
         # Initialize user defaults before application starts.
         defaults = NSUserDefaults.standardUserDefaults()
-        defaultsPath = NSBundle.mainBundle().pathForResource_ofType_(u"Defaults", u"plist")
+        defaultsPath = NSBundle.mainBundle().pathForResource_ofType_("Defaults", "plist")
         defaultsDict = NSDictionary.dictionaryWithContentsOfFile_(defaultsPath)
         defaults.registerDefaults_(defaultsDict)
         
         p = argparse.ArgumentParser()
-        p.add_argument(u"-v", u"--verbose", action=u"store_true", help=u"Verbose output")
-        p.add_argument(u"-L", u"--log-level",
+        p.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+        p.add_argument("-L", "--log-level",
                        type=int, choices=range(0, 8), default=6,
-                       metavar=u"LEVEL", help=u"Log level (0-7), default 6")
-        p.add_argument(u"-l", u"--logfile", help=u"Log to file")
-        p.add_argument(u"-r", u"--root", action=u"store_true", help=u"Allow running as root")
-        sp = p.add_subparsers(title=u"subcommands", dest=u"subcommand")
+                       metavar="LEVEL", help="Log level (0-7), default 6")
+        p.add_argument("-l", "--logfile", help="Log to file")
+        p.add_argument("-r", "--root", action="store_true", help="Allow running as root")
+        sp = p.add_subparsers(title="subcommands", dest="subcommand")
         
         # Populate subparser for each verb.
         for verb in clicontroller.listVerbs():
-            verb_method = getattr(clicontroller, u"cmd%s_" % verb.capitalize())
-            addargs_method = getattr(clicontroller, u"addargs%s_" % verb.capitalize())
+            verb_method = getattr(clicontroller, "cmd%s_" % verb.capitalize())
+            addargs_method = getattr(clicontroller, "addargs%s_" % verb.capitalize())
             parser = sp.add_parser(verb, help=verb_method.__doc__)
             addargs_method(parser)
             parser.set_defaults(func=verb_method)
@@ -125,7 +127,7 @@ def cli_main(argv):
         
         IEDLog.IEDLogFileLogLevel = args.log_level
         
-        if args.logfile == u"-":
+        if args.logfile == "-":
             # Redirect log to stdout instead.
             IEDLog.IEDLogFileHandle = sys.stdout
             IEDLog.IEDLogToFile = True
@@ -135,10 +137,10 @@ def cli_main(argv):
                 if args.logfile:
                     logFile = args.logfile
                 else:
-                    logFile = os.path.join(get_log_dir(), u"AutoDMG-%s.log" % get_date_string())
-                IEDLog.IEDLogFileHandle = open(logFile, u"a", buffering=1)
+                    logFile = os.path.join(get_log_dir(), "AutoDMG-%s.log" % get_date_string())
+                IEDLog.IEDLogFileHandle = open(logFile, "a", buffering=1)
             except (IOError, OSError) as e:
-                print >>sys.stderr, (u"Couldn't open %s for writing" % logFile).encode(u"utf-8")
+                print >>sys.stderr, ("Couldn't open %s for writing" % logFile).encode("utf-8")
                 return os.EX_CANTCREAT
             IEDLog.IEDLogToFile = True
         
@@ -151,20 +153,20 @@ def cli_main(argv):
                                                                                          None,
                                                                                          False,
                                                                                          None)
-                LogWarning(u"Running as root, using %@", os.path.join(url.path(), u"AutoDMG"))
+                LogWarning("Running as root, using %@", os.path.join(url.path(), "AutoDMG"))
             else:
-                LogError(u"Running as root isn't recommended (use -r to override)")
+                LogError("Running as root isn't recommended (use -r to override)")
                 return os.EX_USAGE
         
         # Log version info on startup.
         version, build = IEDUtil.getAppVersion()
-        LogInfo(u"AutoDMG v%@ build %@", version, build)
-        name, version, build = IEDUtil.readSystemVersion_(u"/")
-        LogInfo(u"%@ %@ %@", name, version, build)
-        LogInfo(u"%@ %@ (%@)", platform.python_implementation(),
+        LogInfo("AutoDMG v%@ build %@", version, build)
+        name, version, build = IEDUtil.readSystemVersion_("/")
+        LogInfo("%@ %@ %@", name, version, build)
+        LogInfo("%@ %@ (%@)", platform.python_implementation(),
                                platform.python_version(),
                                platform.python_compiler())
-        LogInfo(u"PyObjC %@", objc.__version__)
+        LogInfo("PyObjC %@", objc.__version__)
         
         return args.func(args)
     finally:
@@ -180,12 +182,12 @@ def main():
         decoded_argv = list()
         i = 1
         while i < len(sys.argv):
-            arg = sys.argv[i].decode(u"utf-8")
-            if arg.startswith(u"-psn"):
+            arg = sys.argv[i].decode("utf-8")
+            if arg.startswith("-psn"):
                 pass
-            elif arg == u"-NSDocumentRevisionsDebugMode":
+            elif arg == "-NSDocumentRevisionsDebugMode":
                 i += 1
-            elif arg.startswith(u"-NS"):
+            elif arg.startswith("-NS"):
                 pass
             else:
                 decoded_argv.append(arg)
@@ -193,19 +195,19 @@ def main():
         
         # Ensure trailing slash on TMPDIR.
         try:
-            tmpdir = os.getenv(u"TMPDIR")
+            tmpdir = os.getenv("TMPDIR")
             if tmpdir:
                 if os.path.isdir(tmpdir):
-                    if not tmpdir.endswith(u"/"):
-                        NSLog(u"Fixing trailing slash on TMPDIR '%@'", tmpdir)
-                        os.environ[u"TMPDIR"] = tmpdir + u"/"
-                        NSLog(u"TMPDIR is now '%@'", os.getenv(u"TMPDIR"))
+                    if not tmpdir.endswith("/"):
+                        NSLog("Fixing trailing slash on TMPDIR '%@'", tmpdir)
+                        os.environ["TMPDIR"] = tmpdir + "/"
+                        NSLog("TMPDIR is now '%@'", os.getenv("TMPDIR"))
                 else:
-                    NSLog(u"TMPDIR is not a valid directory: '%@'", tmpdir)
+                    NSLog("TMPDIR is not a valid directory: '%@'", tmpdir)
             else:
-                NSLog(u"TMPDIR is not set")
+                NSLog("TMPDIR is not set")
         except Exception as e:
-            NSLog(u"TMPDIR trailing slash fix failed with exception: %@", unicode(e))
+            NSLog("TMPDIR trailing slash fix failed with exception: %@", str(e))
         
         # If no arguments are supplied, assume the GUI should be started.
         if len(decoded_argv) == 0:
@@ -216,14 +218,14 @@ def main():
             return status
     
     except SystemExit as e:
-        NSLog(u"main() exited with code %d", e.code)
+        NSLog("main() exited with code %d", e.code)
         return e.code
     except Exception as e:
         try:
             exceptionInfo = traceback.format_exc()
         except:
-            exceptionInfo = u"(no traceback available)"
-        NSLog(u"AutoDMG died with an uncaught exception %@: %@", unicode(e), exceptionInfo)
+            exceptionInfo = "(no traceback available)"
+        NSLog("AutoDMG died with an uncaught exception %@: %@", str(e), exceptionInfo)
         return os.EX_SOFTWARE
     finally:
         # Explicitly close stdout/stderr to avoid Python issue 11380.
