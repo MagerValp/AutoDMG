@@ -114,7 +114,7 @@ class IEDUpdateController(NSObject):
             self.updateTableLabel.setTextColor_(NSColor.disabledControlTextColor())
             self.updateTableImage.setImage_(self.updatesAllOKImage)
         else:
-            sizeStr = IEDUtil.formatBytes_(self.downloadTotalSize)
+            sizeStr = IEDUtil.formatByteSize_(self.downloadTotalSize)
             plurals = u"s" if len(self.downloads) >= 2 else u""
             downloadLabel = u"%d update%s to download (%s)" % (len(self.downloads), plurals, sizeStr)
             self.updateTableLabel.setStringValue_(downloadLabel)
@@ -286,7 +286,7 @@ class IEDUpdateController(NSObject):
         self.downloadProgressBar.setDoubleValue_(0.0)
         self.downloadProgressBar.setMaxValue_(package.size())
         self.downloadCounter += 1
-        self.downloadLabel.setStringValue_(u"%s (%s)" % (package.name(), IEDUtil.formatBytes_(package.size())))
+        self.downloadLabel.setStringValue_(u"%s (%s)" % (package.name(), IEDUtil.formatByteSize_(package.size())))
     
     def downloadStarted_(self, package):
         LogDebug(u"downloadStarted:")

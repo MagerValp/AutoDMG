@@ -578,7 +578,7 @@ class IEDWorkflow(NSObject):
                 self.stop()
                 return
             sizeRequirement += installedSize
-        sizeReqStr = IEDUtil.formatBytes_(sizeRequirement)
+        sizeReqStr = IEDUtil.formatByteSize_(sizeRequirement)
         LogInfo(u"Workflow requires a %@ disk image", sizeReqStr)
         
         if self.volumeSize() is None:

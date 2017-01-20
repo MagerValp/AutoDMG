@@ -153,7 +153,7 @@ class IEDCLIController(NSObject):
             missingUpdates = list()
             
             for update in profile:
-                LogNotice(u"Update: %@ (%@)", update[u"name"], IEDUtil.formatBytes_(update[u"size"]))
+                LogNotice(u"Update: %@ (%@)", update[u"name"], IEDUtil.formatByteSize_(update[u"size"]))
                 package = IEDPackage.alloc().init()
                 package.setName_(update[u"name"])
                 package.setPath_(self.cache.updatePath_(update[u"sha1"]))
@@ -181,7 +181,7 @@ class IEDCLIController(NSObject):
         # Generate the list of additional packages to install.
         template.resolvePackages()
         for package in template.packagesToInstall:
-            LogNotice(u"Package: %@ (%@)", package.name(), IEDUtil.formatBytes_(package.size()))
+            LogNotice(u"Package: %@ (%@)", package.name(), IEDUtil.formatByteSize_(package.size()))
         
         # Check the output path.
         if os.path.exists(template.outputPath):
@@ -270,7 +270,7 @@ class IEDCLIController(NSObject):
             LogNotice(u"    %@%@ (%@)",
                       u"[cached] " if self.cache.isCached_(update[u"sha1"]) else u"",
                       update[u"name"],
-                      IEDUtil.formatBytes_(update[u"size"]))
+                      IEDUtil.formatByteSize_(update[u"size"]))
         
         return os.EX_OK
     
@@ -407,7 +407,7 @@ class IEDCLIController(NSObject):
         self.busy = False
     
     def downloadStarting_(self, package):
-        LogNotice(u"Downloading %@ (%@)", package.name(), IEDUtil.formatBytes_(package.size()))
+        LogNotice(u"Downloading %@ (%@)", package.name(), IEDUtil.formatByteSize_(package.size()))
         self.lastProgressPercent = -100.0
         self.lastProgressTimestamp = NSDate.alloc().init()
     

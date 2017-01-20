@@ -131,13 +131,13 @@ class IEDUtil(NSObject):
             return int(out.split()[0]) * 1024
     
     @classmethod
-    def formatBytes_(cls, bytes):
-        bytes = float(bytes)
+    def formatByteSize_(cls, size):
+        size = float(size)
         unitIndex = 0
-        while len(str(int(bytes))) > 3:
-            bytes /= 1000.0
+        while len(str(int(size))) > 3:
+            size /= 1000.0
             unitIndex += 1
-        return u"%.1f %s" % (bytes, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+        return u"%.1f %s" % (size, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
     
     @classmethod
     def findMountPoint_(cls, path):
@@ -199,7 +199,7 @@ class IEDUtil(NSObject):
         if not plist:
             LogError(u"Error decoding plist: %@", error)
             return None
-        LogDebug(u"Installer says %@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"]) * 1024))
+        LogDebug(u"Installer says %@ requires %@", pkgPath, cls.formatByteSize_(int(plist[u"Size"]) * 1024))
         return int(plist[u"Size"]) * 1024
     
     @classmethod
@@ -212,7 +212,7 @@ class IEDUtil(NSObject):
             # If all else fails, estimate package size requirements.
             LogWarning(u"Estimating package size for '%@'", pkgPath)
             size = cls.getPackageSize_(pkgPath) * 2
-        LogDebug(u"%@ needs %@", pkgPath, cls.formatBytes_(size))
+        LogDebug(u"%@ needs %@", pkgPath, cls.formatByteSize_(size))
         return size
     
     @classmethod
