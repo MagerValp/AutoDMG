@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet
@@ -23,7 +25,7 @@ class IEDAddPkgController(NSObject):
     tableView = IBOutlet()
     removeButton = IBOutlet()
     
-    movedRowsType = u"se.gu.it.AdditionalPackages"
+    movedRowsType = "se.gu.it.AdditionalPackages"
     
     def init(self):
         self = super(IEDAddPkgController, self).init()
@@ -103,9 +105,9 @@ class IEDAddPkgController(NSObject):
     
     def tableView_objectValueForTableColumn_row_(self, tableView, column, row):
         # FIXME: Use bindings.
-        if column.identifier() == u"image":
+        if column.identifier() == "image":
             return self.packages[row].image()
-        elif column.identifier() == u"name":
+        elif column.identifier() == "name":
             return self.packages[row].name()
     
     def tableView_validateDrop_proposedRow_proposedDropOperation_(self, tableView, info, row, operation):
@@ -134,7 +136,7 @@ class IEDAddPkgController(NSObject):
         # If the source is the tableView, we're reordering packages within the
         # table and the pboard contains the source row indexes.
         if info.draggingSource() == tableView:
-            indexes = [int(i) for i in pboard.propertyListForType_(IEDAddPkgController.movedRowsType).split(u",")]
+            indexes = [int(i) for i in pboard.propertyListForType_(IEDAddPkgController.movedRowsType).split(",")]
             # If the rows are dropped on top of another line, and the target
             # row is below the first source row, move the target row one line
             # down.
@@ -180,5 +182,5 @@ class IEDAddPkgController(NSObject):
             indexes.append(index)
             index = rowIndexes.indexGreaterThanIndex_(index)
         pboard.declareTypes_owner_([IEDAddPkgController.movedRowsType], self)
-        pboard.setPropertyList_forType_(u",".join(unicode(i) for i in indexes), IEDAddPkgController.movedRowsType)
+        pboard.setPropertyList_forType_(",".join(str(i) for i in indexes), IEDAddPkgController.movedRowsType)
         return True

@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 from Foundation import *
 import os
 import socket
@@ -24,26 +26,26 @@ class IEDSocketListener(NSObject):
     plists, which are decoded and passed on to the delegate."""
     
     def listenOnSocket_withDelegate_(self, path, delegate):
-        for oldsocket in glob.glob(u"%s.*" % path):
-            LogDebug(u"Removing old socket %@", oldsocket)
+        for oldsocket in glob.glob("%s.*" % path):
+            LogDebug("Removing old socket %@", oldsocket)
             try:
                 os.unlink(oldsocket)
             except:
                 pass
-        self.socketPath = NSString.stringWithFormat_(u"%@.%@", path, os.urandom(8).encode("hex"))
-        LogDebug(u"Creating socket at %@", self.socketPath)
+        self.socketPath = NSString.stringWithFormat_("%@.%@", path, os.urandom(8).encode("hex"))
+        LogDebug("Creating socket at %@", self.socketPath)
         self.delegate = delegate
-        self.watchThread = NSThread.alloc().initWithTarget_selector_object_(self, u"listenInBackground:", None)
+        self.watchThread = NSThread.alloc().initWithTarget_selector_object_(self, "listenInBackground:", None)
         self.watchThread.start()
         return self.socketPath
     
     def stopListening(self):
-        LogDebug(u"stopListening")
+        LogDebug("stopListening")
         self.watchThread.cancel()
         try:
             os.unlink(self.socketPath)
         except BaseException as e:
-            LogWarning(u"Couldn't remove listener socket %@: %@", self.socketPath, unicode(e))
+            LogWarning("Couldn't remove listener socket %@: %@", self.socketPath, str(e))
     
     def listenInBackground_(self, ignored):
         try:
@@ -51,10 +53,10 @@ class IEDSocketListener(NSObject):
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, (IEDSL_MAX_MSG_SIZE + 16) * IEDSL_MAX_MSG_COUNT)
             sock.bind(self.socketPath)
         except socket.error as e:
-            LogError(u"Error creating datagram socket at %@: %@", self.socketPath, unicode(e))
+            LogError("Error creating datagram socket at %@: %@", self.socketPath, str(e))
             return
         
-        LogDebug(u"Listening to socket in background thread")
+        LogDebug("Listening to socket in background thread")
         while True:
             msg = sock.recv(IEDSL_MAX_MSG_SIZE, socket.MSG_WAITALL)
             if not msg:
@@ -65,7 +67,7 @@ class IEDSocketListener(NSObject):
                                                                                                           None,
                                                                                                           None)
             if not plist:
-                LogError(u"Error decoding plist: %@", error)
+                LogError("Error decoding plist: %@", error)
                 continue
-            if self.delegate.respondsToSelector_(u"socketReceivedMessage:"):
-                self.delegate.performSelectorOnMainThread_withObject_waitUntilDone_(u"socketReceivedMessage:", plist, NO)
+            if self.delegate.respondsToSelector_("socketReceivedMessage:"):
+                self.delegate.performSelectorOnMainThread_withObject_waitUntilDone_("socketReceivedMessage:", plist, NO)

@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 from Foundation import *
 
 import os.path
@@ -20,22 +22,22 @@ from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessag
 
 class IEDUtil(NSObject):
     
-    VERSIONPLIST_PATH = u"System/Library/CoreServices/SystemVersion.plist"
-    PACKAGE_EXTENSIONS = [u".pkg", u".mpkg", u".app", u".dmg"]
+    VERSIONPLIST_PATH = "System/Library/CoreServices/SystemVersion.plist"
+    PACKAGE_EXTENSIONS = [".pkg", ".mpkg", ".app", ".dmg"]
     
     @classmethod
     def readSystemVersion_(cls, rootPath):
         """Read SystemVersion.plist on the specified volume."""
         plist = NSDictionary.dictionaryWithContentsOfFile_(os.path.join(rootPath, cls.VERSIONPLIST_PATH))
-        name = plist[u"ProductName"]
-        version = plist[u"ProductUserVisibleVersion"]
-        build = plist[u"ProductBuildVersion"]
+        name = plist["ProductName"]
+        version = plist["ProductUserVisibleVersion"]
+        build = plist["ProductBuildVersion"]
         return (name, version, build)
     
     @classmethod
-    def splitVersion(cls, versionString, strip=u""):
+    def splitVersion(cls, versionString, strip=""):
         """Split version string into a tuple of ints."""
-        return tuple(int(x.strip(strip)) for x in versionString.split(u"."))
+        return tuple(int(x.strip(strip)) for x in versionString.split("."))
     
     @classmethod
     def hostVersionTuple(cls):
@@ -46,17 +48,17 @@ class IEDUtil(NSObject):
     def hostOSName(cls):
         osMajor = cls.hostVersionTuple()[1]
         if osMajor <= 7:
-            return u"Mac OS X"
+            return "Mac OS X"
         elif osMajor >= 12:
-            return u"macOS"
+            return "macOS"
         else:
-            return u"OS X"
+            return "OS X"
     
     @classmethod
     def getAppVersion(cls):
         bundle = NSBundle.mainBundle()
-        version = bundle.objectForInfoDictionaryKey_(u"CFBundleShortVersionString")
-        build = bundle.objectForInfoDictionaryKey_(u"CFBundleVersion")
+        version = bundle.objectForInfoDictionaryKey_("CFBundleShortVersionString")
+        build = bundle.objectForInfoDictionaryKey_("CFBundleVersion")
         return (version, build)
     
     @classmethod
@@ -82,15 +84,15 @@ class IEDUtil(NSObject):
     
     @classmethod
     def installESDPath_(cls, path):
-        u"""Resolve aliases and return path to InstallESD."""
+        """Resolve aliases and return path to InstallESD."""
         path = cls.resolvePath_(path)
         if not path:
             return None
         if os.path.exists(os.path.join(path,
-                          u"Contents/SharedSupport/InstallESD.dmg")):
+                          "Contents/SharedSupport/InstallESD.dmg")):
             return path
-        if (os.path.basename(path).lower().startswith(u"installesd") and
-            os.path.basename(path).lower().endswith(u".dmg")) and \
+        if (os.path.basename(path).lower().startswith("installesd") and
+            os.path.basename(path).lower().endswith(".dmg")) and \
            os.path.exists(path):
             return path
         else:
@@ -98,11 +100,11 @@ class IEDUtil(NSObject):
 
     @classmethod
     def systemImagePath_(cls, path):
-        u"""Resolve aliases and return path to a system image."""
+        """Resolve aliases and return path to a system image."""
         path = cls.resolvePath_(path)
         if not path:
             return None
-        if os.path.basename(path).lower().endswith(u".dmg") and \
+        if os.path.basename(path).lower().endswith(".dmg") and \
             os.path.exists(path):
             return path
         else:
@@ -111,33 +113,33 @@ class IEDUtil(NSObject):
     @classmethod
     def mightBeSource_(cls, path):
         if os.path.exists(os.path.join(path,
-                          u"Contents/SharedSupport/InstallESD.dmg")):
+                          "Contents/SharedSupport/InstallESD.dmg")):
             return True
-        elif path.lower().endswith(u".dmg"):
+        elif path.lower().endswith(".dmg"):
             return True
         else:
             return False
     
     @classmethod
     def getPackageSize_(cls, path):
-        p = subprocess.Popen([u"/usr/bin/du", u"-sk", path],
+        p = subprocess.Popen(["/usr/bin/du", "-sk", path],
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         out, err = p.communicate()
         if p.returncode != 0:
-            LogError(u"du failed with exit code %d", p.returncode)
+            LogError("du failed with exit code %d", p.returncode)
             return 0
         else:
             return int(out.split()[0]) * 1024
     
     @classmethod
-    def formatBytes_(cls, bytes):
-        bytes = float(bytes)
+    def formatByteSize_(cls, size):
+        size = float(size)
         unitIndex = 0
-        while len(str(int(bytes))) > 3:
-            bytes /= 1000.0
+        while len(str(int(size))) > 3:
+            size /= 1000.0
             unitIndex += 1
-        return u"%.1f %s" % (bytes, (u"bytes", u"kB", u"MB", u"GB", u"TB")[unitIndex])
+        return "%.1f %s" % (size, ("bytes", "kB", "MB", "GB", "TB")[unitIndex])
     
     @classmethod
     def findMountPoint_(cls, path):
@@ -150,9 +152,9 @@ class IEDUtil(NSObject):
     def getInstalledPkgSize_(cls, pkgPath):
         # For apps just return the size on disk.
         ext = os.path.splitext(pkgPath)[1].lower()
-        if ext == u".app":
+        if ext == ".app":
             return cls.getPackageSize_(pkgPath)
-        elif ext in (u".pkg", u".mpkg"):
+        elif ext in (".pkg", ".mpkg"):
             # For packages first try to get the size requirements with
             # installer.
             size = cls.getInstalledPkgSizeFromInstaller_(pkgPath)
@@ -163,7 +165,7 @@ class IEDUtil(NSObject):
             else:
                 return size
         else:
-            LogError(u"Don't know how to calculate installed size for '%@'",
+            LogError("Don't know how to calculate installed size for '%@'",
                      pkgPath)
             return None
     
@@ -174,11 +176,11 @@ class IEDUtil(NSObject):
         try:
             symlinkPath = os.path.join(tempdir, pkgFileName)
             os.symlink(pkgPath, symlinkPath)
-            p = subprocess.Popen([u"/usr/sbin/installer",
-                                  u"-pkginfo",
-                                  u"-verbose",
-                                  u"-plist",
-                                  u"-pkg",
+            p = subprocess.Popen(["/usr/sbin/installer",
+                                  "-pkginfo",
+                                  "-verbose",
+                                  "-plist",
+                                  "-pkg",
                                   symlinkPath],
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
@@ -187,9 +189,9 @@ class IEDUtil(NSObject):
             try:
                 shutil.rmtree(tempdir)
             except BaseException as e:
-                LogWarning(u"Unable to remove tempdir: %@", unicode(e))
+                LogWarning("Unable to remove tempdir: %@", str(e))
         if p.returncode != 0:
-            LogDebug(u"/usr/sbin/installer failed to determine size requirements")
+            LogDebug("/usr/sbin/installer failed to determine size requirements")
             return None
         outData = NSData.dataWithBytes_length_(out, len(out))
         plist, format, error = NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
@@ -197,10 +199,10 @@ class IEDUtil(NSObject):
                                                                                                       None,
                                                                                                       None)
         if not plist:
-            LogError(u"Error decoding plist: %@", error)
+            LogError("Error decoding plist: %@", error)
             return None
-        LogDebug(u"Installer says %@ requires %@", pkgPath, cls.formatBytes_(int(plist[u"Size"]) * 1024))
-        return int(plist[u"Size"]) * 1024
+        LogDebug("Installer says %@ requires %@", pkgPath, cls.formatByteSize_(int(plist["Size"]) * 1024))
+        return int(plist["Size"]) * 1024
     
     @classmethod
     def calculateInstalledPkgSize_(cls, pkgPath):
@@ -210,21 +212,21 @@ class IEDUtil(NSObject):
             size = cls.getFlatPkgInfo_(pkgPath)
         if size is None:
             # If all else fails, estimate package size requirements.
-            LogWarning(u"Estimating package size for '%@'", pkgPath)
+            LogWarning("Estimating package size for '%@'", pkgPath)
             size = cls.getPackageSize_(pkgPath) * 2
-        LogDebug(u"%@ needs %@", pkgPath, cls.formatBytes_(size))
+        LogDebug("%@ needs %@", pkgPath, cls.formatByteSize_(size))
         return size
     
     @classmethod
     def getBundlePkgInfo_(cls, pkgPath):
-        distPath = os.path.join(pkgPath, u"Contents", u"distribution.dist")
-        infoPlistPath = os.path.join(pkgPath, u"Contents", u"Info.plist")
+        distPath = os.path.join(pkgPath, "Contents", "distribution.dist")
+        infoPlistPath = os.path.join(pkgPath, "Contents", "Info.plist")
         if os.path.exists(distPath):
             return cls.getSizeFromDistribution_(distPath)
         elif os.path.exists(infoPlistPath):
             return cls.getSizeFromPkgInfoPlist_(infoPlistPath)
         else:
-            LogError(u"No distribution.dist or Info.plist found in '%@'", pkgPath)
+            LogError("No distribution.dist or Info.plist found in '%@'", pkgPath)
             return None
     
     @classmethod
@@ -233,39 +235,39 @@ class IEDUtil(NSObject):
         try:
             # Extract to tempdir, excluding all except Distribution and
             # PackageInfo.
-            subprocess.check_output([u"/usr/bin/xar",
-                                     u"-x",
-                                     u"--exclude", u"^[^DP]",
-                                     u"--exclude", u"Payload",
-                                     u"-C", tempdir,
-                                     u"-f", pkgPath])
-            distPath = os.path.join(tempdir, u"Distribution")
-            pkgInfoPath = os.path.join(tempdir, u"PackageInfo")
+            subprocess.check_output(["/usr/bin/xar",
+                                     "-x",
+                                     "--exclude", "^[^DP]",
+                                     "--exclude", "Payload",
+                                     "-C", tempdir,
+                                     "-f", pkgPath])
+            distPath = os.path.join(tempdir, "Distribution")
+            pkgInfoPath = os.path.join(tempdir, "PackageInfo")
             if os.path.exists(distPath):
                 return cls.getSizeFromDistribution_(distPath)
             elif os.path.exists(pkgInfoPath):
                 return cls.getSizeFromPackageInfo_(pkgInfoPath)
             else:
-                LogError(u"No Distribution or PackageInfo found in '%@'", pkgPath)
+                LogError("No Distribution or PackageInfo found in '%@'", pkgPath)
                 return None
         except subprocess.CalledProcessError as e:
-            LogError(u"xar failed with return code %d", e.returncode)
+            LogError("xar failed with return code %d", e.returncode)
             return None
         finally:
             try:
                 shutil.rmtree(tempdir)
             except Exception as e:
-                LogWarning(u"Unable to remove tempdir: %@", unicode(e))
+                LogWarning("Unable to remove tempdir: %@", str(e))
     
     @classmethod
     def getSizeFromDistribution_(cls, distPath):
         kbytes = 0
         try:
             tree = ElementTree.parse(distPath)
-            for pkgref in tree.iterfind(u"pkg-ref[@installKBytes]"):
-                kbytes += int(pkgref.get(u"installKBytes"))
+            for pkgref in tree.iterfind("pkg-ref[@installKBytes]"):
+                kbytes += int(pkgref.get("installKBytes"))
         except Exception as e:
-            LogError(u"Failed parsing '%@': %@", distPath, unicode(e))
+            LogError("Failed parsing '%@': %@", distPath, str(e))
             return None
         return kbytes * 1024
     
@@ -274,10 +276,10 @@ class IEDUtil(NSObject):
         kbytes = 0
         try:
             tree = ElementTree.parse(pkgInfoPath)
-            for payload in tree.iterfind(u"payload[@installKBytes]"):
-                kbytes += int(payload.get(u"installKBytes"))
+            for payload in tree.iterfind("payload[@installKBytes]"):
+                kbytes += int(payload.get("installKBytes"))
         except Exception as e:
-            LogError(u"Failed parsing '%@': %@", pkgInfoPath, unicode(e))
+            LogError("Failed parsing '%@': %@", pkgInfoPath, str(e))
             return None
         return kbytes * 1024
 
@@ -285,7 +287,7 @@ class IEDUtil(NSObject):
     def getSizeFromPkgInfoPlist_(cls, infoPlistPath):
         try:
             infoDict = NSDictionary.dictionaryWithContentsOfFile_(infoPlistPath)
-            return infoDict[u"IFPkgFlagInstalledSize"] * 1024
+            return infoDict["IFPkgFlagInstalledSize"] * 1024
         except Exception as e:
-            LogError(u"Failed parsing '%@': %@", infoPlistPath, unicode(e))
+            LogError("Failed parsing '%@': %@", infoPlistPath, str(e))
             return None

@@ -9,6 +9,7 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
 
 import os
 import sys
@@ -46,15 +47,15 @@ class ProgressWatcher(NSObject):
         task.setLaunchPath_(args[0])
         task.setArguments_(args[1:])
         
-        if mode == u"asr":
-            progressHandler = u"notifyAsrProgressData:"
+        if mode == "asr":
+            progressHandler = "notifyAsrProgressData:"
             self.asrProgressActive = False
             self.asrPhase = 0
-        elif mode == u"ied":
-            progressHandler = u"notifyIEDProgressData:"
-            self.outputBuffer = u""
+        elif mode == "ied":
+            progressHandler = "notifyIEDProgressData:"
+            self.outputBuffer = ""
             self.watchLogHandle = None
-            self.watchLogBuffer = u""
+            self.watchLogBuffer = ""
             self.lastSender = None
         
         nc.addObserver_selector_name_object_(self,
@@ -64,7 +65,7 @@ class ProgressWatcher(NSObject):
         stdoutHandle.readInBackgroundAndNotify()
         
         nc.addObserver_selector_name_object_(self,
-                                             u"notifyProgressTermination:",
+                                             "notifyProgressTermination:",
                                              NSTaskDidTerminateNotification,
                                              task)
         task.launch()
@@ -76,39 +77,39 @@ class ProgressWatcher(NSObject):
         task = notification.object()
         if task.terminationStatus() == 0:
             pass
-        self.postNotification_({u"action": u"task_done", u"termination_status": task.terminationStatus()})
+        self.postNotification_({"action": "task_done", "termination_status": task.terminationStatus()})
         self.isTaskRunning = False
     
     def notifyAsrProgressData_(self, notification):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
         if data.length():
             progressStr = NSString.alloc().initWithData_encoding_(data, NSUTF8StringEncoding)
-            if (not self.asrProgressActive) and (u"\x0a" in progressStr):
-                msg, _, rest = progressStr.partition(u"\x0a")
-                progressStr = u"\x0a" + rest
-                self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": u"asr output: " + msg.rstrip()})
+            if (not self.asrProgressActive) and ("\x0a" in progressStr):
+                msg, _, rest = progressStr.partition("\x0a")
+                progressStr = "\x0a" + rest
+                self.postNotification_({"action": "log_message", "log_level": 6, "message": "asr output: " + msg.rstrip()})
             while progressStr:
-                if progressStr.startswith(u"\x0a"):
+                if progressStr.startswith("\x0a"):
                     progressStr = progressStr[1:]
                     self.asrProgressActive = False
-                elif progressStr.startswith(u"Block checksum: "):
+                elif progressStr.startswith("Block checksum: "):
                     progressStr = progressStr[16:]
                     self.asrPercent = 0
                     self.asrProgressActive = True
                     self.asrPhase += 1
-                    self.postNotification_({u"action": u"select_phase", u"phase": u"asr%d" % self.asrPhase})
-                elif progressStr.startswith(u".") and self.asrProgressActive:
+                    self.postNotification_({"action": "select_phase", "phase": "asr%d" % self.asrPhase})
+                elif progressStr.startswith(".") and self.asrProgressActive:
                     progressStr = progressStr[1:]
                     self.asrPercent += 2
-                    self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
+                    self.postNotification_({"action": "update_progress", "percent": float(self.asrPercent)})
                 else:
                     m = self.re_number.match(progressStr)
                     if m and self.asrProgressActive:
                         progressStr = progressStr[len(m.group(0)):]
                         self.asrPercent = int(m.group(0))
-                        self.postNotification_({u"action": u"update_progress", u"percent": float(self.asrPercent)})
+                        self.postNotification_({"action": "update_progress", "percent": float(self.asrPercent)})
                     else:
-                        self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": u"asr output: " + progressStr.rstrip()})
+                        self.postNotification_({"action": "log_message", "log_level": 6, "message": "asr output: " + progressStr.rstrip()})
                         break
             
             notification.object().readInBackgroundAndNotify()
@@ -120,7 +121,7 @@ class ProgressWatcher(NSObject):
             if string:
                 self.appendOutput_(string)
             else:
-                NSLog(u"Couldn't decode %@ as UTF-8", data)
+                NSLog("Couldn't decode %@ as UTF-8", data)
             notification.object().readInBackgroundAndNotify()
     
     def appendOutput_(self, string):
@@ -132,66 +133,66 @@ class ProgressWatcher(NSObject):
     def parseProgress_(self, string):
         # Wrap progress parsing so app doesn't crash from bad input.
         try:
-            if string.startswith(u"installer:"):
+            if string.startswith("installer:"):
                 self.parseInstallerProgress_(string[10:])
-            elif string.startswith(u"IED:"):
+            elif string.startswith("IED:"):
                 self.parseIEDProgress_(string[4:])
-            elif string.startswith(u"MESSAGE:") or string.startswith(u"PERCENT:"):
+            elif string.startswith("MESSAGE:") or string.startswith("PERCENT:"):
                 self.parseHdiutilProgress_(string)
             else:
                 m = self.re_installerlog.match(string)
                 if m:
-                    level = m.group(u"level") if m.group(u"level") else u"stderr"
-                    message = u"installer.%s: %s" % (level, m.group(u"message"))
-                    self.postNotification_({u"action": u"log_message",
-                                            u"log_level": 6,
-                                            u"message": message})
+                    level = m.group("level") if m.group("level") else "stderr"
+                    message = "installer.%s: %s" % (level, m.group("message"))
+                    self.postNotification_({"action": "log_message",
+                                            "log_level": 6,
+                                            "message": message})
                 else:
-                    self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": string})
+                    self.postNotification_({"action": "log_message", "log_level": 6, "message": string})
         except BaseException as e:
-            NSLog(u"Progress parsing failed: %s" % traceback.format_exc())
+            NSLog("Progress parsing failed: %@", traceback.format_exc())
     
     def parseInstallerProgress_(self, string):
-        if string.startswith(u"%"):
+        if string.startswith("%"):
             progress = float(string[1:])
-            self.postNotification_({u"action": u"update_progress", u"percent": progress})
-        elif string.startswith(u"PHASE:"):
+            self.postNotification_({"action": "update_progress", "percent": progress})
+        elif string.startswith("PHASE:"):
             message = string[6:]
-            self.postNotification_({u"action": u"update_message", u"message": message})
-        elif string.startswith(u"STATUS:"):
-            self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": u"installer: " + string[7:]})
+            self.postNotification_({"action": "update_message", "message": message})
+        elif string.startswith("STATUS:"):
+            self.postNotification_({"action": "log_message", "log_level": 6, "message": "installer: " + string[7:]})
         else:
-            self.postNotification_({u"action": u"log_message", u"log_level": 6, u"message": u"installer: " + string})
+            self.postNotification_({"action": "log_message", "log_level": 6, "message": "installer: " + string})
     
     def parseIEDProgress_(self, string):
-        if string.startswith(u"MSG:"):
+        if string.startswith("MSG:"):
             message = string[4:]
-            self.postNotification_({u"action": u"update_message", u"message": message})
-        elif string.startswith(u"PHASE:"):
+            self.postNotification_({"action": "update_message", "message": message})
+        elif string.startswith("PHASE:"):
             phase = string[6:]
-            self.postNotification_({u"action": u"select_phase", u"phase": phase})
-        elif string.startswith(u"FAILURE:"):
+            self.postNotification_({"action": "select_phase", "phase": phase})
+        elif string.startswith("FAILURE:"):
             message = string[8:]
-            self.postNotification_({u"action": u"notify_failure", u"message": message})
-        elif string.startswith(u"SUCCESS:"):
+            self.postNotification_({"action": "notify_failure", "message": message})
+        elif string.startswith("SUCCESS:"):
             message = string[8:]
-            self.postNotification_({u"action": u"notify_success", u"message": message})
-        elif string.startswith(u"WATCHLOG:"):
+            self.postNotification_({"action": "notify_success", "message": message})
+        elif string.startswith("WATCHLOG:"):
             self.watchLog_(string[9:])
         else:
-            NSLog(u"(Unknown IED progress %@)", string)
+            NSLog("(Unknown IED progress %@)", string)
     
     def parseHdiutilProgress_(self, string):
-        if string.startswith(u"MESSAGE:"):
+        if string.startswith("MESSAGE:"):
             message = string[8:]
-            self.postNotification_({u"action": u"update_message", u"message": message})
-        elif string.startswith(u"PERCENT:"):
+            self.postNotification_({"action": "update_message", "message": message})
+        elif string.startswith("PERCENT:"):
             progress = float(string[8:])
-            self.postNotification_({u"action": u"update_progress", u"percent": progress})
+            self.postNotification_({"action": "update_progress", "percent": progress})
     
     def watchLog_(self, cmd):
-        if cmd == u"START":
-            self.watchLogHandle = NSFileHandle.fileHandleForReadingAtPath_(u"/var/log/install.log")
+        if cmd == "START":
+            self.watchLogHandle = NSFileHandle.fileHandleForReadingAtPath_("/var/log/install.log")
             self.watchLogHandle.seekToEndOfFile()
             nc = NSNotificationCenter.defaultCenter()
             nc.addObserver_selector_name_object_(self,
@@ -199,7 +200,7 @@ class ProgressWatcher(NSObject):
                                                  NSFileHandleReadCompletionNotification,
                                                  self.watchLogHandle)
             self.watchLogHandle.readInBackgroundAndNotify()
-        elif cmd == u"STOP":
+        elif cmd == "STOP":
             if self.watchLogHandle:
                 try:
                     self.watchLogHandle.close()
@@ -207,7 +208,7 @@ class ProgressWatcher(NSObject):
                     pass
             self.watchLogHandle = None
         else:
-            NSLog(u"(Unknown watchLog command: %@)", repr(string))
+            NSLog("(Unknown watchLog command: %@)", repr(string))
     
     def notifyWatchLogData_(self, notification):
         data = notification.userInfo()[NSFileHandleNotificationDataItem]
@@ -216,7 +217,7 @@ class ProgressWatcher(NSObject):
             if string:
                 self.appendWatchLog_(string)
             else:
-                NSLog(u"Couldn't decode %@ as UTF-8", data)
+                NSLog("Couldn't decode %@ as UTF-8", data)
             if self.watchLogHandle:
                 self.watchLogHandle.readInBackgroundAndNotify()
         else:
@@ -240,20 +241,20 @@ class ProgressWatcher(NSObject):
     
     def parseWatchLog_(self, string):
         # Multi-line messages start with a tab.
-        if string.startswith(u"\t") and self.lastSender:
-            message = u"%s: %s" % (self.lastSender, string[1:])
-            self.postNotification_({u"action": u"log_message",
-                                    u"log_level": 6,
-                                    u"message": message})
+        if string.startswith("\t") and self.lastSender:
+            message = "%s: %s" % (self.lastSender, string[1:])
+            self.postNotification_({"action": "log_message",
+                                    "log_level": 6,
+                                    "message": message})
         else:
             m = self.re_watchlog.match(string)
             if m:
                 # Keep track of last sender for multi-line messages.
-                self.lastSender = m.group(u"sender")
-                message = u"%s: %s" % (m.group(u"sender"), m.group(u"message"))
-                self.postNotification_({u"action": u"log_message",
-                                        u"log_level": 6,
-                                        u"message": message})
+                self.lastSender = m.group("sender")
+                message = "%s: %s" % (m.group("sender"), m.group("message"))
+                self.postNotification_({"action": "log_message",
+                                        "log_level": 6,
+                                        "message": message})
             else:
                 self.lastSender = None
     
@@ -264,16 +265,16 @@ class ProgressWatcher(NSObject):
                                                                                             None)
         if not msg:
             if error:
-                NSLog(u"plist encoding failed: %@", error)
+                NSLog("plist encoding failed: %@", error)
             return
         if self.sockPath:
             try:
                 self.sock.sendto(msg, self.sockPath)
-            except socket.error, e:
-                NSLog(u"Socket at %@ failed: %@", self.sockPath, unicode(e))
-                NSLog(u"Failed socket message: %@", msg)
+            except socket.error as e:
+                NSLog("Socket at %@ failed: %@", self.sockPath, str(e))
+                NSLog("Failed socket message: %@", msg)
         else:
-            NSLog(u"postNotification:%@", msgDict)
+            NSLog("postNotification:%@", msgDict)
     
 
 def run(args, sockPath, mode):
@@ -287,61 +288,61 @@ def run(args, sockPath, mode):
 def installesdtodmg(args):
     if (os.geteuid() == 0) and (os.getuid() != 0):
         os.setuid(0)
-    NSLog(u"progresswatcher uid: %d, euid: %d", os.getuid(), os.geteuid())
+    NSLog("progresswatcher uid: %d, euid: %d", os.getuid(), os.geteuid())
     if args.cd:
         os.chdir(args.cd)
     if args.baseimage:
         baseimage = [args.baseimage]
     else:
         baseimage = []
-    pwargs = [u"./installesdtodmg.sh",
+    pwargs = ["./installesdtodmg.sh",
               args.user,
               args.group,
               args.output,
               args.volume_name,
               args.size,
               args.template] + baseimage + args.packages
-    run(pwargs, args.socket, u"ied")
+    run(pwargs, args.socket, "ied")
 
 
 def imagescan(args):
     if args.cd:
         os.chdir(args.cd)
-    pwargs = [u"/usr/sbin/asr", u"imagescan", u"--source", args.image]
-    run(pwargs, args.socket, u"asr")
+    pwargs = ["/usr/sbin/asr", "imagescan", "--source", args.image]
+    run(pwargs, args.socket, "asr")
 
 
 def main(argv):
-    NSLog(u"progresswatcher launching")
-    NSLog(u"progresswatcher arguments: %@", argv)
-    NSLog(u"progresswatcher uid: %d, euid: %d", os.getuid(), os.geteuid())
-    NSLog(u"progresswatcher language: %@", NSLocale.currentLocale().objectForKey_(NSLocaleLanguageCode))
+    NSLog("progresswatcher launching")
+    NSLog("progresswatcher arguments: %@", argv)
+    NSLog("progresswatcher uid: %d, euid: %d", os.getuid(), os.geteuid())
+    NSLog("progresswatcher language: %@", NSLocale.currentLocale().objectForKey_(NSLocaleLanguageCode))
     
     p = argparse.ArgumentParser()
-    p.add_argument(u"-d", u"--cd", help=u"Set current directory")
-    p.add_argument(u"-s", u"--socket", help=u"Communications socket")
-    sp = p.add_subparsers(title=u"subcommands", dest=u"subcommand")
+    p.add_argument("-d", "--cd", help="Set current directory")
+    p.add_argument("-s", "--socket", help="Communications socket")
+    sp = p.add_subparsers(title="subcommands", dest="subcommand")
     
-    iedparser = sp.add_parser(u"installesdtodmg", help=u"Perform installation to DMG")
-    iedparser.add_argument(u"-u", u"--user", help=u"Change owner of DMG", required=True)
-    iedparser.add_argument(u"-g", u"--group", help=u"Change group of DMG", required=True)
-    iedparser.add_argument(u"-o", u"--output", help=u"Set output path", required=True)
-    iedparser.add_argument(u"-t", u"--template", help=u"Path to adtmpl", required=True)
-    iedparser.add_argument(u"-n", u"--volume-name", default=u"Macintosh HD", help=u"Set installed system's volume name.")
-    iedparser.add_argument(u"-s", u"--size", default=u"32", help=u"Disk image size in GB.")
-    iedparser.add_argument(u"-b", u"--baseimage", default=None, help=u"Base system image for shadow mount.")
-    iedparser.add_argument(u"packages", help=u"Packages to install", nargs=u"+")
+    iedparser = sp.add_parser("installesdtodmg", help="Perform installation to DMG")
+    iedparser.add_argument("-u", "--user", help="Change owner of DMG", required=True)
+    iedparser.add_argument("-g", "--group", help="Change group of DMG", required=True)
+    iedparser.add_argument("-o", "--output", help="Set output path", required=True)
+    iedparser.add_argument("-t", "--template", help="Path to adtmpl", required=True)
+    iedparser.add_argument("-n", "--volume-name", default="Macintosh HD", help="Set installed system's volume name.")
+    iedparser.add_argument("-s", "--size", default="32", help="Disk image size in GB.")
+    iedparser.add_argument("-b", "--baseimage", default=None, help="Base system image for shadow mount.")
+    iedparser.add_argument("packages", help="Packages to install", nargs="+")
     iedparser.set_defaults(func=installesdtodmg)
     
-    asrparser = sp.add_parser(u"imagescan", help=u"Perform asr imagescan of dmg")
-    asrparser.add_argument(u"image", help=u"DMG to scan")
+    asrparser = sp.add_parser("imagescan", help="Perform asr imagescan of dmg")
+    asrparser.add_argument("image", help="DMG to scan")
     asrparser.set_defaults(func=imagescan)
     
     try:
-        args = p.parse_args([x.decode(u"utf-8") for x in argv[1:]])
+        args = p.parse_args([x.decode("utf-8") for x in argv[1:]])
         args.func(args)
     except:
-        NSLog(u"progresswatcher died with an uncaught exception: %@", traceback.format_exc())
+        NSLog("progresswatcher died with an uncaught exception: %@", traceback.format_exc())
         return os.EX_SOFTWARE
     
     return 0

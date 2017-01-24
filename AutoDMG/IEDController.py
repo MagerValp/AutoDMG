@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 from Foundation import *
 from AppKit import *
 from objc import IBAction, IBOutlet
@@ -45,11 +47,11 @@ class IEDController(NSObject):
     finalizeAsrImagescan = IBOutlet()
     
     def awakeFromNib(self):
-        LogDebug(u"awakeFromNib")
+        LogDebug("awakeFromNib")
         
         # Initialize UI.
         self.buildProgressBar.setMaxValue_(100.0)
-        self.buildProgressMessage.setStringValue_(u"")
+        self.buildProgressMessage.setStringValue_("")
         self.setSourcePlaceholder()
         
         # We're a delegate for the drag and drop target, protocol:
@@ -92,11 +94,11 @@ class IEDController(NSObject):
     # Helper methods.
     
     def setSourcePlaceholder(self):
-        self.sourceLabel.setStringValue_(u"Drop %s Installer Here" % (IEDUtil.hostOSName()))
+        self.sourceLabel.setStringValue_("Drop %s Installer Here" % (IEDUtil.hostOSName()))
         osMajor = IEDUtil.hostVersionTuple()[1]
-        image = NSImage.imageNamed_(u"Installer Placeholder 10.%d" % osMajor)
+        image = NSImage.imageNamed_("Installer Placeholder 10.%d" % osMajor)
         if not image:
-            image = NSImage.imageNamed_(u"Installer Placeholder")
+            image = NSImage.imageNamed_("Installer Placeholder")
         self.sourceImage.animator().setImage_(image)
         self.sourceImage.animator().setAlphaValue_(1.0)
     
@@ -104,7 +106,7 @@ class IEDController(NSObject):
         return not self.busy()
     
     def displayAlert_text_(self, message, text):
-        LogDebug(u"Displaying alert: %@ (%@)", message, text)
+        LogDebug("Displaying alert: %@ (%@)", message, text)
         alert = NSAlert.alloc().init()
         alert.setMessageText_(message)
         alert.setInformativeText_(text)
@@ -145,16 +147,16 @@ class IEDController(NSObject):
     # Workflow delegate methods.
     
     def detachFailed_details_(self, dmgPath, details):
-        self.displayAlert_text_(u"Failed to detach %s" % dmgPath, details)
+        self.displayAlert_text_("Failed to detach %s" % dmgPath, details)
     
     def ejectingSource(self):
         self.sourceImage.animator().setAlphaValue_(0.5)
-        self.sourceLabel.setStringValue_(u"Ejecting")
+        self.sourceLabel.setStringValue_("Ejecting")
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
     def examiningSource_(self, path):
         self.foundSourceForIcon_(path)
-        self.sourceLabel.setStringValue_(u"Examining")
+        self.sourceLabel.setStringValue_("Examining")
         self.sourceLabel.setTextColor_(NSColor.disabledControlTextColor())
     
     def foundSourceForIcon_(self, path):
@@ -166,15 +168,15 @@ class IEDController(NSObject):
         self.sourceImage.animator().setImage_(image)
     
     def sourceSucceeded_(self, info):
-        self.installerName = info[u"name"]
-        self.installerVersion = info[u"version"]
-        self.installerBuild = info[u"build"]
-        self.sourceLabel.setStringValue_(u"%s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
+        self.installerName = info["name"]
+        self.installerVersion = info["version"]
+        self.installerBuild = info["build"]
+        self.sourceLabel.setStringValue_("%s %s %s" % (info["name"], info["version"], info["build"]))
         self.sourceLabel.setTextColor_(NSColor.controlTextColor())
-        self.updateController.loadProfileForVersion_build_(info[u"version"], info[u"build"])
-        template = info[u"template"]
+        self.updateController.loadProfileForVersion_build_(info["version"], info["build"])
+        template = info["template"]
         if template:
-            LogInfo(u"Template found in image: %@", repr(template))
+            LogInfo("Template found in image: %@", repr(template))
             # Don't default to applying updates to an image that was built
             # with updates applied, and vice versa.
             if template.applyUpdates:
@@ -182,8 +184,8 @@ class IEDController(NSObject):
             else:
                 self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
         else:
-            if info[u"sourceType"] == IEDWorkflow.SYSTEM_IMAGE:
-                LogInfo(u"No template found in image")
+            if info["sourceType"] == IEDWorkflow.SYSTEM_IMAGE:
+                LogInfo("No template found in image")
                 # If the image doesn't have a template inside, assume that updates
                 # were applied.
                 self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
@@ -202,7 +204,7 @@ class IEDController(NSObject):
     def locateInstaller_(self, menuItem):
         if menuItem.isAlternate():
             try:
-                path = glob.glob(u"/Applications/Install*OS*.app")[-1]
+                path = glob.glob("/Applications/Install*OS*.app")[-1]
                 if IEDUtil.mightBeSource_(path):
                     self.acceptSource_(path)
                 else:
@@ -210,18 +212,18 @@ class IEDController(NSObject):
             except IndexError:
                 NSBeep()
         else:
-            IEDPanelPathManager.loadPathForName_(u"Installer")
+            IEDPanelPathManager.loadPathForName_("Installer")
             
             panel = NSOpenPanel.openPanel()
             panel.setDelegate_(self)
             panel.setExtensionHidden_(False)
-            panel.setAllowedFileTypes_([u"app", u"dmg"])
+            panel.setAllowedFileTypes_(["app", "dmg"])
             
             result = panel.runModal()
             if result != NSFileHandlingPanelOKButton:
                 return
             
-            IEDPanelPathManager.savePathForName_(u"Installer")
+            IEDPanelPathManager.savePathForName_("Installer")
             
             self.acceptSource_(panel.URL().path())
     
@@ -254,26 +256,26 @@ class IEDController(NSObject):
     @LogException
     @IBAction
     def buildButtonClicked_(self, sender):
-        IEDPanelPathManager.loadPathForName_(u"Image")
+        IEDPanelPathManager.loadPathForName_("Image")
         
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_([u"dmg"])
-        imageName = u"osx"
+        panel.setAllowedFileTypes_(["dmg"])
+        imageName = "osx"
         formatter = NSDateFormatter.alloc().init()
-        formatter.setDateFormat_(u"yyMMdd")
+        formatter.setDateFormat_("yyMMdd")
         if self.updateController.packagesToInstall():
             dateStr = formatter.stringFromDate_(self.updateController.profileController.publicationDate)
-            imageName = u"osx_updated_%s" % dateStr
+            imageName = "osx_updated_%s" % dateStr
         if self.addPkgController.packagesToInstall():
             dateStr = formatter.stringFromDate_(NSDate.date())
-            imageName = u"osx_custom_%s" % dateStr
-        panel.setNameFieldStringValue_(u"%s-%s-%s.hfs" % (imageName, self.installerVersion, self.installerBuild))
+            imageName = "osx_custom_%s" % dateStr
+        panel.setNameFieldStringValue_("%s-%s-%s.hfs" % (imageName, self.installerVersion, self.installerBuild))
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
         
-        IEDPanelPathManager.savePathForName_(u"Image")
+        IEDPanelPathManager.savePathForName_("Image")
         
         exists, error = panel.URL().checkResourceIsReachableAndReturnError_(None)
         if exists:
@@ -290,7 +292,7 @@ class IEDController(NSObject):
         else:
             template.setApplyUpdates_(False)
         if not template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()]):
-            self.displayAlert_text_(u"Additional packages failed verification",
+            self.displayAlert_text_("Additional packages failed verification",
                                     template.additionalPackageError)
             return
         template.setOutputPath_(panel.URL().path())
@@ -316,11 +318,11 @@ class IEDController(NSObject):
     
     def buildStartingWithOutput_(self, outputPath):
         self.buildProgressWindow.setTitle_(os.path.basename(outputPath))
-        self.buildProgressPhase.setStringValue_(u"Starting")
+        self.buildProgressPhase.setStringValue_("Starting")
         self.buildProgressBar.setIndeterminate_(True)
         self.buildProgressBar.startAnimation_(self)
         self.buildProgressBar.setDoubleValue_(0.0)
-        self.buildProgressMessage.setStringValue_(u"")
+        self.buildProgressMessage.setStringValue_("")
         self.buildProgressWindow.makeKeyAndOrderFront_(self)
         self.setBusy_(True)
     
@@ -339,10 +341,10 @@ class IEDController(NSObject):
     
     def buildSucceeded(self):
         alert = NSAlert.alloc().init()
-        alert.setMessageText_(u"Build successful")
-        alert.setInformativeText_(u"Built %s" % os.path.basename(self.workflow.outputPath()))
-        alert.addButtonWithTitle_(u"OK")
-        alert.addButtonWithTitle_(u"Reveal")
+        alert.setMessageText_("Build successful")
+        alert.setInformativeText_("Built %s" % os.path.basename(self.workflow.outputPath()))
+        alert.addButtonWithTitle_("OK")
+        alert.addButtonWithTitle_("Reveal")
         button = alert.runModal()
         if button == NSAlertSecondButtonReturn:
             fileURL = NSURL.fileURLWithPath_(self.workflow.outputPath())
@@ -352,8 +354,8 @@ class IEDController(NSObject):
         alert = NSAlert.alloc().init()
         alert.setMessageText_(message)
         alert.setInformativeText_(details)
-        alert.addButtonWithTitle_(u"OK")
-        alert.addButtonWithTitle_(u"View Log")
+        alert.addButtonWithTitle_("OK")
+        alert.addButtonWithTitle_("View Log")
         button = alert.runModal()
         if button == NSAlertSecondButtonReturn:
             self.logController.displayLogWindow_(self)
@@ -373,20 +375,20 @@ class IEDController(NSObject):
             self.saveTemplateAs()
     
     def saveTemplateAs(self):
-        IEDPanelPathManager.loadPathForName_(u"Template")
+        IEDPanelPathManager.loadPathForName_("Template")
         
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_([u"adtmpl"])
+        panel.setAllowedFileTypes_(["adtmpl"])
         formatter = NSDateFormatter.alloc().init()
-        formatter.setDateFormat_(u"yyMMdd")
+        formatter.setDateFormat_("yyMMdd")
         dateStr = formatter.stringFromDate_(NSDate.date())
-        panel.setNameFieldStringValue_(u"AutoDMG-%s.adtmpl" % (dateStr))
+        panel.setNameFieldStringValue_("AutoDMG-%s.adtmpl" % (dateStr))
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
         
-        IEDPanelPathManager.savePathForName_(u"Template")
+        IEDPanelPathManager.savePathForName_("Template")
         
         exists, error = panel.URL().checkResourceIsReachableAndReturnError_(None)
         if exists:
@@ -398,7 +400,7 @@ class IEDController(NSObject):
         self.saveTemplateToURL_(panel.URL())
     
     def saveTemplateToURL_(self, url):
-        LogDebug(u"saveTemplateToURL:%@", url)
+        LogDebug("saveTemplateToURL:%@", url)
         self.templateURL = url
         NSDocumentController.sharedDocumentController().noteNewRecentDocumentURL_(url)
         
@@ -420,61 +422,61 @@ class IEDController(NSObject):
         
         error = template.saveTemplateAndReturnError_(url.path())
         if error:
-            self.displayAlert_text_(u"Couldn't save template", error)
+            self.displayAlert_text_("Couldn't save template", error)
     
     def openTemplate(self):
-        IEDPanelPathManager.loadPathForName_(u"Template")
+        IEDPanelPathManager.loadPathForName_("Template")
         
         panel = NSOpenPanel.openPanel()
         panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_([u"adtmpl"])
+        panel.setAllowedFileTypes_(["adtmpl"])
         
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
         
-        IEDPanelPathManager.savePathForName_(u"Template")
+        IEDPanelPathManager.savePathForName_("Template")
         
         return self.openTemplateAtURL_(panel.URL())
     
     def openTemplateAtURL_(self, url):
-        LogDebug(u"openTemplateAtURL:%@", url)
+        LogDebug("openTemplateAtURL:%@", url)
         self.templateURL = None
         template = IEDTemplate.alloc().init()
         error = template.loadTemplateAndReturnError_(url.path())
         if error:
-            self.displayAlert_text_(u"Couldn't open template", error)
+            self.displayAlert_text_("Couldn't open template", error)
             return False
         self.templateURL = url
         NSDocumentController.sharedDocumentController().noteNewRecentDocumentURL_(url)
         # AdditionalPackages.
-        LogDebug(u"Setting additional packages to %@", template.additionalPackages)
+        LogDebug("Setting additional packages to %@", template.additionalPackages)
         self.addPkgController.replacePackagesWithPaths_(template.additionalPackages)
         # ApplyUpdates.
         if template.applyUpdates:
-            LogDebug(u"Enable updates")
+            LogDebug("Enable updates")
             self.updateController.applyUpdatesCheckbox.setState_(NSOnState)
         else:
-            LogDebug(u"Disable updates")
+            LogDebug("Disable updates")
             self.updateController.applyUpdatesCheckbox.setState_(NSOffState)
         # VolumeName.
-        self.volumeName.setStringValue_(u"")
+        self.volumeName.setStringValue_("")
         if template.volumeName:
-            LogDebug(u"Setting volume name to %@", template.volumeName)
+            LogDebug("Setting volume name to %@", template.volumeName)
             self.volumeName.setStringValue_(template.volumeName)
         # VolumeSize.
-        self.volumeSize.setStringValue_(u"")
+        self.volumeSize.setStringValue_("")
         if template.volumeSize:
-            LogDebug(u"Setting volume size to %@", template.volumeSize)
+            LogDebug("Setting volume size to %@", template.volumeSize)
             self.volumeSize.setIntValue_(template.volumeSize)
         # Finalize task: ASR imagescan.
         self.finalizeAsrImagescan.setState_(NSOnState)
         if template.finalizeAsrImagescan == False:
-            LogDebug(u"Setting 'Finalize: Scan for restore' to %@", template.finalizeAsrImagescan)
+            LogDebug("Setting 'Finalize: Scan for restore' to %@", template.finalizeAsrImagescan)
             self.finalizeAsrImagescan.setState_(NSOffState)
         # SourcePath.
         if template.sourcePath:
-            LogDebug(u"Setting source to %@", template.sourcePath)
+            LogDebug("Setting source to %@", template.sourcePath)
             self.setBusy_(True)
             self.workflow.setSource_(template.sourcePath)
         return True

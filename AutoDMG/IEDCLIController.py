@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 from Foundation import *
 from AppKit import *
 from Collaboration import CBIdentity, CBIdentityAuthority
@@ -44,14 +46,14 @@ class IEDCLIController(NSObject):
         self.busy = False
         
         self.progressMax = 1.0
-        self.lastMessage = u""
+        self.lastMessage = ""
         
         self.hasFailed = False
         
         return self
     
     def listVerbs(self):
-        return list(item[3:].rstrip(u"_").lower() for item in dir(self) if item.startswith(u"cmd"))
+        return list(item[3:].rstrip("_").lower() for item in dir(self) if item.startswith("cmd"))
     
     def cleanup(self):
         self.workflow.cleanup()
@@ -63,11 +65,11 @@ class IEDCLIController(NSObject):
             if not self.busy:
                 break
             if not runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, nextfire):
-                self.failWithMessage_(u"runMode:beforeDate: failed")
+                self.failWithMessage_("runMode:beforeDate: failed")
                 break
     
     def failWithMessage_(self, message):
-        LogError(u"%@", message)
+        LogError("%@", message)
         self.hasFailed = True
         self.busy = False
     
@@ -87,14 +89,14 @@ class IEDCLIController(NSObject):
             templatePath = self.checkTemplate_(args.source)
         
         if not sourcePath and not templatePath:
-            self.failWithMessage_(u"'%s' is not a valid OS X installer, OS X system image or AutoDMG template" % args.source)
+            self.failWithMessage_("'%s' is not a valid OS X installer, OS X system image or AutoDMG template" % args.source)
             return os.EX_DATAERR
         
         if templatePath:
             template = IEDTemplate.alloc().init()
             error = template.loadTemplateAndReturnError_(templatePath)
             if error:
-                self.failWithMessage_(u"Couldn't load template from '%s': %s" % (templatePath, error))
+                self.failWithMessage_("Couldn't load template from '%s': %s" % (templatePath, error))
                 return os.EX_DATAERR
         else:
             template = IEDTemplate.alloc().initWithSourcePath_(sourcePath)
@@ -113,17 +115,17 @@ class IEDCLIController(NSObject):
             template.setApplyUpdates_(True)
         if args.packages:
             if not template.setAdditionalPackages_(args.packages):
-                self.failWithMessage_(u"Additional packages failed verification: %s" % template.additionalPackageError)
+                self.failWithMessage_("Additional packages failed verification: %s" % template.additionalPackageError)
                 return os.EX_DATAERR
         
         if not template.sourcePath:
-            self.failWithMessage_(u"No source path")
+            self.failWithMessage_("No source path")
             return os.EX_USAGE
         if not template.outputPath:
-            self.failWithMessage_(u"No output path")
+            self.failWithMessage_("No output path")
             return os.EX_USAGE
         
-        LogNotice(u"Installer: %@", template.sourcePath)
+        LogNotice("Installer: %@", template.sourcePath)
         
         # Set the source.
         self.busy = True
@@ -133,13 +135,13 @@ class IEDCLIController(NSObject):
             return os.EX_DATAERR
         
         template.resolveVariables_({
-            u"OSNAME":      self.installerName,
-            u"OSVERSION":   self.installerVersion,
-            u"OSBUILD":     self.installerBuild,
+            "OSNAME":      self.installerName,
+            "OSVERSION":   self.installerVersion,
+            "OSBUILD":     self.installerBuild,
         })
         
-        LogNotice(u"Output Path: %@", template.outputPath)
-        LogNotice(u"Volume Name: %@", template.volumeName)
+        LogNotice("Output Path: %@", template.outputPath)
+        LogNotice("Volume Name: %@", template.volumeName)
         
         # Generate the list of updates to install.
         updates = list()
@@ -153,18 +155,18 @@ class IEDCLIController(NSObject):
             missingUpdates = list()
             
             for update in profile:
-                LogNotice(u"Update: %@ (%@)", update[u"name"], IEDUtil.formatBytes_(update[u"size"]))
+                LogNotice("Update: %@ (%@)", update["name"], IEDUtil.formatByteSize_(update["size"]))
                 package = IEDPackage.alloc().init()
-                package.setName_(update[u"name"])
-                package.setPath_(self.cache.updatePath_(update[u"sha1"]))
-                package.setSize_(update[u"size"])
-                package.setUrl_(update[u"url"])
-                package.setSha1_(update[u"sha1"])
-                if not self.cache.isCached_(update[u"sha1"]):
+                package.setName_(update["name"])
+                package.setPath_(self.cache.updatePath_(update["sha1"]))
+                package.setSize_(update["size"])
+                package.setUrl_(update["url"])
+                package.setSha1_(update["sha1"])
+                if not self.cache.isCached_(update["sha1"]):
                     if args.download_updates:
                         missingUpdates.append(package)
                     else:
-                        self.failWithMessage_(u"Can't apply updates, %s is missing from cache" % update[u"name"])
+                        self.failWithMessage_("Can't apply updates, %s is missing from cache" % update["name"])
                         return os.EX_DATAERR
                 updates.append(package)
             
@@ -173,15 +175,15 @@ class IEDCLIController(NSObject):
                 self.busy = True
                 self.waitBusy()
                 if self.hasFailed:
-                    self.failWithMessage_(u"Can't build due to updates missing from cache")
+                    self.failWithMessage_("Can't build due to updates missing from cache")
                     return 1    # EXIT_FAILURE
                 updates.extend(missingUpdates)
-                LogNotice(u"All updates for %@ %@ downloaded", self.installerVersion, self.installerBuild)
+                LogNotice("All updates for %@ %@ downloaded", self.installerVersion, self.installerBuild)
         
         # Generate the list of additional packages to install.
         template.resolvePackages()
         for package in template.packagesToInstall:
-            LogNotice(u"Package: %@ (%@)", package.name(), IEDUtil.formatBytes_(package.size()))
+            LogNotice("Package: %@ (%@)", package.name(), IEDUtil.formatByteSize_(package.size()))
         
         # Check the output path.
         if os.path.exists(template.outputPath):
@@ -189,10 +191,10 @@ class IEDCLIController(NSObject):
                 try:
                     os.unlink(template.outputPath)
                 except OSError as e:
-                    self.failWithMessage_(u"Couldn't remove %s: %s" % (template.outputPath, unicode(e)))
+                    self.failWithMessage_("Couldn't remove %s: %s" % (template.outputPath, str(e)))
                     return os.EX_CANTCREAT
             else:
-                self.failWithMessage_(u"%s already exists" % template.outputPath)
+                self.failWithMessage_("%s already exists" % template.outputPath)
                 return os.EX_CANTCREAT
         else:
             outputDir = os.path.dirname(template.outputPath)
@@ -200,7 +202,7 @@ class IEDCLIController(NSObject):
                 try:
                     os.makedirs(outputDir)
                 except OSError as e:
-                    self.failWithMessage_(u"%s does not exist and can't be created: %s" % (outputDir, unicode(e)))
+                    self.failWithMessage_("%s does not exist and can't be created: %s" % (outputDir, str(e)))
                     return os.EX_CANTCREAT
         
         # If we're not running as root get the password for authentication.
@@ -209,7 +211,7 @@ class IEDCLIController(NSObject):
             currentUser = CBIdentity.identityWithName_authority_(username, CBIdentityAuthority.defaultIdentityAuthority())
             passwordOK = False
             while not passwordOK:
-                password = getpass.getpass(u"Password for %s: " % username).decode(u"utf-8")
+                password = getpass.getpass("Password for %s: " % username).decode("utf-8")
                 if currentUser.authenticateWithPassword_(password):
                     passwordOK = True
             self.workflow.setAuthUsername_(username)
@@ -237,21 +239,21 @@ class IEDCLIController(NSObject):
         if not os.path.exists(path):
             return None
         ext = os.path.splitext(path)[1].lower()
-        if ext not in (u".plist", u".adtmpl"):
+        if ext not in (".plist", ".adtmpl"):
             return None
         return path
     
     def addargsBuild_(self, argparser):
-        argparser.add_argument(u"source", help=u"OS X installer, OS X system image or AutoDMG template")
-        argparser.add_argument(u"-o", u"--output", help=u"DMG output path")
-        argparser.add_argument(u"-i", u"--installer", help=u"Override installer in template")
-        argparser.add_argument(u"-n", u"--name", help=u"Installed system volume name")
-        argparser.add_argument(u"-s", u"--size", type=int, help=u"Installed system volume size, in GB")
-        argparser.add_argument(u"--skip-asr-imagescan", action=u"store_true", help=u"Skip `asr imagescan` (Scan for Restore) phase")
-        argparser.add_argument(u"-u", u"--updates", action=u"store_const", const=True, help=u"Apply updates")
-        argparser.add_argument(u"-U", u"--download-updates", action=u"store_true", help=u"Download missing updates")
-        argparser.add_argument(u"-f", u"--force", action=u"store_true", help=u"Overwrite output")
-        argparser.add_argument(u"packages", nargs=u"*", help=u"Additional packages")
+        argparser.add_argument("source", help="OS X installer, OS X system image or AutoDMG template")
+        argparser.add_argument("-o", "--output", help="DMG output path")
+        argparser.add_argument("-i", "--installer", help="Override installer in template")
+        argparser.add_argument("-n", "--name", help="Installed system volume name")
+        argparser.add_argument("-s", "--size", type=int, help="Installed system volume size, in GB")
+        argparser.add_argument("--skip-asr-imagescan", action="store_true", help="Skip `asr imagescan` (Scan for Restore) phase")
+        argparser.add_argument("-u", "--updates", action="store_const", const=True, help="Apply updates")
+        argparser.add_argument("-U", "--download-updates", action="store_true", help="Download missing updates")
+        argparser.add_argument("-f", "--force", action="store_true", help="Overwrite output")
+        argparser.add_argument("packages", nargs="*", help="Additional packages")
     
     
     
@@ -265,18 +267,18 @@ class IEDCLIController(NSObject):
             self.failWithMessage_(self.profileController.whyNoProfileForVersion_build_(args.version, args.build))
             return os.EX_DATAERR
         
-        LogNotice(u"%d update%@ for %@ %@:", len(profile), u"" if len(profile) == 1 else u"s", args.version, args.build)
+        LogNotice("%d update%@ for %@ %@:", len(profile), "" if len(profile) == 1 else "s", args.version, args.build)
         for update in profile:
-            LogNotice(u"    %@%@ (%@)",
-                      u"[cached] " if self.cache.isCached_(update[u"sha1"]) else u"",
-                      update[u"name"],
-                      IEDUtil.formatBytes_(update[u"size"]))
+            LogNotice("    %@%@ (%@)",
+                      "[cached] " if self.cache.isCached_(update["sha1"]) else "",
+                      update["name"],
+                      IEDUtil.formatByteSize_(update["size"]))
         
         return os.EX_OK
     
     def addargsList_(self, argparser):
-        argparser.add_argument(u"version", help=u"OS X version")
-        argparser.add_argument(u"build", help=u"OS X build")
+        argparser.add_argument("version", help="OS X version")
+        argparser.add_argument("build", help="OS X build")
     
     
     
@@ -292,13 +294,13 @@ class IEDCLIController(NSObject):
         
         updates = list()
         for update in profile:
-            if not self.cache.isCached_(update[u"sha1"]):
+            if not self.cache.isCached_(update["sha1"]):
                 package = IEDPackage.alloc().init()
-                package.setName_(update[u"name"])
-                package.setPath_(self.cache.updatePath_(update[u"sha1"]))
-                package.setSize_(update[u"size"])
-                package.setUrl_(update[u"url"])
-                package.setSha1_(update[u"sha1"])
+                package.setName_(update["name"])
+                package.setPath_(self.cache.updatePath_(update["sha1"]))
+                package.setSize_(update["size"])
+                package.setUrl_(update["url"])
+                package.setSha1_(update["sha1"])
                 updates.append(package)
         
         if updates:
@@ -309,13 +311,13 @@ class IEDCLIController(NSObject):
         if self.hasFailed:
             return 1    # EXIT_FAILURE
         
-        LogNotice(u"All updates for %@ %@ downloaded", args.version, args.build)
+        LogNotice("All updates for %@ %@ downloaded", args.version, args.build)
         
         return os.EX_OK
     
     def addargsDownload_(self, argparser):
-        argparser.add_argument(u"version", help=u"OS X version")
-        argparser.add_argument(u"build", help=u"OS X build")
+        argparser.add_argument("version", help="OS X version")
+        argparser.add_argument("build", help="OS X build")
     
     
     
@@ -335,35 +337,35 @@ class IEDCLIController(NSObject):
     
     def addargsUpdate_(self, argparser):
         defaults = NSUserDefaults.standardUserDefaults()
-        url = NSURL.URLWithString_(defaults.stringForKey_(u"UpdateProfilesURL"))
-        argparser.add_argument(u"-u", u"--url", default=url, help=u"Profile URL")
+        url = NSURL.URLWithString_(defaults.stringForKey_("UpdateProfilesURL"))
+        argparser.add_argument("-u", "--url", default=url, help="Profile URL")
     
     
     
     # Workflow delegate methods.
     
     def detachFailed_details_(self, dmgPath, details):
-        LogError(u"Failed to detach '%@': %@", dmgPath, details)
+        LogError("Failed to detach '%@': %@", dmgPath, details)
     
     def ejectingSource(self):
-        LogInfo("%@", u"Ejecting source…")
+        LogInfo("%@", "Ejecting source…")
     
     def examiningSource_(self, path):
-        LogInfo("%@", u"Examining source…")
+        LogInfo("%@", "Examining source…")
     
     def foundSourceForIcon_(self, path):
         pass
     
     def sourceSucceeded_(self, info):
-        self.installerName = info[u"name"]
-        self.installerVersion = info[u"version"]
-        self.installerBuild = info[u"build"]
-        LogNotice(u"Found installer: %s %s %s" % (info[u"name"], info[u"version"], info[u"build"]))
+        self.installerName = info["name"]
+        self.installerVersion = info["version"]
+        self.installerBuild = info["build"]
+        LogNotice("Found installer: %@ %@ %@", info["name"], info["version"], info["build"])
         self.busy = False
     
     def sourceFailed_text_(self, message, text):
-        self.failWithMessage_(u"Source failed: %s" % message)
-        self.failWithMessage_(u"    %s" % text)
+        self.failWithMessage_("Source failed: %s" % message)
+        self.failWithMessage_("    %s" % text)
     
     
     
@@ -375,25 +377,25 @@ class IEDCLIController(NSObject):
         self.progressMax = totalWeight
     
     def buildSetPhase_(self, phase):
-        LogNotice(u"phase: %@", phase)
+        LogNotice("phase: %@", phase)
     
     def buildSetProgress_(self, progress):
         percent = 100.0 * progress / self.progressMax
         if abs(percent - self.lastProgressPercent) >= 0.1:
-            LogInfo(u"progress: %.1f%%", percent)
+            LogInfo("progress: %.1f%%", percent)
             self.lastProgressPercent = percent
     
     def buildSetProgressMessage_(self, message):
         if message != self.lastMessage:
-            LogInfo(u"message: %@", message)
+            LogInfo("message: %@", message)
             self.lastMessage = message
     
     def buildSucceeded(self):
-        LogNotice(u"Build successful")
+        LogNotice("Build successful")
     
     def buildFailed_details_(self, message, details):
-        self.failWithMessage_(u"Build failed: %s" % message)
-        self.failWithMessage_(u"    %s" % details)
+        self.failWithMessage_("Build failed: %s" % message)
+        self.failWithMessage_("    %s" % details)
     
     def buildStopped(self):
         self.busy = False
@@ -403,19 +405,19 @@ class IEDCLIController(NSObject):
     # UpdateCache delegate methods.
     
     def downloadAllDone(self):
-        LogDebug(u"downloadAllDone")
+        LogDebug("downloadAllDone")
         self.busy = False
     
     def downloadStarting_(self, package):
-        LogNotice(u"Downloading %@ (%@)", package.name(), IEDUtil.formatBytes_(package.size()))
+        LogNotice("Downloading %@ (%@)", package.name(), IEDUtil.formatByteSize_(package.size()))
         self.lastProgressPercent = -100.0
         self.lastProgressTimestamp = NSDate.alloc().init()
     
     def downloadStarted_(self, package):
-        LogDebug(u"downloadStarted:")
+        LogDebug("downloadStarted:")
     
     def downloadStopped_(self, package):
-        LogDebug(u"downloadStopped:")
+        LogDebug("downloadStopped:")
     
     def downloadGotData_bytesRead_(self, package, bytes):
         percent = 100.0 * float(bytes) / float(package.size())
@@ -424,15 +426,15 @@ class IEDCLIController(NSObject):
         if (abs(percent - self.lastProgressPercent) >= 10.0) or \
            (abs(self.lastProgressTimestamp.timeIntervalSinceNow()) >= 1.0) or \
            (bytes == package.size()):
-            LogInfo(u"progress: %.1f%%", percent)
+            LogInfo("progress: %.1f%%", percent)
             self.lastProgressPercent = percent
             self.lastProgressTimestamp = NSDate.alloc().init()
     
     def downloadSucceeded_(self, package):
-        LogDebug(u"downloadSucceeded:")
+        LogDebug("downloadSucceeded:")
     
     def downloadFailed_withError_(self, package, message):
-        self.failWithMessage_(u"Download of %s failed: %s" % (package.name(), message))
+        self.failWithMessage_("Download of %s failed: %s" % (package.name(), message))
     
     
     
@@ -442,13 +444,13 @@ class IEDCLIController(NSObject):
         self.busy = False
     
     def profileUpdateFailed_(self, error):
-        self.failWithMessage_(u"%@", error.localizedDescription())
+        self.failWithMessage_("%@", error.localizedDescription())
     
     def profileUpdateSucceeded_(self, publicationDate):
-        LogDebug(u"profileUpdateSucceeded:%@", publicationDate)
+        LogDebug("profileUpdateSucceeded:%@", publicationDate)
         defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject_forKey_(NSDate.date(), u"LastUpdateProfileCheck")
+        defaults.setObject_forKey_(NSDate.date(), "LastUpdateProfileCheck")
     
     def profilesUpdated(self):
-        LogDebug(u"profilesUpdated")
+        LogDebug("profilesUpdated")
         self.cache.pruneAndCreateSymlinks(self.profileController.updatePaths)

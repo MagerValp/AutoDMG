@@ -80,7 +80,7 @@
 			<string>SafariYo</string>
 			<string>SecurityYo</string>
 		</array>
-		<key>10.11.6-15G1212</key>
+		<key>10.11.6-15G1217</key>
 		<array>
 		</array>
 		<key>10.11.6-15G31</key>
@@ -105,7 +105,7 @@
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2016-12-16T13:13:04Z</date>
+	<date>2017-01-18T14:10:15Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>BookKit</key>
@@ -179,11 +179,11 @@
 			<key>name</key>
 			<string>Security Update 2016-003 (10.11.6)</string>
 			<key>sha1</key>
-			<string>53770436f3dbeb60fe8b131412215c9eee5108ee</string>
+			<string>c35481ef608a90b1fe7b69fc117f05d5565758b6</string>
 			<key>size</key>
-			<integer>717012386</integer>
+			<integer>717020696</integer>
 			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1903/en_US/secupd2016-003elcapitan.dmg</string>
+			<string>https://support.apple.com/downloads/DL1907/en_US/secupd2016-003elcapitan.dmg</string>
 		</dict>
 		<key>SecurityMav</key>
 		<dict>

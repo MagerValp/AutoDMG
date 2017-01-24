@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 import objc
 from Foundation import *
 
@@ -29,7 +31,7 @@ class IEDTemplate(NSObject):
         self.applyUpdates = False
         self.additionalPackages = NSMutableArray.alloc().init()
         self.additionalPackageError = None
-        self.volumeName = u"Macintosh HD"
+        self.volumeName = "Macintosh HD"
         self.volumeSize = None
         self.finalizeAsrImagescan = True
         self.packagesToInstall = None
@@ -60,81 +62,81 @@ class IEDTemplate(NSObject):
     
     def saveTemplateAndReturnError_(self, path):
         plist = NSMutableDictionary.alloc().init()
-        plist[u"TemplateFormat"] = self.templateFormat = u"1.0"
-        plist[u"AdditionalPackages"] = self.additionalPackages
-        plist[u"ApplyUpdates"] = self.applyUpdates
-        plist[u"VolumeName"] = self.volumeName
+        plist["TemplateFormat"] = self.templateFormat = "1.0"
+        plist["AdditionalPackages"] = self.additionalPackages
+        plist["ApplyUpdates"] = self.applyUpdates
+        plist["VolumeName"] = self.volumeName
         if self.sourcePath:
-            plist[u"SourcePath"] = self.sourcePath
+            plist["SourcePath"] = self.sourcePath
         if self.outputPath:
-            plist[u"OutputPath"] = self.outputPath
+            plist["OutputPath"] = self.outputPath
         if self.volumeSize:
-            plist[u"VolumeSize"] = self.volumeSize
+            plist["VolumeSize"] = self.volumeSize
         if not self.finalizeAsrImagescan:
-            plist[u"FinalizeAsrImagescan"] = self.finalizeAsrImagescan
+            plist["FinalizeAsrImagescan"] = self.finalizeAsrImagescan
         if plist.writeToFile_atomically_(path, False):
             return None
         else:
-            error = u"Couldn't write dictionary to plist at %s" % (path)
-            LogWarning(u"%@", error)
+            error = "Couldn't write dictionary to plist at %s" % (path)
+            LogWarning("%@", error)
             return error
     
     def loadTemplateAndReturnError_(self, path):
         if path in self.loadedTemplates:
-            return u"%s included recursively" % path
+            return "%s included recursively" % path
         else:
             self.loadedTemplates.add(path)
         
         plist = NSDictionary.dictionaryWithContentsOfFile_(path)
         if not plist:
-            error = u"Couldn't read dictionary from plist at %s" % (path)
-            LogWarning(u"%@", error)
+            error = "Couldn't read dictionary from plist at %s" % (path)
+            LogWarning("%@", error)
             return error
         
-        templateFormat = plist.get(u"TemplateFormat", u"1.0")
+        templateFormat = plist.get("TemplateFormat", "1.0")
         
-        if templateFormat != u"1.0":
-            LogWarning(u"Unknown format version %@", templateFormat)
+        if templateFormat != "1.0":
+            LogWarning("Unknown format version %@", templateFormat)
         
-        for key in plist.keys():
-            if key == u"IncludeTemplates":
-                for includePath in plist[u"IncludeTemplates"]:
-                    LogInfo(u"Including template %@", includePath)
+        for key in plist.iterkeys():
+            if key == "IncludeTemplates":
+                for includePath in plist["IncludeTemplates"]:
+                    LogInfo("Including template %@", includePath)
                     error = self.loadTemplateAndReturnError_(includePath)
                     if error:
                         return error
-            elif key == u"SourcePath":
-                self.setSourcePath_(plist[u"SourcePath"])
-            elif key == u"ApplyUpdates":
-                self.setApplyUpdates_(plist[u"ApplyUpdates"])
-            elif key == u"AdditionalPackages":
-                if not self.setAdditionalPackages_(plist[u"AdditionalPackages"]):
-                    msg = u"Additional packages failed verification"
+            elif key == "SourcePath":
+                self.setSourcePath_(plist["SourcePath"])
+            elif key == "ApplyUpdates":
+                self.setApplyUpdates_(plist["ApplyUpdates"])
+            elif key == "AdditionalPackages":
+                if not self.setAdditionalPackages_(plist["AdditionalPackages"]):
+                    msg = "Additional packages failed verification"
                     if self.additionalPackageError:
-                        msg += u":\n" + self.additionalPackageError
+                        msg += ":\n" + self.additionalPackageError
                     return msg
-            elif key == u"OutputPath":
-                self.setOutputPath_(plist[u"OutputPath"])
-            elif key == u"VolumeName":
-                self.setVolumeName_(plist[u"VolumeName"])
-            elif key == u"VolumeSize":
-                self.setVolumeSize_(plist[u"VolumeSize"])
-            elif key == u"FinalizeAsrImagescan":
-                self.setFinalizeAsrImagescan_(plist[u"FinalizeAsrImagescan"])
-            elif key == u"TemplateFormat":
+            elif key == "OutputPath":
+                self.setOutputPath_(plist["OutputPath"])
+            elif key == "VolumeName":
+                self.setVolumeName_(plist["VolumeName"])
+            elif key == "VolumeSize":
+                self.setVolumeSize_(plist["VolumeSize"])
+            elif key == "FinalizeAsrImagescan":
+                self.setFinalizeAsrImagescan_(plist["FinalizeAsrImagescan"])
+            elif key == "TemplateFormat":
                 pass
             
             else:
-                LogWarning(u"Unknown key '%@' in template", key)
+                LogWarning("Unknown key '%@' in template", key)
         
         return None
     
     def setSourcePath_(self, path):
-        LogInfo(u"Setting source path to '%@'", path)
+        LogInfo("Setting source path to '%@'", path)
         self.sourcePath = IEDUtil.resolvePath_(os.path.expanduser(path))
     
     def setApplyUpdates_(self, shouldApplyUpdates):
-        LogInfo(u"Setting apply updates to '%@'", shouldApplyUpdates)
+        LogInfo("Setting apply updates to '%@'", shouldApplyUpdates)
         self.applyUpdates = shouldApplyUpdates
     
     def setAdditionalPackages_(self, packagePaths):
@@ -142,35 +144,35 @@ class IEDTemplate(NSObject):
         for packagePath in packagePaths:
             path = IEDUtil.resolvePath_(os.path.abspath(os.path.expanduser(packagePath)))
             if not os.path.exists(path):
-                self.additionalPackageError = u"Package '%s' not found" % packagePath
-                LogError(u"'%@'", self.additionalPackageError)
+                self.additionalPackageError = "Package '%s' not found" % packagePath
+                LogError("'%@'", self.additionalPackageError)
                 return False
             name, ext = os.path.splitext(path)
             if ext.lower() not in IEDUtil.PACKAGE_EXTENSIONS:
-                self.additionalPackageError = u"'%s' is not valid software package" % packagePath
-                LogError(u"'%@'", self.additionalPackageError)
+                self.additionalPackageError = "'%s' is not valid software package" % packagePath
+                LogError("'%@'", self.additionalPackageError)
                 return False
             if path not in self.additionalPackages:
-                LogInfo(u"Adding '%@' to additional packages", path)
+                LogInfo("Adding '%@' to additional packages", path)
                 self.additionalPackages.append(IEDUtil.resolvePath_(path))
             else:
-                LogInfo(u"Skipping duplicate package '%@'", path)
+                LogInfo("Skipping duplicate package '%@'", path)
         return True
     
     def setOutputPath_(self, path):
-        LogInfo(u"Setting output path to '%@'", path)
+        LogInfo("Setting output path to '%@'", path)
         self.outputPath = os.path.abspath(os.path.expanduser(path))
     
     def setVolumeName_(self, name):
-        LogInfo(u"Setting volume name to '%@'", name)
+        LogInfo("Setting volume name to '%@'", name)
         self.volumeName = name
     
     def setVolumeSize_(self, size):
-        LogInfo(u"Setting volume size to '%d'", size)
+        LogInfo("Setting volume size to '%d'", size)
         self.volumeSize = size
     
     def setFinalizeAsrImagescan_(self, finalizeAsrImagescan):
-        LogInfo(u"Setting 'Finalize: Scan for restore to '%@'", finalizeAsrImagescan)
+        LogInfo("Setting 'Finalize: Scan for restore to '%@'", finalizeAsrImagescan)
         self.finalizeAsrImagescan = finalizeAsrImagescan
 
     def resolvePackages(self):
@@ -187,17 +189,17 @@ class IEDTemplate(NSObject):
     
     def resolveVariables_(self, variables):
         formatter = NSDateFormatter.alloc().init()
-        formatter.setDateFormat_(u"yyMMdd")
-        variables[u"DATE"] = formatter.stringFromDate_(NSDate.date())
-        formatter.setDateFormat_(u"HHmmss")
-        variables[u"TIME"] = formatter.stringFromDate_(NSDate.date())
+        formatter.setDateFormat_("yyMMdd")
+        variables["DATE"] = formatter.stringFromDate_(NSDate.date())
+        formatter.setDateFormat_("HHmmss")
+        variables["TIME"] = formatter.stringFromDate_(NSDate.date())
         
         def getvar(m):
             try:
                 return variables[m.group("key")]
             except KeyError as err:
                 LogWarning("Template references undefined variable: %%%@%%", m.group("key"))
-                return u"%%%s%%" % m.group("key")
+                return "%%%s%%" % m.group("key")
         
         self.volumeName = self.re_keyref.sub(getvar, self.volumeName)
         self.outputPath = self.re_keyref.sub(getvar, self.outputPath)

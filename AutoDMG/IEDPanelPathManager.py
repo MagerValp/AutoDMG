@@ -7,6 +7,8 @@
 #  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
+from __future__ import unicode_literals
+
 from Foundation import *
 
 # No logging here, since IEDLog uses us.
@@ -20,15 +22,15 @@ class IEDPanelPathManager(NSObject):
     
     @classmethod
     def loadPathForName_(cls, name):
-        path = defaults.stringForKey_(u"Last%sDir" % name)
+        path = defaults.stringForKey_("Last%sDir" % name)
         if path:
             #LogDebug(u"Load path for %@ = '%@'", name, path)
-            defaults.setObject_forKey_(path, u"NSNavLastRootDirectory")
+            defaults.setObject_forKey_(path, "NSNavLastRootDirectory")
     
     @classmethod
     def savePathForName_(cls, name):
-        path = defaults.stringForKey_(u"NSNavLastRootDirectory")
+        path = defaults.stringForKey_("NSNavLastRootDirectory")
         if path:
             #LogDebug(u"Save path for %@ = '%@'", name, path)
-            defaults.setObject_forKey_(path, u"Last%sDir" % name)
+            defaults.setObject_forKey_(path, "Last%sDir" % name)
     
