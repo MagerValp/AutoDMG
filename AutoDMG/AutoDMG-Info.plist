@@ -43,17 +43,6 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>automac.se</key>
-			<dict>
-				<key>NSTemporaryExceptionRequiresForwardSecrecy</key>
-				<false/>
-			</dict>
-		</dict>
-	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.</string>
 	<key>NSMainNibFile</key>
