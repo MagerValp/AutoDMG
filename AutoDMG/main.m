@@ -43,6 +43,7 @@ int main(int argc, const char *argv[])
         
         // Initialize Python interpreter.
         Py_SetProgramName("/usr/bin/python");
+		Py_DontWriteBytecodeFlag = 1;
         Py_Initialize();
         PySys_SetArgvEx(argc, (char **)argv, 0);
         PyObject *pSysPath = PySys_GetObject("path");
