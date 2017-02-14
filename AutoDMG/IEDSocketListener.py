@@ -70,4 +70,4 @@ class IEDSocketListener(NSObject):
                 LogError("Error decoding plist: %@", error)
                 continue
             if self.delegate.respondsToSelector_("socketReceivedMessage:"):
-                self.delegate.performSelectorOnMainThread_withObject_waitUntilDone_("socketReceivedMessage:", plist, NO)
+                self.delegate.performSelectorOnMainThread_withObject_waitUntilDone_("socketReceivedMessage:", plist, False)
