@@ -35,6 +35,7 @@
 		665E928518159C1A00A8F683 /* IEDProfileController.py in Resources */ = {isa = PBXBuildFile; fileRef = 665E928418159C1A00A8F683 /* IEDProfileController.py */; };
 		665E92871815B07A00A8F683 /* UpdateProfiles.plist in Resources */ = {isa = PBXBuildFile; fileRef = 665E92861815B07A00A8F683 /* UpdateProfiles.plist */; };
 		667F176B181BB6570076EF63 /* IEDPackage.py in Resources */ = {isa = PBXBuildFile; fileRef = 667F176A181BB6570076EF63 /* IEDPackage.py */; };
+		667F6D2B1E530AD5009AC1AC /* CocoaWrapper.py in Resources */ = {isa = PBXBuildFile; fileRef = 667F6D2A1E530AD5009AC1AC /* CocoaWrapper.py */; };
 		669051BF1D9D64730024A561 /* STPrivilegedTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 669051BE1D9D64730024A561 /* STPrivilegedTask.m */; };
 		669ADA3D18126E1D002CE331 /* IEDDMGHelper.py in Resources */ = {isa = PBXBuildFile; fileRef = 669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */; };
 		669DBBF718069EEC001F909B /* IEDSocketListener.py in Resources */ = {isa = PBXBuildFile; fileRef = 669DBBF618069EEC001F909B /* IEDSocketListener.py */; };
@@ -87,6 +88,7 @@
 		665E928418159C1A00A8F683 /* IEDProfileController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDProfileController.py; sourceTree = "<group>"; };
 		665E92861815B07A00A8F683 /* UpdateProfiles.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = UpdateProfiles.plist; sourceTree = "<group>"; };
 		667F176A181BB6570076EF63 /* IEDPackage.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDPackage.py; sourceTree = "<group>"; };
+		667F6D2A1E530AD5009AC1AC /* CocoaWrapper.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = CocoaWrapper.py; sourceTree = "<group>"; };
 		669051BD1D9D64730024A561 /* STPrivilegedTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPrivilegedTask.h; sourceTree = "<group>"; };
 		669051BE1D9D64730024A561 /* STPrivilegedTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPrivilegedTask.m; sourceTree = "<group>"; };
 		669ADA3C18126E1D002CE331 /* IEDDMGHelper.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDDMGHelper.py; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 		66EA72D417EB1586009B8350 /* AutoDMG */ = {
 			isa = PBXGroup;
 			children = (
+				667F6D2A1E530AD5009AC1AC /* CocoaWrapper.py */,
 				66EA72E017EB1587009B8350 /* main.py */,
 				66EA72E217EB1587009B8350 /* IEDAppDelegate.py */,
 				66EA72F017EB2ECB009B8350 /* IEDController.py */,
@@ -341,6 +344,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				667F6D2B1E530AD5009AC1AC /* CocoaWrapper.py in Resources */,
 				05429D761816715300CD61E6 /* Package blue arrow.png in Resources */,
 				05429D771816715300CD61E6 /* Package blue arrow@2x.png in Resources */,
 				66158EC4182149CC00E43508 /* Checkmark@2x.png in Resources */,

@@ -9,8 +9,7 @@
 
 from __future__ import unicode_literals
 
-from AppKit import *
-from Foundation import *
+from CocoaWrapper import *
 from objc import IBOutlet
 
 import os.path

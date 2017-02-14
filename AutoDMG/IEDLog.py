@@ -10,8 +10,7 @@
 from __future__ import unicode_literals
 from __future__ import print_function
 
-from Foundation import *
-from AppKit import *
+from CocoaWrapper import *
 from objc import IBAction, IBOutlet
 
 from IEDLogLine import *

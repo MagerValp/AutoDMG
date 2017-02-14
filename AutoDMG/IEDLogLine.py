@@ -9,7 +9,7 @@
 
 from __future__ import unicode_literals
 
-from Foundation import *
+from CocoaWrapper import *
 
 
 class IEDLogLine(NSObject):

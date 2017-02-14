@@ -16,7 +16,6 @@ import argparse
 import traceback
 
 import objc
-import Foundation
 
 objc.setVerbose(True)
 
@@ -47,7 +46,7 @@ def gui_unexpected_error_alert():
     except:
         exceptionInfo = "(no traceback available)"
     NSLog("AutoDMG died with an uncaught exception: %@", exceptionInfo)
-    from AppKit import NSAlertSecondButtonReturn
+    from CocoaWrapper import NSAlertSecondButtonReturn
     alert = NSAlert.alloc().init()
     alert.setMessageText_("AutoDMG died with an uncaught exception")
     alert.setInformativeText_(exceptionInfo)

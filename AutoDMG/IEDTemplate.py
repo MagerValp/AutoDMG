@@ -10,7 +10,7 @@
 from __future__ import unicode_literals
 
 import objc
-from Foundation import *
+from CocoaWrapper import *
 
 import os.path
 import re

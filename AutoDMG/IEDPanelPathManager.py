@@ -9,7 +9,7 @@
 
 from __future__ import unicode_literals
 
-from Foundation import *
+from CocoaWrapper import *
 
 # No logging here, since IEDLog uses us.
 #from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage

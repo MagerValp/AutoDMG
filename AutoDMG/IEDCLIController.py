@@ -9,8 +9,7 @@
 
 from __future__ import unicode_literals
 
-from Foundation import *
-from AppKit import *
+from CocoaWrapper import *
 from Collaboration import CBIdentity, CBIdentityAuthority
 
 import os
