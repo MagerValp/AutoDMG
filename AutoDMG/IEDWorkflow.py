@@ -25,6 +25,7 @@ from IEDUtil import *
 from IEDSocketListener import *
 from IEDDMGHelper import *
 from IEDTemplate import *
+from Foundation import STPrivilegedTask
 
 
 class IEDWorkflow(NSObject):
