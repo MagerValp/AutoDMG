@@ -104,6 +104,7 @@ class IEDDMGHelper(NSObject):
             attached = self.attachedDMGs()
             if dmgPath in attached:
                 LogDebug("%@ is already mounted, no need to attach", dmgPath)
+                self.dmgs[dmgPath] = attached[dmgPath]
                 self.tellDelegate_message_(selector, {"success": True,
                                                       "dmg-path": dmgPath,
                                                       "mount-point": attached[dmgPath]})
