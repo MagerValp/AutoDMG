@@ -35,6 +35,7 @@ class IEDWorkflow(NSObject):
     
     INSTALL_ESD = 1
     SYSTEM_IMAGE = 2
+    INSTALL_INFO = 3
     
     def init(self):
         self = super(IEDWorkflow, self).init()
@@ -106,7 +107,7 @@ class IEDWorkflow(NSObject):
     # External state of controller.
     
     def hasSource(self):
-        return self.installerMountPoint is not None
+        return (self.sourceType == IEDWorkflow.INSTALL_INFO) or (self.installerMountPoint is not None)
     
     
     
@@ -130,6 +131,7 @@ class IEDWorkflow(NSObject):
         LogDebug("setSource:%@", path)
         
         self._source = None
+        self.sourceType = None
         self.newSourcePath = path
         if self.installerMountPoint:
             self.delegate.ejectingSource()
@@ -145,15 +147,25 @@ class IEDWorkflow(NSObject):
         
         self.alertFailedUnmounts_(failedUnmounts)
         
-        self.installESDPath = os.path.join(self.newSourcePath, "Contents/SharedSupport/InstallESD.dmg")
-        if not os.path.exists(self.installESDPath):
-            self.installESDPath = self.newSourcePath
+        pathCandidates = [
+            os.path.join(self.newSourcePath, "Contents/SharedSupport/BaseSystem.dmg"),
+            os.path.join(self.newSourcePath, "Contents/SharedSupport/InstallESD.dmg"),
+            self.newSourcePath,
+        ]
+        for path in pathCandidates:
+            if os.path.exists(path):
+                dmgPath = path
+                break
+        else:
+            self.delegate.sourceFailed_text_("Failed to mount %s" % self.newSourcePath,
+                                             "No system dmg found")
+            return
         
         self.delegate.examiningSource_(self.newSourcePath)
         
         self.installerMountPoint = None
         self.baseSystemMountedFromPath = None
-        self.dmgHelper.attach_selector_(self.installESDPath, self.handleSourceMountResult_)
+        self.dmgHelper.attach_selector_(dmgPath, self.handleSourceMountResult_)
     
     # handleSourceMountResult: may be called twice, once for InstallESD.dmg
     # and once for BaseSystem.dmg.
@@ -173,12 +185,16 @@ class IEDWorkflow(NSObject):
         
         # Don't set this again since 10.9 mounts BaseSystem.dmg after InstallESD.dmg.
         if self.installerMountPoint is None:
-            self.installerMountPoint = mountPoint
-            # Check if the source is an InstallESD or system image.
+            # Check if the source is an InstallESD, BaseSystem or system image.
             if os.path.exists(os.path.join(mountPoint, "Packages", "OSInstall.mpkg")):
+                self.installerMountPoint = mountPoint
                 self.sourceType = IEDWorkflow.INSTALL_ESD
                 LogDebug("sourceType = INSTALL_ESD")
+            elif glob.glob(os.path.join(mountPoint, "Install*.app")):
+                self.sourceType = IEDWorkflow.INSTALL_INFO
+                LogDebug("sourceType = INSTALL_INFO")
             else:
+                self.installerMountPoint = mountPoint
                 self.sourceType = IEDWorkflow.SYSTEM_IMAGE
                 LogDebug("sourceType = SYSTEM_IMAGE")
         
@@ -229,8 +245,8 @@ class IEDWorkflow(NSObject):
             "sourceType": self.sourceType,
         }
         self.delegate.sourceSucceeded_(info)
-        # There's no reason to keep the dmg mounted if it's not an installer.
-        if self.sourceType == IEDWorkflow.SYSTEM_IMAGE:
+        # There's no reason to keep the dmg mounted if it's not an InstallESD.
+        if self.sourceType != IEDWorkflow.INSTALL_ESD:
             self.dmgHelper.detachAll_(self.ejectSystemImage_)
     
     def loadImageTemplate_(self, mountPoint):
@@ -383,7 +399,7 @@ class IEDWorkflow(NSObject):
             {"title": "Starting install",    "weight":       21 * 1024 * 1024},
             {"title": "Creating disk image", "weight":       21 * 1024 * 1024},
         ]
-        if self.sourceType == IEDWorkflow.INSTALL_ESD:
+        if self.sourceType != IEDWorkflow.SYSTEM_IMAGE:
             installerPhases.append({
                 "title": "Installing OS",
                 "weight": 4 * 1024 * 1024 * 1024,
@@ -521,7 +537,7 @@ class IEDWorkflow(NSObject):
         if self.numberOfDMGsToAttach == 0:
             self.continuePrepare()
     
-    # This will be called once for each disk image.
+    # This will be called once for each package disk image.
     def attachPackageDMG_(self, result):
         LogDebug("attachPackageDMG:%@", result)
         
@@ -545,6 +561,11 @@ class IEDWorkflow(NSObject):
             self.packagesToInstall.append(os.path.join(self.installerMountPoint,
                                                        "Packages",
                                                        "OSInstall.mpkg"))
+        elif self.sourceType == IEDWorkflow.INSTALL_INFO:
+            self.packagesToInstall.append(os.path.join(self.newSourcePath,
+                                                       "Contents",
+                                                       "SharedSupport",
+                                                       "InstallInfo.plist"))
         for package in self.additionalPackages:
             if package.path().endswith(".dmg"):
                 mountPoint = self.attachedPackageDMGs[package.path()]

@@ -164,6 +164,10 @@ class IEDUtil(NSObject):
                 return cls.calculateInstalledPkgSize_(pkgPath)
             else:
                 return size
+        elif ext == ".plist":
+            # FIXME: Implement size calculation
+            LogWarning("Using hardcoded size for InstallInfo.plist")
+            return 12497424
         else:
             LogError("Don't know how to calculate installed size for '%@'",
                      pkgPath)
