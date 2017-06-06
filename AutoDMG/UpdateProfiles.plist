@@ -36,7 +36,7 @@
 			<string>15E65</string>
 			<string>15F34</string>
 		</array>
-		<key>10.12.2-16C68</key>
+		<key>10.12.5-16F73</key>
 		<array>
 			<string>16A323</string>
 			<string>16A322</string>
@@ -48,6 +48,9 @@
 			<string>16B2657</string>
 			<string>16B2659</string>
 			<string>16C67</string>
+			<string>16C68</string>
+			<string>16D32</string>
+			<string>16E195</string>
 		</array>
 		<key>10.9.5-13F34</key>
 		<array>
@@ -70,29 +73,35 @@
 	</array>
 	<key>Profiles</key>
 	<dict>
-		<key>10.10.5-14F2109</key>
+		<key>10.10.5-14F2411</key>
 		<array>
 		</array>
 		<key>10.10.5-14F27</key>
 		<array>
 			<string>RemoteDesktopClient</string>
 			<string>iTunes</string>
-			<string>SafariYo</string>
 			<string>SecurityYo</string>
+			<string>SafariYo</string>
 		</array>
-		<key>10.11.6-15G1217</key>
+		<key>10.11.6-15G1510</key>
 		<array>
 		</array>
 		<key>10.11.6-15G31</key>
 		<array>
+			<string>RemoteDesktopClient</string>
 			<string>CameraRawElCap</string>
 			<string>iTunes</string>
-			<string>SafariElCap</string>
 			<string>SecurityElCap</string>
+			<string>SafariElCap</string>
+			<string>AppStoreElCap</string>
 		</array>
-		<key>10.12.2-16C68</key>
+		<key>10.12.5-16F73</key>
 		<array>
+			<string>RemoteDesktopClient</string>
 			<string>iTunes</string>
+		</array>
+		<key>10.13-17A264c</key>
+		<array>
 		</array>
 		<key>10.9.5-13F34</key>
 		<array>
@@ -105,9 +114,20 @@
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2017-01-18T14:10:15Z</date>
+	<date>2017-06-06T09:00:43Z</date>
 	<key>Updates</key>
 	<dict>
+		<key>AppStoreElCap</key>
+		<dict>
+			<key>name</key>
+			<string>Mac App Store Update for OS X El Capitan</string>
+			<key>sha1</key>
+			<string>9245bc2b4828665b6b126d676cb610b78bfa68ed</string>
+			<key>size</key>
+			<integer>4787605</integer>
+			<key>url</key>
+			<string>http://swcdn.apple.com/content/downloads/61/61/091-10728/i82m5auvwlrwtyd8moumo7sfzr52npkyyh/MacAppStoreUpdateforElCapitan.pkg</string>
+		</dict>
 		<key>BookKit</key>
 		<dict>
 			<key>name</key>
@@ -133,24 +153,24 @@
 		<key>RemoteDesktopClient</key>
 		<dict>
 			<key>name</key>
-			<string>Remote Desktop Client Update 3.8.5.1</string>
+			<string>Remote Desktop Client Update 3.9.2</string>
 			<key>sha1</key>
-			<string>a9d22fe999931ab0209cb0b0ad9b5c0322ca6fd3</string>
+			<string>2ad3b30ca2e15312a421d4383cbe410b9314f9fa</string>
 			<key>size</key>
-			<integer>7888653</integer>
+			<integer>8768918</integer>
 			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1875/en_US/remotedesktopclient.dmg</string>
+			<string>http://swcdn.apple.com/content/downloads/51/41/091-00404/yf2kt4gajz3qh788grqeg366vuglw5l3hw/RemoteDesktopClient.pkg</string>
 		</dict>
 		<key>SafariElCap</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 10.0.2 for El Capitan</string>
+			<string>Safari 10.1.1 for El Capitan</string>
 			<key>sha1</key>
-			<string>13ccc3614b3c6ec1f9a30edb0763a7702ec4f1a4</string>
+			<string>037005b0df008fe70f5843b09363bd7aa008a4b1</string>
 			<key>size</key>
-			<integer>70544799</integer>
+			<integer>73117080</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/34/41/031-93196/0ytx8ld0c6lrtla0o25n461p8hvpuz2x3n/Safari10.0.2ElCapitan.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/27/23/091-03063/2354sgxgndmvy5w4rruif7f3aw5uphchvr/Safari10.1.1ElCapitan.pkg</string>
 		</dict>
 		<key>SafariMav</key>
 		<dict>
@@ -166,24 +186,24 @@
 		<key>SafariYo</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 10.0.2 for Yosemite</string>
+			<string>Safari 10.1.1 for Yosemite</string>
 			<key>sha1</key>
-			<string>b7dad4700bf27abf35ac87e7e77b22d4475846e7</string>
+			<string>fa033537f17990c5609d057a7f88587e706b4f41</string>
 			<key>size</key>
-			<integer>70217110</integer>
+			<integer>72822161</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/53/47/031-93195/pxv0cq3qo0sclhdpamv7qxcvf60k5pj5gi/Safari10.0.2Yosemite.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/08/23/091-02722/anzj6rcuourekx784i99cz29rd472rb3yp/Safari10.1.1Yosemite.pkg</string>
 		</dict>
 		<key>SecurityElCap</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2016-003 (10.11.6)</string>
+			<string>Security Update 2017-002 (El Capitan)</string>
 			<key>sha1</key>
-			<string>c35481ef608a90b1fe7b69fc117f05d5565758b6</string>
+			<string>502aafd298cac5f524fdab1daf6a7674e27728cd</string>
 			<key>size</key>
-			<integer>717020696</integer>
+			<integer>710622744</integer>
 			<key>url</key>
-			<string>https://support.apple.com/downloads/DL1907/en_US/secupd2016-003elcapitan.dmg</string>
+			<string>http://support.apple.com/downloads/DL1920/en_US/secupd2017-002elcapitan.dmg</string>
 		</dict>
 		<key>SecurityMav</key>
 		<dict>
@@ -199,13 +219,13 @@
 		<key>SecurityYo</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2016-007 (10.10.5)</string>
+			<string>Security Update 2017-002 (Yosemite)</string>
 			<key>sha1</key>
-			<string>dcce05ca2b53c7d16951399e3ca358892190e543</string>
+			<string>9998bccdd6bd05e06b7da21fbb7835e7fe370de5</string>
 			<key>size</key>
-			<integer>498144682</integer>
+			<integer>421094826</integer>
 			<key>url</key>
-			<string>https://support.apple.com/downloads/DL1902/en_US/secupd2016-007yosemite.dmg</string>
+			<string>http://support.apple.com/downloads/DL1919/en_US/secupd2017-002yosemite.dmg</string>
 		</dict>
 		<key>iBooks</key>
 		<dict>
@@ -221,13 +241,13 @@
 		<key>iTunes</key>
 		<dict>
 			<key>name</key>
-			<string>iTunes 12.5.4</string>
+			<string>iTunes 12.6.1</string>
 			<key>sha1</key>
-			<string>211de6432af0a47b1a82e2fd548669b66d581863</string>
+			<string>d90cc2acbb6270996821be298daeffdbb9214de3</string>
 			<key>size</key>
-			<integer>276066408</integer>
+			<integer>283099318</integer>
 			<key>url</key>
-			<string>https://secure-appldnld.apple.com/itunes12/031-77736-20161212-7D847B64-BE2C-11E6-93D2-FAEA82FDB0CC/iTunes12.5.4.dmg</string>
+			<string>https://secure-appldnld.apple.com/itunes12/091-14787-20170523-86F107F8-3FB9-11E7-A63F-D7F22C6174CC/iTunes12.6.1.dmg</string>
 		</dict>
 	</dict>
 </dict>
