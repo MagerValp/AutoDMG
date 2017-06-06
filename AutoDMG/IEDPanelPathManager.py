@@ -3,8 +3,8 @@
 #  IEDPanelPathManager.py
 #  AutoDMG
 #
-#  Created by Per Olofsson on 2016-12-06.
-#  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
+#  Created by Per Olofsson on 2017-12-06.
+#  Copyright 2013-2017 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
 from __future__ import unicode_literals

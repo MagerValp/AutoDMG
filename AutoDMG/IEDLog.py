@@ -4,7 +4,7 @@
 #  AutoDMG
 #
 #  Created by Per Olofsson on 2013-10-25.
-#  Copyright 2013-2016 Per Olofsson, University of Gothenburg. All rights reserved.
+#  Copyright 2013-2017 Per Olofsson, University of Gothenburg. All rights reserved.
 #
 
 from __future__ import unicode_literals
