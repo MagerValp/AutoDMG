@@ -191,10 +191,11 @@ OSStatus const errAuthorizationFnNoLongerExists = -70001;
     // first, construct an array of c strings from NSArray w. arguments
     for (int i = 0; i < numberOfArguments; i++) {
         NSString *argString = arguments[i];
-        NSUInteger stringLength = [argString length];
+        const char *fsrep = [argString fileSystemRepresentation];
+        NSUInteger stringLength = strlen(fsrep);
         
         args[i] = malloc((stringLength + 1) * sizeof(char));
-        snprintf(args[i], stringLength + 1, "%s", [argString fileSystemRepresentation]);
+        snprintf(args[i], stringLength + 1, "%s", fsrep);
     }
     args[numberOfArguments] = NULL;
     

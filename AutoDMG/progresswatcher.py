@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 
 # -*- coding: utf-8 -*-
 #
@@ -17,7 +17,7 @@ import argparse
 import socket
 import re
 import traceback
-from Foundation import *
+from CocoaWrapper import *
 
 
 MAX_MSG_SIZE = 32768 # See also IEDSL_MAX_MSG_SIZE in IEDSocketListener.

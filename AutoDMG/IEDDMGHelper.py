@@ -9,7 +9,7 @@
 
 from __future__ import unicode_literals
 
-from Foundation import *
+from CocoaWrapper import *
 import subprocess
 import time
 import traceback
@@ -104,6 +104,7 @@ class IEDDMGHelper(NSObject):
             attached = self.attachedDMGs()
             if dmgPath in attached:
                 LogDebug("%@ is already mounted, no need to attach", dmgPath)
+                self.dmgs[dmgPath] = attached[dmgPath]
                 self.tellDelegate_message_(selector, {"success": True,
                                                       "dmg-path": dmgPath,
                                                       "mount-point": attached[dmgPath]})
