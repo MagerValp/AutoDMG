@@ -1,7 +1,7 @@
 AutoDMG
 =======
 
-The award winning AutoDMG takes a macOS installer (10.9 or newer) and builds a system image suitable for deployment with Imagr, DeployStudio, LANrev, Jamf Pro, and other asr-based imaging tools.
+The award winning AutoDMG takes a macOS installer (10.10 or newer) and builds a system image suitable for deployment with Imagr, DeployStudio, LANrev, Jamf Pro, and other asr-based imaging tools.
 
 ![Autodmg 1.7.1](https://magervalp.github.io/images/AutoDMG-1.7.1.png)
 
