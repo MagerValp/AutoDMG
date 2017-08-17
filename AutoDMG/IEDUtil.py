@@ -295,3 +295,37 @@ class IEDUtil(NSObject):
         except Exception as e:
             LogError("Failed parsing '%@': %@", infoPlistPath, str(e))
             return None
+
+    @classmethod
+    def listApfsVolumes(cls):
+        LogDebug("Listing APFS volumes")
+        if cls.hostVersionTuple()[1] < 13:
+            return {}
+        p = subprocess.Popen(["/usr/sbin/diskutil",
+                              "apfs",
+                              "list",
+                              "-plist"],
+                             bufsize=1,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if p.returncode != 0:
+            LogError("diskutil apfs list failed with return code %d" % p.returncode)
+            return None
+        outData = NSData.dataWithBytes_length_(out, len(out))
+        plist, format, error = \
+            NSPropertyListSerialization.propertyListWithData_options_format_error_(outData,
+                                                                                   NSPropertyListImmutable,
+                                                                                   None,
+                                                                                   None)
+        if "Containers" not in plist:
+            LogError("diskutil apfs list does not have any Containers")
+            return None
+        
+        volumes = {}
+        for container in plist["Containers"]:
+            for volume in container.get("Volumes", []):
+                volumes[volume["DeviceIdentifier"]] = volume
+        return volumes
+    

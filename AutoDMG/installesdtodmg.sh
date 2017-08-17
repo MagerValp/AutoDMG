@@ -12,7 +12,8 @@
 #
 # Usage (mount InstallESD.dmg first):
 #
-#   installesdtodmg.sh user group output.dmg "Macintosh HD" 32 /tmp/template.adtmpl \
+#   installesdtodmg.sh ladmin staff HFS+J output.dmg "Macintosh HD" 32 \
+#       /tmp/template.adtmpl \
 #       "/Volumes/OS X Install ESD/Packages/OSInstall.mpkg" [package.pkg ...]
 
 
@@ -27,6 +28,35 @@ remove_tempdirs() {
         rm -rf "$tempdir"
     done
     unset tempdirs
+}
+
+unmount_volume() {
+    local mountvolume="$1"
+    local result="failure"
+    if [[ -d "$mountvolume" ]]; then
+        if ! diskutil unmountDisk "$mountvolume"; then
+            for tries in {1..10}; do
+                if [[ -d "$mountvolume" ]]; then
+                    echo "IED:MSG:Unmounting '$mountvolume' failed, force attempt $tries…"
+                    sleep $tries
+                    if diskutil unmountDisk force "$mountvolume"; then
+                        echo "IED:MSG:Forcefully unmounted '$mountvolume'"
+                        result="success"
+                        break
+                    fi
+                else
+                    echo "IED:MSG:'$mountvolume' disappeared"
+                    hdiutil info
+                fi
+            done
+        else
+            echo "IED:MSG:Unmounted '$mountvolume'"
+            result="success"
+        fi
+        if [[ "$result" != "success" ]]; then
+            echo "IED:MSG:Unmounting '$mountvolume' failed, giving up!"
+        fi
+    fi
 }
 
 eject_dmg() {
@@ -52,9 +82,9 @@ eject_dmg() {
             echo "IED:MSG:Ejected '$mountdev'"
             result="success"
         fi
-    fi
-    if [[ "$result" != "success" ]]; then
-        echo "IED:MSG:Ejecting '$mountdev' failed, giving up!"
+        if [[ "$result" != "success" ]]; then
+            echo "IED:MSG:Ejecting '$mountdev' failed, giving up!"
+        fi
     fi
 }
 
@@ -82,21 +112,22 @@ if [[ $(id -u) -ne 0 ]]; then
     exit 100
 fi
 
-if [[ $# -lt 4 ]]; then
-    echo "IED:FAILURE:Usage: $(basename "$0") user group output.dmg volname size OSInstall.mpkg [package...]"
+if [[ $# -lt 5 ]]; then
+    echo "IED:FAILURE:Usage: $(basename "$0") user group fstype output.dmg volname size OSInstall.mpkg [package...]"
     exit 100
 fi
 user="$1"
 group="$2"
-compresseddmg="$3"
-volname="$4"
-size="$5"
-template="$6"
-if [[ "$7" == *.dmg ]]; then
-    sysimg="$7"
-    shift 7
+fstype="$3"
+compresseddmg="$4"
+volname="$5"
+size="$6"
+template="$7"
+if [[ "$8" == *.dmg ]]; then
+    sysimg="$8"
+    shift 8
 else
-    shift 6
+    shift 7
 fi
 
 # Get a work directory and check free space.
@@ -129,10 +160,10 @@ start_nvb=""
 
 # Create and mount a sparse image.
 echo "IED:PHASE:sparseimage"
-echo "IED:MSG:Creating disk image"
 if [[ -z "$sysimg" ]]; then
+    echo "IED:MSG:Creating disk image with $fstype"
     sparsedmg="$tempdir/os.sparseimage"
-    if ! hdiutil create -size "${size}g" -type SPARSE -fs HFS+J -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"; then
+    if ! hdiutil create -size "${size}g" -type SPARSE -fs "$fstype" -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"; then
         echo "IED:FAILURE:Failed to create disk image for install"
         exit 101
     fi
@@ -142,10 +173,11 @@ if [[ -z "$sysimg" ]]; then
         echo "IED:FAILURE:Failed to mount disk image for install, return code $result"
         exit 101
     fi
-    mountresult=$(grep Apple_HFS <<< "$mountoutput")
-    sparsemount=$(echo "$mountresult" | cut -f3)
-    dmgmounts+=( $(echo "$mountresult" | cut -f1) )
+    sparsemount=$(egrep '/Volumes/' <<< "$mountoutput" | head -1 | cut -f3)
+    dmgmounts+=( $(egrep 'Apple_(H|AP)FS' <<< "$mountoutput" | awk '{print $1}') )
 else
+    echo "IED:MSG:Creating shadow file"
+    
     shadowfile="$tempdir/autodmg.shadow"
     shadowoutput=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg")
     declare -i result=$?
@@ -153,15 +185,14 @@ else
         echo "IED:FAILURE:Failed to create shadow image for install, return code $result"
         exit 101
     fi
-    shadowdev=$(echo "$shadowoutput" | grep Apple_HFS | awk '{print $1}')
-    echo "IED:MSG:Renaming $shadowdev to $volname"
-    echo "IED:MSG:Renaming volume"
-    if ! diskutil rename "$shadowdev" "$volname"; then
+    targetdev=$(echo "$shadowoutput" | egrep '/Volumes/' | head -1 | awk '{print $1}')
+    echo "IED:MSG:Renaming $targetdev to $volname"
+    if ! diskutil rename "$targetdev" "$volname"; then
         echo "IED:FAILURE:Failed to rename install volume"
         exit 101
     fi
-    dmgmounts+=("$shadowdev")
-    sparsemount=$(hdiutil info | grep "^$shadowdev" | cut -f3)
+    sparsemount=$(egrep '/Volumes/' <<< "$shadowoutput" | head -1 | cut -f3)
+    dmgmounts+=( $(egrep 'Apple_(H|AP)FS' <<< "$shadowoutput" | awk '{print $1}') )
     # If we're using a system image as the source, read the version and build
     # numbers before the first install.
     start_nvb=$(read_nvb "$sparsemount")
@@ -253,6 +284,8 @@ cp "$template" "$sparsemount/private/var/log"
 echo "IED:PHASE:asr"
 
 # Eject the dmgs.
+echo "IED:MSG:Unmounting volume"
+unmount_volume "$sparsemount"
 echo "IED:MSG:Ejecting image"
 unmount_dmgs
 

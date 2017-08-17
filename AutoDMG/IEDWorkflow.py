@@ -635,6 +635,11 @@ class IEDWorkflow(NSObject):
         
         # The script is wrapped with progresswatcher.py which parses script
         # output and sends it back as notifications to IEDSocketListener.
+        osMajor = IEDUtil.hostVersionTuple()[1]
+        if osMajor < 13:
+            fsType = "HFS+J"
+        else:
+            fsType = "APFS"
         args = [
             NSBundle.mainBundle().pathForResource_ofType_("progresswatcher", "py"),
             "--cd", NSBundle.mainBundle().resourcePath(),
@@ -642,6 +647,7 @@ class IEDWorkflow(NSObject):
             "installesdtodmg",
             "--user", str(os.getuid()),
             "--group", str(os.getgid()),
+            "--fstype", fsType,
             "--output", self.outputPath(),
             "--volume-name", self.volumeName(),
             "--size", str(self.volumeSize()),

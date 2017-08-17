@@ -298,6 +298,7 @@ def installesdtodmg(args):
     pwargs = ["./installesdtodmg.sh",
               args.user,
               args.group,
+              args.fstype,
               args.output,
               args.volume_name,
               args.size,
@@ -326,6 +327,7 @@ def main(argv):
     iedparser = sp.add_parser("installesdtodmg", help="Perform installation to DMG")
     iedparser.add_argument("-u", "--user", help="Change owner of DMG", required=True)
     iedparser.add_argument("-g", "--group", help="Change group of DMG", required=True)
+    iedparser.add_argument("-f", "--fstype", help="File system type", required=True)
     iedparser.add_argument("-o", "--output", help="Set output path", required=True)
     iedparser.add_argument("-t", "--template", help="Path to adtmpl", required=True)
     iedparser.add_argument("-n", "--volume-name", default="Macintosh HD", help="Set installed system's volume name.")

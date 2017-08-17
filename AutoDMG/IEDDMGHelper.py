@@ -15,6 +15,7 @@ import time
 import traceback
 
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage
+from IEDUtil import *
 
 
 class IEDDMGHelper(NSObject):
@@ -140,9 +141,17 @@ class IEDDMGHelper(NSObject):
                                                                                        NSPropertyListImmutable,
                                                                                        None,
                                                                                        None)
+            apfsVolumes = IEDUtil.listApfsVolumes()
             for partition in plist["system-entities"]:
                 if partition.get("potentially-mountable") == 1:
                     if "mount-point" in partition:
+                        deviceId = partition.get("dev-entry", "").rpartition("/")[-1]
+                        roles = apfsVolumes.get(deviceId, {}).get("Roles", [])
+                        if roles:
+                            LogDebug("Skipping %@ which has role %@",
+                                partition["mount-point"],
+                                str(roles))
+                            continue
                         self.dmgs[dmgPath] = partition["mount-point"]
                         break
             else:

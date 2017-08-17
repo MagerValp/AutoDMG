@@ -269,7 +269,15 @@ class IEDController(NSObject):
         if self.addPkgController.packagesToInstall():
             dateStr = formatter.stringFromDate_(NSDate.date())
             imageName = "osx_custom_%s" % dateStr
-        panel.setNameFieldStringValue_("%s-%s-%s.hfs" % (imageName, self.installerVersion, self.installerBuild))
+        osMajor = IEDUtil.hostVersionTuple()[1]
+        if osMajor < 13:
+            fsType = "hfs"
+        else:
+            fsType = "apfs"
+        panel.setNameFieldStringValue_("%s-%s-%s.%s" % (imageName,
+            self.installerVersion,
+            self.installerBuild,
+            fsType))
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
