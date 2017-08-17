@@ -203,7 +203,7 @@ class IEDController(NSObject):
     def locateInstaller_(self, menuItem):
         if menuItem.isAlternate():
             try:
-                path = glob.glob("/Applications/Install*OS*.app")[-1]
+                path = (glob.glob("/Applications/*/Install*OS*.app") + glob.glob("/Applications/Install*OS*.app"))[-1]
                 if IEDUtil.mightBeSource_(path):
                     self.acceptSource_(path)
                 else:
