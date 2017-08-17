@@ -36,7 +36,7 @@
 			<string>15E65</string>
 			<string>15F34</string>
 		</array>
-		<key>10.12.5-16F73</key>
+		<key>10.12.6-16G29</key>
 		<array>
 			<string>16A323</string>
 			<string>16A322</string>
@@ -51,6 +51,18 @@
 			<string>16C68</string>
 			<string>16D32</string>
 			<string>16E195</string>
+			<string>16F73</string>
+			<string>16F2073</string>
+			<string>16F2104</string>
+		</array>
+		<key>10.13-17A344b</key>
+		<array>
+			<string>17A306f</string>
+			<string>17A291m</string>
+			<string>17A291j</string>
+			<string>17A264c</string>
+			<string>17A315i</string>
+			<string>17A330h</string>
 		</array>
 		<key>10.9.5-13F34</key>
 		<array>
@@ -73,7 +85,7 @@
 	</array>
 	<key>Profiles</key>
 	<dict>
-		<key>10.10.5-14F2411</key>
+		<key>10.10.5-14F2511</key>
 		<array>
 		</array>
 		<key>10.10.5-14F27</key>
@@ -83,7 +95,7 @@
 			<string>SecurityYo</string>
 			<string>SafariYo</string>
 		</array>
-		<key>10.11.6-15G1510</key>
+		<key>10.11.6-15G1611</key>
 		<array>
 		</array>
 		<key>10.11.6-15G31</key>
@@ -95,13 +107,14 @@
 			<string>SafariElCap</string>
 			<string>AppStoreElCap</string>
 		</array>
-		<key>10.12.5-16F73</key>
+		<key>10.12.6-16G29</key>
 		<array>
-			<string>RemoteDesktopClient</string>
 			<string>iTunes</string>
+			<string>RemoteDesktopClient</string>
 		</array>
-		<key>10.13-17A264c</key>
+		<key>10.13-17A344b</key>
 		<array>
+			<string>iTunes</string>
 		</array>
 		<key>10.9.5-13F34</key>
 		<array>
@@ -114,7 +127,7 @@
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2017-06-06T09:00:43Z</date>
+	<date>2017-08-17T11:50:19Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AppStoreElCap</key>
@@ -153,24 +166,24 @@
 		<key>RemoteDesktopClient</key>
 		<dict>
 			<key>name</key>
-			<string>Remote Desktop Client Update 3.9.2</string>
+			<string>Remote Desktop Client Update 3.9.3</string>
 			<key>sha1</key>
-			<string>2ad3b30ca2e15312a421d4383cbe410b9314f9fa</string>
+			<string>8f578ce13def8188e77a9ba4d1a8a369b82f779e</string>
 			<key>size</key>
-			<integer>8768918</integer>
+			<integer>8793493</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/51/41/091-00404/yf2kt4gajz3qh788grqeg366vuglw5l3hw/RemoteDesktopClient.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/50/46/091-14720/s22jiusq9ekq2ioyb6jzy6syqvbavjb46e/RemoteDesktopClient.pkg</string>
 		</dict>
 		<key>SafariElCap</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 10.1.1 for El Capitan</string>
+			<string>Safari 10.1.2 for El Capitan</string>
 			<key>sha1</key>
-			<string>037005b0df008fe70f5843b09363bd7aa008a4b1</string>
+			<string>d1c54c91763d9271b28a8a92872b710b3ca4350c</string>
 			<key>size</key>
-			<integer>73117080</integer>
+			<integer>73198997</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/27/23/091-03063/2354sgxgndmvy5w4rruif7f3aw5uphchvr/Safari10.1.1ElCapitan.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/11/18/091-22828/isj968w4tkwqtz4jhlxngzbsr3nit6zh6z/Safari10.1.2ElCapitan.pkg</string>
 		</dict>
 		<key>SafariMav</key>
 		<dict>
@@ -186,24 +199,24 @@
 		<key>SafariYo</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 10.1.1 for Yosemite</string>
+			<string>Safari 10.1.2 for Yosemite</string>
 			<key>sha1</key>
-			<string>fa033537f17990c5609d057a7f88587e706b4f41</string>
+			<string>86b8af542c1a8d35c5fc64a477733afe828a51c2</string>
 			<key>size</key>
-			<integer>72822161</integer>
+			<integer>73194892</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/08/23/091-02722/anzj6rcuourekx784i99cz29rd472rb3yp/Safari10.1.1Yosemite.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/49/15/091-22830/922z4gigaqp3s1ww66w487cbm88x2cd2gu/Safari10.1.2Yosemite.pkg</string>
 		</dict>
 		<key>SecurityElCap</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2017-002 (El Capitan)</string>
+			<string>Security Update 2017-003 (El Capitan)</string>
 			<key>sha1</key>
-			<string>502aafd298cac5f524fdab1daf6a7674e27728cd</string>
+			<string>ebe661bb32c54e338da0cbaf2d23fd5d07a13374</string>
 			<key>size</key>
-			<integer>710622744</integer>
+			<integer>763907490</integer>
 			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1920/en_US/secupd2017-002elcapitan.dmg</string>
+			<string>http://support.apple.com/downloads/DL1932/en_US/secupd2017-003elcapitan.dmg</string>
 		</dict>
 		<key>SecurityMav</key>
 		<dict>
@@ -219,13 +232,13 @@
 		<key>SecurityYo</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2017-002 (Yosemite)</string>
+			<string>Security Update 2017-003 (Yosemite)</string>
 			<key>sha1</key>
-			<string>9998bccdd6bd05e06b7da21fbb7835e7fe370de5</string>
+			<string>5079894334ea2054a30a7e44e0ccf59e5aa72d8a</string>
 			<key>size</key>
-			<integer>421094826</integer>
+			<integer>431572394</integer>
 			<key>url</key>
-			<string>http://support.apple.com/downloads/DL1919/en_US/secupd2017-002yosemite.dmg</string>
+			<string>http://support.apple.com/downloads/DL1933/en_US/secupd2017-003yosemite.dmg</string>
 		</dict>
 		<key>iBooks</key>
 		<dict>
@@ -241,13 +254,13 @@
 		<key>iTunes</key>
 		<dict>
 			<key>name</key>
-			<string>iTunes 12.6.1</string>
+			<string>iTunes 12.6.2</string>
 			<key>sha1</key>
-			<string>d90cc2acbb6270996821be298daeffdbb9214de3</string>
+			<string>fe2e229e11b232ab2db12ccd893983bb13a7cdc4</string>
 			<key>size</key>
-			<integer>283099318</integer>
+			<integer>284911210</integer>
 			<key>url</key>
-			<string>https://secure-appldnld.apple.com/itunes12/091-14787-20170523-86F107F8-3FB9-11E7-A63F-D7F22C6174CC/iTunes12.6.1.dmg</string>
+			<string>https://secure-appldnld.apple.com/itunes12/091-22852-20170719-8AC524F0-6BB9-11E7-A52A-C5374A4DD6D5/iTunes12.6.2.dmg</string>
 		</dict>
 	</dict>
 </dict>
