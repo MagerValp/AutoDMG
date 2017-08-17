@@ -64,6 +64,7 @@ class IEDWorkflow(NSObject):
         self._finalizeAsrImagescan = True
         self.tempDir = None
         self.templatePath = None
+        self.sourceType = None
         
         return self
     
