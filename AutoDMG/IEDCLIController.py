@@ -110,6 +110,8 @@ class IEDCLIController(NSObject):
             template.setVolumeSize_(args.size)
         if args.skip_asr_imagescan:
             template.setFinalizeAsrImagescan_(False)
+        if args.filesystem:
+            template.setFilesystem_(args.filesystem)
         if args.updates is not None:
             template.setApplyUpdates_(True)
         if args.packages:
@@ -223,6 +225,7 @@ class IEDCLIController(NSObject):
         self.workflow.setVolumeName_(template.volumeName)
         self.workflow.setVolumeSize_(template.volumeSize)
         self.workflow.setFinalizeAsrImagescan_(template.finalizeAsrImagescan)
+        self.workflow.setFilesystem_(template.get("Filesystem"))
         self.workflow.setTemplate_(template)
         self.workflow.start()
         self.waitBusy()
@@ -252,6 +255,7 @@ class IEDCLIController(NSObject):
         argparser.add_argument("-u", "--updates", action="store_const", const=True, help="Apply updates")
         argparser.add_argument("-U", "--download-updates", action="store_true", help="Download missing updates")
         argparser.add_argument("-f", "--force", action="store_true", help="Overwrite output")
+        argparser.add_argument("-F", "--filesystem", choices=["apfs", "hfs"], help="Filesystem for 10.13+ images")
         argparser.add_argument("packages", nargs="*", help="Additional packages")
     
     

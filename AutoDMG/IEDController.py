@@ -44,6 +44,9 @@ class IEDController(NSObject):
     volumeName = IBOutlet()
     volumeSize = IBOutlet()
     finalizeAsrImagescan = IBOutlet()
+    filesystem = IBOutlet()
+    filesystemApfs = IBOutlet()
+    filesystemHfs = IBOutlet()
     
     def awakeFromNib(self):
         LogDebug("awakeFromNib")
@@ -74,6 +77,18 @@ class IEDController(NSObject):
         
         # Currently loaded template.
         self.templateURL = None
+        
+        # Filesystem selection.
+        self.filesystem.setAutoenablesItems_(False)
+        self.filesystemHfs.setRepresentedObject_("hfs")
+        self.filesystemApfs.setRepresentedObject_("apfs")
+        osMajor = IEDUtil.hostVersionTuple()[1]
+        if osMajor < 13:
+            self.filesystem.selectItem_(self.filesystemHfs)
+            self.filesystemApfs.setEnabled_(False)
+        else:
+            self.filesystem.selectItem_(self.filesystemApfs)
+            self.filesystemApfs.setEnabled_(True)
     
     # Methods to communicate with app delegate.
     
@@ -270,14 +285,10 @@ class IEDController(NSObject):
             dateStr = formatter.stringFromDate_(NSDate.date())
             imageName = "osx_custom_%s" % dateStr
         osMajor = IEDUtil.hostVersionTuple()[1]
-        if osMajor < 13:
-            fsType = "hfs"
-        else:
-            fsType = "apfs"
         panel.setNameFieldStringValue_("%s-%s-%s.%s" % (imageName,
             self.installerVersion,
             self.installerBuild,
-            fsType))
+            self.filesystem.selectedItem().representedObject()))
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
             return
@@ -313,6 +324,10 @@ class IEDController(NSObject):
         finalize_asr_imagescan = bool(self.finalizeAsrImagescan.state())
         template.setFinalizeAsrImagescan_(finalize_asr_imagescan)
         self.workflow.setFinalizeAsrImagescan_(finalize_asr_imagescan)
+        
+        fsType = self.filesystem.selectedItem().representedObject()
+        template.setFilesystem_(fsType)
+        self.workflow.setFilesystem_(fsType)
 
         self.workflow.setTemplate_(template)
         
@@ -481,6 +496,21 @@ class IEDController(NSObject):
         if template.finalizeAsrImagescan == False:
             LogDebug("Setting 'Finalize: Scan for restore' to %@", template.finalizeAsrImagescan)
             self.finalizeAsrImagescan.setState_(NSOffState)
+        # Filesystem.
+        if template.filesystem:
+            osMajor = IEDUtil.hostVersionTuple()[1]
+            if osMajor < 13:
+                if template.filesystem != "hfs":
+                    LogWarning("Ignoring template filesystem (%@), using hfs on 10.%d", template.filesystem, osMajor)
+            else:
+                LogDebug("Setting filesystem to %@", template.filesystem)
+                for item in self.filesystem.itemArray():
+                    if item.representedObject() == template.filesystem:
+                        self.filesystem.selectItem_(item)
+                        break
+                else:
+                    LogWarning("Unknown filesystem '%@'", template.filesystem)
+        
         # SourcePath.
         if template.sourcePath:
             LogDebug("Setting source to %@", template.sourcePath)

@@ -35,6 +35,7 @@ class IEDTemplate(NSObject):
         self.volumeSize = None
         self.finalizeAsrImagescan = True
         self.packagesToInstall = None
+        self.filesystem = None
         
         self.loadedTemplates = set()
         
@@ -49,6 +50,7 @@ class IEDTemplate(NSObject):
                           "    volumeName=%s" % repr(self.volumeName),
                           "    volumeSize=%s" % repr(self.volumeSize),
                           "    finalizeAsrImagescan=%s" % repr(self.finalizeAsrImagescan),
+                          "    filesystem=%s" % repr(self.filesystem),
                           ">"))
     
     def initWithSourcePath_(self, path):
@@ -62,7 +64,7 @@ class IEDTemplate(NSObject):
     
     def saveTemplateAndReturnError_(self, path):
         plist = NSMutableDictionary.alloc().init()
-        plist["TemplateFormat"] = self.templateFormat = "1.0"
+        plist["TemplateFormat"] = self.templateFormat = "1.1"
         plist["AdditionalPackages"] = self.additionalPackages
         plist["ApplyUpdates"] = self.applyUpdates
         plist["VolumeName"] = self.volumeName
@@ -74,6 +76,8 @@ class IEDTemplate(NSObject):
             plist["VolumeSize"] = self.volumeSize
         if not self.finalizeAsrImagescan:
             plist["FinalizeAsrImagescan"] = self.finalizeAsrImagescan
+        if self.filesystem:
+            plist["Filesystem"] = self.filesystem
         if plist.writeToFile_atomically_(path, False):
             return None
         else:
@@ -95,7 +99,7 @@ class IEDTemplate(NSObject):
         
         templateFormat = plist.get("TemplateFormat", "1.0")
         
-        if templateFormat != "1.0":
+        if templateFormat not in ["1.0", "1.1"]:
             LogWarning("Unknown format version %@", templateFormat)
         
         for key in plist.iterkeys():
@@ -123,6 +127,11 @@ class IEDTemplate(NSObject):
                 self.setVolumeSize_(plist["VolumeSize"])
             elif key == "FinalizeAsrImagescan":
                 self.setFinalizeAsrImagescan_(plist["FinalizeAsrImagescan"])
+            elif key == "Filesystem":
+                if plist["Filesystem"] not in ["apfs", "hfs"]:
+                    error = "Unknown Filesystem value '%s'" % plist["Filesystem"]
+                    return error
+                self.setFilesystem_(plist["Filesystem"])
             elif key == "TemplateFormat":
                 pass
             
@@ -172,9 +181,13 @@ class IEDTemplate(NSObject):
         self.volumeSize = size
     
     def setFinalizeAsrImagescan_(self, finalizeAsrImagescan):
-        LogInfo("Setting 'Finalize: Scan for restore to '%@'", finalizeAsrImagescan)
+        LogInfo("Setting finalize: scan for restore to '%@'", finalizeAsrImagescan)
         self.finalizeAsrImagescan = finalizeAsrImagescan
-
+    
+    def setFilesystem_(self, filesystem):
+        LogInfo("Setting filesystem to '%@'", filesystem)
+        self.filesystem = filesystem
+    
     def resolvePackages(self):
         self.packagesToInstall = list()
         for path in self.additionalPackages:

@@ -62,6 +62,7 @@ class IEDWorkflow(NSObject):
         self._volumeSize = None
         self._template = None
         self._finalizeAsrImagescan = True
+        self._filesystem = None
         self.tempDir = None
         self.templatePath = None
         self.sourceType = None
@@ -318,6 +319,24 @@ class IEDWorkflow(NSObject):
     
     def setFinalizeAsrImagescan_(self, finalizeAsrImagescan):
         self._finalizeAsrImagescan = finalizeAsrImagescan
+    
+    # Filesystem for 10.13+ images.
+    
+    def filesystem(self):
+        osMajor = IEDUtil.hostVersionTuple()[1]
+        if osMajor < 13:
+            LogDebug("Workflow filesystem is always hfs for this OS version")
+            return "hfs"
+        elif self._filesystem:
+            LogDebug("Workflow filesystem is set to '%@'", self._filesystem)
+            return self._filesystem
+        else:
+            LogDebug("Workflow filesystem defaults to apfs for this OS version")
+            return "apfs"
+    
+    def setFilesystem_(self, filesystem):
+        LogDebug("Setting filesystem for workflow to '%@'", filesystem)
+        self._filesystem = filesystem
     
     # Template to save in image.
     
@@ -636,11 +655,6 @@ class IEDWorkflow(NSObject):
         
         # The script is wrapped with progresswatcher.py which parses script
         # output and sends it back as notifications to IEDSocketListener.
-        osMajor = IEDUtil.hostVersionTuple()[1]
-        if osMajor < 13:
-            fsType = "HFS+J"
-        else:
-            fsType = "APFS"
         args = [
             NSBundle.mainBundle().pathForResource_ofType_("progresswatcher", "py"),
             "--cd", NSBundle.mainBundle().resourcePath(),
@@ -648,7 +662,7 @@ class IEDWorkflow(NSObject):
             "installesdtodmg",
             "--user", str(os.getuid()),
             "--group", str(os.getgid()),
-            "--fstype", fsType,
+            "--fstype", self.filesystem(),
             "--output", self.outputPath(),
             "--volume-name", self.volumeName(),
             "--size", str(self.volumeSize()),
