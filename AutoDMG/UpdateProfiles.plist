@@ -55,7 +55,7 @@
 			<string>16F2073</string>
 			<string>16F2104</string>
 		</array>
-		<key>10.13-17A344b</key>
+		<key>10.13-17A362A</key>
 		<array>
 			<string>17A306f</string>
 			<string>17A291m</string>
@@ -63,6 +63,10 @@
 			<string>17A264c</string>
 			<string>17A315i</string>
 			<string>17A330h</string>
+			<string>17A344b</string>
+			<string>17A352a</string>
+			<string>17A358a</string>
+			<string>17A360a</string>
 		</array>
 		<key>10.9.5-13F34</key>
 		<array>
@@ -109,10 +113,9 @@
 		</array>
 		<key>10.12.6-16G29</key>
 		<array>
-			<string>iTunes</string>
 			<string>RemoteDesktopClient</string>
 		</array>
-		<key>10.13-17A344b</key>
+		<key>10.13-17A362a</key>
 		<array>
 			<string>iTunes</string>
 		</array>
@@ -127,7 +130,7 @@
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2017-08-17T11:50:19Z</date>
+	<date>2017-09-14T22:06:20Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AppStoreElCap</key>
@@ -254,13 +257,13 @@
 		<key>iTunes</key>
 		<dict>
 			<key>name</key>
-			<string>iTunes 12.6.2</string>
+			<string>iTunes 12.7</string>
 			<key>sha1</key>
-			<string>fe2e229e11b232ab2db12ccd893983bb13a7cdc4</string>
+			<string>ec42117569857b81206ca782b932b9f5f48954fc</string>
 			<key>size</key>
-			<integer>284911210</integer>
+			<integer>268903616</integer>
 			<key>url</key>
-			<string>https://secure-appldnld.apple.com/itunes12/091-22852-20170719-8AC524F0-6BB9-11E7-A52A-C5374A4DD6D5/iTunes12.6.2.dmg</string>
+			<string>https://secure-appldnld.apple.com/itunes12/031-97711-20170912-AA2DAD20-71C8-4326-9AE8-F56B9F1DF169/iTunes12.7.dmg</string>
 		</dict>
 	</dict>
 </dict>
