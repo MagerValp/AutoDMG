@@ -225,7 +225,7 @@ class IEDCLIController(NSObject):
         self.workflow.setVolumeName_(template.volumeName)
         self.workflow.setVolumeSize_(template.volumeSize)
         self.workflow.setFinalizeAsrImagescan_(template.finalizeAsrImagescan)
-        self.workflow.setFilesystem_(template.get("Filesystem"))
+        self.workflow.setFilesystem_(template.filesystem)
         self.workflow.setTemplate_(template)
         self.workflow.start()
         self.waitBusy()
