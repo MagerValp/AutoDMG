@@ -440,6 +440,9 @@ class IEDController(NSObject):
             template.setVolumeSize_(self.volumeSize.intValue())
         if self.finalizeAsrImagescan.state() == NSOffState:
             template.setFinalizeAsrImagescan_(False)
+        osMajor = IEDUtil.hostVersionTuple()[1]
+        if osMajor >= 13:
+            template.setFilesystem_(self.filesystem.selectedItem().representedObject())
         template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
         
         error = template.saveTemplateAndReturnError_(url.path())
