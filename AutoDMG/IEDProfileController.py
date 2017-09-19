@@ -133,11 +133,10 @@ class IEDProfileController(NSObject):
         # Ensure profile in plist supports current OS.
         plistVersions = list(x.partition("-")[0] for x in plist["Profiles"].iterkeys())
         plistMajors = sorted(IEDUtil.splitVersion(x)[1] for x in plistVersions)
-        osMajor = IEDUtil.hostVersionTuple()[1]
-        plistSupportsOS = osMajor in plistMajors
+        plistSupportsOS = IEDUtil.hostMajorVersion() in plistMajors
         LogDebug("Profile %@ 10.%d",
                  "supports" if plistSupportsOS else "does not support",
-                 osMajor)
+                 IEDUtil.hostMajorVersion())
         
         # If the plist is newer, update the user's.
         userIsEmpty = not userUpdateProfiles
@@ -191,10 +190,9 @@ class IEDProfileController(NSObject):
         
         self.deprecatedOS = False
         try:
-            hostVerMajor = IEDUtil.hostVersionTuple()[1]
             for osVerStr in plist["DeprecatedOSVersions"]:
                 deprecatedVerMajor = IEDUtil.splitVersion(osVerStr)[1]
-                if hostVerMajor <= deprecatedVerMajor:
+                if IEDUtil.hostMajorVersion() <= deprecatedVerMajor:
                     self.deprecatedOS = True
                     LogWarning("%@ is no longer being updated by Apple", osVerStr)
                     break

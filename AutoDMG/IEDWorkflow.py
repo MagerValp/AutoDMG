@@ -323,8 +323,7 @@ class IEDWorkflow(NSObject):
     # Filesystem for 10.13+ images.
     
     def filesystem(self):
-        osMajor = IEDUtil.hostVersionTuple()[1]
-        if osMajor < 13:
+        if IEDUtil.hostMajorVersion() < 13:
             LogDebug("Workflow filesystem is always hfs for this OS version")
             return "hfs"
         elif self._filesystem:

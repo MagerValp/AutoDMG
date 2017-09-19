@@ -45,11 +45,14 @@ class IEDUtil(NSObject):
         return cls.splitVersion(version)
     
     @classmethod
+    def hostMajorVersion(cls):
+        return cls.hostVersionTuple()[1]
+    
+    @classmethod
     def hostOSName(cls):
-        osMajor = cls.hostVersionTuple()[1]
-        if osMajor <= 7:
+        if IEDUtil.hostMajorVersion() <= 7:
             return "Mac OS X"
-        elif osMajor >= 12:
+        elif IEDUtil.hostMajorVersion() >= 12:
             return "macOS"
         else:
             return "OS X"

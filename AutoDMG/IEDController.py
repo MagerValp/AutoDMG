@@ -82,8 +82,7 @@ class IEDController(NSObject):
         self.filesystem.setAutoenablesItems_(False)
         self.filesystemHfs.setRepresentedObject_("hfs")
         self.filesystemApfs.setRepresentedObject_("apfs")
-        osMajor = IEDUtil.hostVersionTuple()[1]
-        if osMajor < 13:
+        if IEDUtil.hostMajorVersion() < 13:
             self.filesystem.selectItem_(self.filesystemHfs)
             self.filesystemApfs.setEnabled_(False)
         else:
@@ -109,8 +108,7 @@ class IEDController(NSObject):
     
     def setSourcePlaceholder(self):
         self.sourceLabel.setStringValue_("Drop %s Installer Here" % (IEDUtil.hostOSName()))
-        osMajor = IEDUtil.hostVersionTuple()[1]
-        image = NSImage.imageNamed_("Installer Placeholder 10.%d" % osMajor)
+        image = NSImage.imageNamed_("Installer Placeholder 10.%d" % IEDUtil.hostMajorVersion())
         if not image:
             image = NSImage.imageNamed_("Installer Placeholder")
         self.sourceImage.animator().setImage_(image)
@@ -284,7 +282,6 @@ class IEDController(NSObject):
         if self.addPkgController.packagesToInstall():
             dateStr = formatter.stringFromDate_(NSDate.date())
             imageName = "osx_custom_%s" % dateStr
-        osMajor = IEDUtil.hostVersionTuple()[1]
         panel.setNameFieldStringValue_("%s-%s-%s.%s" % (imageName,
             self.installerVersion,
             self.installerBuild,
@@ -440,8 +437,7 @@ class IEDController(NSObject):
             template.setVolumeSize_(self.volumeSize.intValue())
         if self.finalizeAsrImagescan.state() == NSOffState:
             template.setFinalizeAsrImagescan_(False)
-        osMajor = IEDUtil.hostVersionTuple()[1]
-        if osMajor >= 13:
+        if IEDUtil.hostMajorVersion() >= 13:
             template.setFilesystem_(self.filesystem.selectedItem().representedObject())
         template.setAdditionalPackages_([x.path() for x in self.addPkgController.packagesToInstall()])
         
@@ -501,10 +497,11 @@ class IEDController(NSObject):
             self.finalizeAsrImagescan.setState_(NSOffState)
         # Filesystem.
         if template.filesystem:
-            osMajor = IEDUtil.hostVersionTuple()[1]
-            if osMajor < 13:
+            if IEDUtil.hostMajorVersion() < 13:
                 if template.filesystem != "hfs":
-                    LogWarning("Ignoring template filesystem (%@), using hfs on 10.%d", template.filesystem, osMajor)
+                    LogWarning("Ignoring template filesystem (%@), using hfs on 10.%d",
+                               template.filesystem,
+                               IEDUtil.hostMajorVersion())
             else:
                 LogDebug("Setting filesystem to %@", template.filesystem)
                 for item in self.filesystem.itemArray():
