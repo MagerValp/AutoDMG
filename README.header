@@ -21,7 +21,3 @@
 
 <body>
 
-<%= @body %>
-
-</body>
-</html>
