@@ -118,6 +118,9 @@ class IEDUtil(NSObject):
         if os.path.exists(os.path.join(path,
                           "Contents/SharedSupport/InstallESD.dmg")):
             return True
+        elif os.path.exists(os.path.join(path,
+                            "Contents/Resources/InstallAssistantTool")):
+            return True
         elif path.lower().endswith(".dmg"):
             return True
         else:

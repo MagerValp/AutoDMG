@@ -155,12 +155,20 @@ class IEDWorkflow(NSObject):
             self.newSourcePath,
         ]
         for path in pathCandidates:
-            if os.path.exists(path):
+            if os.path.isfile(path):
                 dmgPath = path
                 break
         else:
-            self.delegate.sourceFailed_text_("Failed to mount %s" % self.newSourcePath,
-                                             "No system dmg found")
+            iaToolPath = os.path.join(self.newSourcePath, "Contents/Resources/InstallAssistantTool")
+            baseName = os.path.basename(self.newSourcePath)
+            if os.path.exists(iaToolPath):
+                self.delegate.sourceFailed_text_("Incomplete installer",
+                                                 "Installation resources are missing from '%s'. " % baseName +
+                                                 "Try downloading a new installer from the App Store straight from " +
+                                                 "Apple without using an internal Software Update or caching server.")
+            else:
+                self.delegate.sourceFailed_text_("Failed to mount %s" % self.newSourcePath,
+                                                 "No system dmg found")
             return
         
         self.delegate.examiningSource_(self.newSourcePath)
