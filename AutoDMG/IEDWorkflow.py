@@ -621,13 +621,17 @@ class IEDWorkflow(NSObject):
         sizeRequirement = 0
         LogInfo("%d packages to install:", len(self.packagesToInstall))
         for path in self.packagesToInstall:
-            LogInfo("    %@", path)
-            installedSize = IEDUtil.getInstalledPkgSize_(path)
+            try:
+                installedSize = IEDUtil.getInstalledPkgSize_(path)
+            except BaseException as e:
+                LogError("Size calculation of %@ failed: %@", path, unicode(e))
+                installedSize = None
             if installedSize is None:
                 self.delegate.buildFailed_details_("Failed to determine installed size",
                                                    "Unable to determine installation size requirements for %s" % path)
                 self.stop()
                 return
+            LogInfo("    %@ requires %@", path, IEDUtil.formatByteSize_(installedSize))
             sizeRequirement += installedSize
         sizeReqStr = IEDUtil.formatByteSize_(sizeRequirement)
         LogInfo("Workflow requires a %@ disk image", sizeReqStr)

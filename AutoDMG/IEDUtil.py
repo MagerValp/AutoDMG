@@ -170,14 +170,20 @@ class IEDUtil(NSObject):
                 return cls.calculateInstalledPkgSize_(pkgPath)
             else:
                 return size
-        elif ext == ".plist":
-            # FIXME: Implement size calculation
-            LogWarning("Using hardcoded size for InstallInfo.plist")
-            return 12497424
-        else:
-            LogError("Don't know how to calculate installed size for '%@'",
-                     pkgPath)
-            return None
+        elif os.path.basename(pkgPath) == "InstallInfo.plist":
+            iedPath = os.path.join(os.path.dirname(pkgPath), "InstallESD.dmg")
+            try:
+                iedSize = os.stat(iedPath).st_size
+                estimatedSize = int(iedSize * 2.72127696157)
+                LogDebug("Estimating size requirements of InstallInfo.plist to %@",
+                          cls.formatByteSize_(estimatedSize))
+                return estimatedSize
+            except OSError:
+                pass
+        
+        LogError("Don't know how to calculate installed size for '%@'",
+                 pkgPath)
+        return None
     
     @classmethod
     def getInstalledPkgSizeFromInstaller_(cls, pkgPath):
