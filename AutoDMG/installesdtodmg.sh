@@ -134,8 +134,10 @@ fi
 tempdir=$(mktemp -d "${TMPDIR:-/tmp/}installesdtodmg.XXXXXXXX")
 tempdirs+=("$tempdir")
 freespace=$(df -g "$tempdir" | tail -1 | awk '{print $4}')
+tempdev=$(df -g "$tempdir" | tail -1 | awk '{print $1}')
+tempvol=$(diskutil info -plist "$tempdev" | grep -A1 VolumeName | tail -1 | cut -d\> -f2 | cut -d\< -f1)
 if [[ "$freespace" -lt 15 ]]; then
-    echo "IED:FAILURE:Less than 15 GB free disk space, aborting"
+    echo "IED:FAILURE:Not enough space on $tempvol to build image."
     exit 100
 fi
 
@@ -164,13 +166,13 @@ if [[ -z "$sysimg" ]]; then
     echo "IED:MSG:Creating disk image with $fstype"
     sparsedmg="$tempdir/os.sparseimage"
     if ! hdiutil create -size "${size}g" -type SPARSE -fs "$fstype" -volname "$volname" -uid 0 -gid 80 -mode 1775 "$sparsedmg"; then
-        echo "IED:FAILURE:Failed to create disk image for install"
+        echo "IED:FAILURE:Failed to create disk image for install, see the log for details."
         exit 101
     fi
     mountoutput=$(hdiutil attach -nobrowse -noautoopen -noverify -owners on "$sparsedmg")
     declare -i result=$?
     if [[ $result -ne 0 ]]; then
-        echo "IED:FAILURE:Failed to mount disk image for install, return code $result"
+        echo "IED:FAILURE:Failed to mount disk image for install, return code $result."
         exit 101
     fi
     sparsemount=$(egrep '/Volumes/' <<< "$mountoutput" | head -1 | cut -f3)
@@ -182,13 +184,13 @@ else
     shadowoutput=$(hdiutil attach -shadow "$shadowfile" -nobrowse -noautoopen -noverify -owners on "$sysimg")
     declare -i result=$?
     if [[ $result -ne 0 ]]; then
-        echo "IED:FAILURE:Failed to create shadow image for install, return code $result"
+        echo "IED:FAILURE:Failed to create shadow image for install, return code $result."
         exit 101
     fi
     targetdev=$(echo "$shadowoutput" | egrep '/Volumes/' | head -1 | awk '{print $1}')
     echo "IED:MSG:Renaming $targetdev to $volname"
     if ! diskutil rename "$targetdev" "$volname"; then
-        echo "IED:FAILURE:Failed to rename install volume"
+        echo "IED:FAILURE:Failed to rename install volume."
         exit 101
     fi
     sparsemount=$(egrep '/Volumes/' <<< "$shadowoutput" | head -1 | cut -f3)
@@ -239,7 +241,7 @@ for package; do
             installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
             declare -i result=$?
             if [[ $result -ne 0 ]]; then
-                echo "IED:FAILURE:$(basename "$package") failed with return code $result"
+                echo "IED:FAILURE:Installation of '$(basename "$package")' failed with return code $result. See the log for details."
                 exit 102
             fi
         fi
@@ -297,14 +299,14 @@ else
     hdiutil convert -puppetstrings -format UDZO -shadow "$shadowfile" "$sysimg" -o "$compresseddmg"
 fi
 if [[ $? -ne 0 ]]; then
-    echo "IED:FAILURE:Disk image conversion failed"
+    echo "IED:FAILURE:Disk image conversion failed, see the log for details."
     exit 103
 fi
 
 # Change ownership.
 echo "IED:MSG:Changing owner"
 if ! chown "${user}:$group" "$compresseddmg"; then
-    echo "IED:FAILURE:Ownership change failed"
+    echo "IED:FAILURE:Setting owner to ${user}:$group failed, see the log for details."
     exit 105
 fi
 
