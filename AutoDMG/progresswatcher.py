@@ -51,12 +51,21 @@ class ProgressWatcher(NSObject):
             progressHandler = "notifyAsrProgressData:"
             self.asrProgressActive = False
             self.asrPhase = 0
+            self.asrOutput = ""
+            nc.addObserver_selector_name_object_(self,
+                                                 "notifyAsrProgressTermination:",
+                                                 NSTaskDidTerminateNotification,
+                                                 task)
         elif mode == "ied":
             progressHandler = "notifyIEDProgressData:"
             self.outputBuffer = ""
             self.watchLogHandle = None
             self.watchLogBuffer = ""
             self.lastSender = None
+            nc.addObserver_selector_name_object_(self,
+                                                 "notifyIEDProgressTermination:",
+                                                 NSTaskDidTerminateNotification,
+                                                 task)
         
         nc.addObserver_selector_name_object_(self,
                                              progressHandler,
@@ -64,19 +73,26 @@ class ProgressWatcher(NSObject):
                                              stdoutHandle)
         stdoutHandle.readInBackgroundAndNotify()
         
-        nc.addObserver_selector_name_object_(self,
-                                             "notifyProgressTermination:",
-                                             NSTaskDidTerminateNotification,
-                                             task)
         task.launch()
     
     def shouldKeepRunning(self):
         return self.isTaskRunning
     
-    def notifyProgressTermination_(self, notification):
+    def notifyAsrProgressTermination_(self, notification):
         task = notification.object()
-        if task.terminationStatus() == 0:
-            pass
+        if task.terminationStatus() != 0:
+            message = "asr failed with status %d" % task.terminationStatus()
+            if self.asrOutput:
+                message += ":\n\n" + self.asrOutput.rstrip()
+            else:
+                message += "."
+            self.postNotification_({"action": "notify_failure", "message": message})
+        else:
+            self.postNotification_({"action": "task_done", "termination_status": task.terminationStatus()})
+        self.isTaskRunning = False
+    
+    def notifyIEDProgressTermination_(self, notification):
+        task = notification.object()
         self.postNotification_({"action": "task_done", "termination_status": task.terminationStatus()})
         self.isTaskRunning = False
     
@@ -87,6 +103,7 @@ class ProgressWatcher(NSObject):
             if (not self.asrProgressActive) and ("\x0a" in progressStr):
                 msg, _, rest = progressStr.partition("\x0a")
                 progressStr = "\x0a" + rest
+                self.asrOutput += msg + "\n"
                 self.postNotification_({"action": "log_message", "log_level": 6, "message": "asr output: " + msg.rstrip()})
             while progressStr:
                 if progressStr.startswith("\x0a"):
@@ -109,6 +126,7 @@ class ProgressWatcher(NSObject):
                         self.asrPercent = int(m.group(0))
                         self.postNotification_({"action": "update_progress", "percent": float(self.asrPercent)})
                     else:
+                        self.asrOutput += progressStr
                         self.postNotification_({"action": "log_message", "log_level": 6, "message": "asr output: " + progressStr.rstrip()})
                         break
             
