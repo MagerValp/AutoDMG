@@ -218,6 +218,11 @@ class IEDWorkflow(NSObject):
             self.baseSystemMountedFromPath = baseSystemPath
             self.dmgHelper.attach_selector_(baseSystemPath, self.handleSourceMountResult_)
         else:
+            if (self.sourceType == IEDWorkflow.INSTALL_ESD) and \
+               (IEDUtil.hostMajorVersion() >= 13):
+                self.delegate.sourceFailed_text_("Invalid source",
+                                                 "InstallESD images aren't valid installers on 10.13+.")
+                return
             self.delegate.sourceFailed_text_("Invalid source",
                                              "Couldn't find system version.")
     
