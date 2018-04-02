@@ -42,9 +42,13 @@ class IEDUpdateController(NSObject):
     def init(self):
         self = super(IEDUpdateController, self).init()
         if self is None:
+            LogError("Failed to initialize IEDUpdateController")
             return None
         
         self.cache = IEDUpdateCache.alloc().initWithDelegate_(self)
+        if not self.cache:
+            LogError("Failed to initialize IEDUpdateController")
+            return None
         self.updates = list()
         self.downloadTotalSize = 0
         self.downloads = list()

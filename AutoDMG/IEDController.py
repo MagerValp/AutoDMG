@@ -12,7 +12,8 @@ from __future__ import unicode_literals
 from CocoaWrapper import *
 from objc import IBAction, IBOutlet
 
-import os.path
+import sys
+import os
 import glob
 from IEDLog import LogDebug, LogInfo, LogNotice, LogWarning, LogError, LogMessage, LogException
 from IEDUpdateController import *
@@ -64,7 +65,13 @@ class IEDController(NSObject):
         
         # We're a delegate for the update controller, protocol:
         #   (void)updateControllerChanged
-        self.updateController.setDelegate_(self)
+        if self.updateController:
+            self.updateController.setDelegate_(self)
+        else:
+            alert = NSAlert.alloc().init()
+            alert.setMessageText_("Unable to initialize update controller")
+            alert.setInformativeText_("AutoDMG will not function correctly, check the log for details.")
+            alert.runModal()
         
         # Main workflow logic.
         self.workflow = IEDWorkflow.alloc().initWithDelegate_(self)

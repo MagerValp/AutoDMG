@@ -30,6 +30,12 @@ class IEDUpdateCache(NSObject):
                                                                                  None,
                                                                                  True,
                                                                                  None)
+        if not url:
+            if error:
+                LogError("Unable to locate Application Support directory: %@", error.localizedDescription())
+            else:
+                LogError("Unable to locate Application Support directory")
+            return None
         self.updateDir = os.path.join(url.path(), "AutoDMG", "Updates")
         if not os.path.exists(self.updateDir):
             try:

@@ -36,6 +36,9 @@ class IEDCLIController(NSObject):
             return None
         
         self.cache = IEDUpdateCache.alloc().initWithDelegate_(self)
+        if not self.cache:
+            LogError("Failed to initialize IEDUpdateController")
+            return None
         self.workflow = IEDWorkflow.alloc().initWithDelegate_(self)
         self.profileController = IEDProfileController.alloc().init()
         self.profileController.awakeFromNib()
