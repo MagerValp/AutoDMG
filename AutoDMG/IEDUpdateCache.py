@@ -155,6 +155,7 @@ class IEDUpdateCache(NSObject):
                 self.delegate.downloadFailed_withError_(self.package, error)
                 return
             
+            LogDebug("Downloading %@ from %@", self.package.name(), self.package.url())
             url = NSURL.URLWithString_(self.package.url())
             request = NSURLRequest.requestWithURL_(url)
             self.connection = NSURLConnection.connectionWithRequest_delegate_(request, self)
@@ -179,6 +180,16 @@ class IEDUpdateCache(NSObject):
             self.delegate.downloadFailed_withError_(self.package, error)
             self.delegate.downloadAllDone()
     
+    def connection_willSendRequest_redirectResponse_(self, connection, request, response):
+        try:
+            if response:
+                url = response.URL()
+                code = response.statusCode()
+                LogDebug("%d redirect to %@", code, url)
+        except BaseException as e:
+            LogDebug("Exception: %@", repr(e))
+        return request
+
     def connection_didReceiveData_(self, connection, data):
         try:
             self.fileHandle.writeData_(data)
