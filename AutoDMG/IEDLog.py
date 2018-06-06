@@ -35,8 +35,8 @@ IEDColorForLevel = [
     NSColor.redColor(),
     NSColor.redColor(),
     NSColor.orangeColor(),
-    NSColor.blackColor(),
-    NSColor.blackColor(),
+    NSColor.labelColor(),
+    NSColor.labelColor(),
     NSColor.grayColor(),
 ]
 
