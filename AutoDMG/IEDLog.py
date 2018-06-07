@@ -30,14 +30,14 @@ IEDLogLevelNotice    = 5
 IEDLogLevelInfo      = 6
 IEDLogLevelDebug     = 7
 IEDColorForLevel = [
-    NSColor.redColor(),
-    NSColor.redColor(),
-    NSColor.redColor(),
-    NSColor.redColor(),
-    NSColor.orangeColor(),
+    NSColor.systemRedColor(),
+    NSColor.systemRedColor(),
+    NSColor.systemRedColor(),
+    NSColor.systemRedColor(),
+    NSColor.systemOrangeColor(),
     NSColor.labelColor(),
     NSColor.labelColor(),
-    NSColor.grayColor(),
+    NSColor.secondaryLabelColor(),
 ]
 
 # Control which output channels are active.
