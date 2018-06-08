@@ -258,7 +258,7 @@ class IEDCLIController(NSObject):
         argparser.add_argument("-u", "--updates", action="store_const", const=True, help="Apply updates")
         argparser.add_argument("-U", "--download-updates", action="store_true", help="Download missing updates")
         argparser.add_argument("-f", "--force", action="store_true", help="Overwrite output")
-        argparser.add_argument("-F", "--filesystem", choices=["apfs", "hfs"], help="Filesystem for 10.13+ images")
+        argparser.add_argument("-F", "--filesystem", choices=["apfs", "hfs"], help="Filesystem for 10.13 images")
         argparser.add_argument("packages", nargs="*", help="Additional packages")
     
     

@@ -333,12 +333,15 @@ class IEDWorkflow(NSObject):
     def setFinalizeAsrImagescan_(self, finalizeAsrImagescan):
         self._finalizeAsrImagescan = finalizeAsrImagescan
     
-    # Filesystem for 10.13+ images.
+    # Filesystem for 10.13 images.
     
     def filesystem(self):
         if IEDUtil.hostMajorVersion() < 13:
             LogDebug("Workflow filesystem is always hfs for this OS version")
             return "hfs"
+        elif IEDUtil.hostMajorVersion() > 13:
+            LogDebug("Workflow filesystem is always apfs for this OS version")
+            return "apfs"
         elif self._filesystem:
             LogDebug("Workflow filesystem is set to '%@'", self._filesystem)
             return self._filesystem
@@ -348,6 +351,14 @@ class IEDWorkflow(NSObject):
     
     def setFilesystem_(self, filesystem):
         LogDebug("Setting filesystem for workflow to '%@'", filesystem)
+        if filesystem == "hfs":
+            if IEDUtil.hostMajorVersion > 13:
+                LogWarning("Ignoring filesystem setting, only apfs is supported")
+        elif filesystem == "apfs":
+            if IEDUtil.hostMajorVersion < 13:
+                LogWarning("Ignoring filesystem setting, only hfs is supported")
+        else:
+            LogWarning("Unrecognized filesystem setting '%@'", filesystem)
         self._filesystem = filesystem
     
     # Template to save in image.
