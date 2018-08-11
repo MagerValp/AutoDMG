@@ -352,10 +352,10 @@ class IEDWorkflow(NSObject):
     def setFilesystem_(self, filesystem):
         LogDebug("Setting filesystem for workflow to '%@'", filesystem)
         if filesystem == "hfs":
-            if IEDUtil.hostMajorVersion > 13:
+            if IEDUtil.hostMajorVersion() > 13:
                 LogWarning("Ignoring filesystem setting, only apfs is supported")
         elif filesystem == "apfs":
-            if IEDUtil.hostMajorVersion < 13:
+            if IEDUtil.hostMajorVersion() < 13:
                 LogWarning("Ignoring filesystem setting, only hfs is supported")
         else:
             LogWarning("Unrecognized filesystem setting '%@'", filesystem)
