@@ -5,6 +5,42 @@
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "#!/bin/bash&#10;#&#10;# Sets the version string to a monotonically increased string, based on&#10;# the number of git commits.&#10;&#10;set -o errexit&#10;set -o nounset&#10;&#10;VERSION=$(git --git-dir=&quot;$PROJECT_DIR/.git&quot; --work-tree=&quot;$PROJECT_DIR&quot; log | grep &apos;^commit&apos; | wc -l)&#10;/usr/libexec/PlistBuddy -c &quot;Set :CFBundleVersion $VERSION&quot; &quot;$PROJECT_DIR/$INFOPLIST_FILE&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "66EA72C817EB1585009B8350"
+                     BuildableName = "AutoDMG.app"
+                     BlueprintName = "AutoDMG"
+                     ReferencedContainer = "container:AutoDMG.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "#!/bin/bash&#10;#&#10;# Restores the CFBundleVersion to 1 so we don&apos;t check in the build number.&#10;&#10;set -o errexit&#10;set -o nounset&#10;&#10;/usr/libexec/PlistBuddy -c &quot;Set :CFBundleVersion 1&quot; &quot;$PROJECT_DIR/$INFOPLIST_FILE&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "66EA72C817EB1585009B8350"
+                     BuildableName = "AutoDMG.app"
+                     BlueprintName = "AutoDMG"
+                     ReferencedContainer = "container:AutoDMG.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"

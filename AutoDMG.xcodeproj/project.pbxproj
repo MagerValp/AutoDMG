@@ -298,7 +298,6 @@
 				66EA72C517EB1585009B8350 /* Sources */,
 				66EA72C617EB1585009B8350 /* Frameworks */,
 				66EA72C717EB1585009B8350 /* Resources */,
-				0506B97D17F085210011CCC2 /* ShellScript */,
 				6691F13A18EE027500E8D663 /* ShellScript */,
 			);
 			buildRules = (
@@ -399,20 +398,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0506B97D17F085210011CCC2 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/bin/bash\n#\n# Sets the version string to a monotonically increased string, based on\n# the number of git commits.\n\nset -o errexit\nset -o nounset\n\nVERSION=$(git --git-dir=\"$PROJECT_DIR/.git\" --work-tree=\"$PROJECT_DIR\" log | grep '^commit' | wc -l)\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $VERSION\" \"$TARGET_BUILD_DIR/$INFOPLIST_PATH\"\n";
-			showEnvVarsInLog = 0;
-		};
 		6691F13A18EE027500E8D663 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
