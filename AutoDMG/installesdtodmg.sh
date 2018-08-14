@@ -176,6 +176,7 @@ if [[ -z "$sysimg" ]]; then
         exit 101
     fi
     sparsemount=$(egrep '/Volumes/' <<< "$mountoutput" | head -1 | cut -f3)
+    touch "$sparsemount/.workaround-mojave-b4-installer-bug"
     dmgmounts+=( $(egrep 'Apple_(H|AP)FS' <<< "$mountoutput" | awk '{print $1}') )
 else
     echo "IED:MSG:Creating shadow file"
@@ -286,6 +287,7 @@ cp "$template" "$sparsemount/private/var/log"
 echo "IED:PHASE:asr"
 
 # Eject the dmgs.
+rm -f "$sparsemount/.workaround-mojave-b4-installer-bug"
 echo "IED:MSG:Unmounting volume"
 unmount_volume "$sparsemount"
 echo "IED:MSG:Ejecting image"
