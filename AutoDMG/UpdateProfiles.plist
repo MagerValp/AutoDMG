@@ -60,7 +60,7 @@
 			<string>16G1212</string>
 			<string>16G1314</string>
 		</array>
-		<key>10.13.5-17F77</key>
+		<key>10.13.6-17G65</key>
 		<array>
 			<string>17A306f</string>
 			<string>17A291m</string>
@@ -81,9 +81,16 @@
 			<string>17C88</string>
 			<string>17D47</string>
 			<string>17E199</string>
+			<string>17F77</string>
 		</array>
-		<key>10.14-18A293u</key>
+		<key>10.14-18A365a</key>
 		<array>
+			<string>18A293u</string>
+			<string>18A314h</string>
+			<string>18A326g</string>
+			<string>18A336e</string>
+			<string>18A347e</string>
+			<string>18A353d</string>
 		</array>
 	</dict>
 	<key>DeprecatedOSVersions</key>
@@ -122,16 +129,16 @@
 			<string>SecuritySierra</string>
 			<string>SafariSierra</string>
 		</array>
-		<key>10.13.5-17F77</key>
+		<key>10.13.6-17G65</key>
 		<array>
 			<string>iTunesHighSierra</string>
 		</array>
-		<key>10.14-18A293u</key>
+		<key>10.14-18A365a</key>
 		<array>
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2018-06-06T09:45:21Z</date>
+	<date>2018-08-14T15:23:31Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AppStoreElCap</key>
@@ -170,24 +177,24 @@
 		<key>SafariElCap</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 11.1.1 for El Capitan</string>
+			<string>Safari 11.1.2 for El Capitan</string>
 			<key>sha1</key>
-			<string>7942228fafbd6e4876cd6d780d86ea2dd9e9b1d5</string>
+			<string>c1aca61c30f3ceea373956b28b9e1f5e0b5270f4</string>
 			<key>size</key>
-			<integer>77917598</integer>
+			<integer>79330675</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/62/45/091-77731/9hcvul9sqn3dq0j4h9362w3chkwj2ihqn7/Safari11.1.1ElCapitan.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/60/50/091-84014/kxld7h4nhhnektja3lkfwqlv6ml8r4psxx/Safari11.1.2ElCapitan.pkg</string>
 		</dict>
 		<key>SafariSierra</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 11.1.1 for Sierra</string>
+			<string>Safari 11.1.2 for Sierra</string>
 			<key>sha1</key>
-			<string>ca850b5be92f9527ed71ef6bdd240426ab5ebd12</string>
+			<string>331f5d21bd0eecc1b04f58977b88eb08763c4e49</string>
 			<key>size</key>
-			<integer>79834517</integer>
+			<integer>79834518</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/09/51/091-75784/xxae706zt4nwlnxjguf8eud13h6gkd8c6i/Safari11.1.1Sierra.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/20/17/091-83945/2bu9iw6dmccjoqnoghfww55hlssmmr2hqq/Safari11.1.2Sierra.pkg</string>
 		</dict>
 		<key>SafariYo</key>
 		<dict>
@@ -203,24 +210,24 @@
 		<key>SecurityElCap</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2018-003 (El Capitan)</string>
+			<string>Security Update 2018-004 (El Capitan)</string>
 			<key>sha1</key>
-			<string>cb3f4e4d5103082a30f6a2555926c197ebf72c45</string>
+			<string>6302515a975a72ffb5a4b58ea65315af3e06cc6a</string>
 			<key>size</key>
-			<integer>871431704</integer>
+			<integer>900459938</integer>
 			<key>url</key>
-			<string>http://updates-http.cdn-apple.com/2018/macos/091-60951-20180601-B127CE66-C99A-43F2-8456-5CC14A75929B/SecUpd2018-003ElCapitan.dmg</string>
+			<string>http://updates-http.cdn-apple.com/2018/macos/091-63420-94327-20180709-5409BA12-7C10-11E8-84CF-4F47544C24EB/SecUpd2018-004ElCapitan.dmg</string>
 		</dict>
 		<key>SecuritySierra</key>
 		<dict>
 			<key>name</key>
-			<string>Security Update 2018-003 (Sierra)</string>
+			<string>Security Update 2018-004 (Sierra)</string>
 			<key>sha1</key>
-			<string>c1cfac3c2ff34da58dce746c6218854cfa986df7</string>
+			<string>9332acabc82146aa85eaf5abfabd9680edfed1a5</string>
 			<key>size</key>
-			<integer>778200656</integer>
+			<integer>786586361</integer>
 			<key>url</key>
-			<string>http://updates-http.cdn-apple.com/2018/macos/091-58224-20180601-E393DE12-F342-4258-9851-7B623E6D249B/SecUpd2018-003Sierra.dmg</string>
+			<string>http://updates-http.cdn-apple.com/2018/macos/091-65274-94327-20180709-5409BA12-7C10-11E8-84CF-4F47544C24EB/SecUpd2018-004Sierra.dmg</string>
 		</dict>
 		<key>SecurityYo</key>
 		<dict>
@@ -236,13 +243,13 @@
 		<key>iTunesHighSierra</key>
 		<dict>
 			<key>name</key>
-			<string>iTunes 12.7.5</string>
+			<string>iTunes 12.8</string>
 			<key>sha1</key>
-			<string>8e94b9ee5ea38fb78666710f0fede35995723131</string>
+			<string>c0c82adb920626fc500134732c4de2e0de6ea235</string>
 			<key>size</key>
-			<integer>287430766</integer>
+			<integer>275915484</integer>
 			<key>url</key>
-			<string>https://secure-appldnld.apple.com/itunes12/091-81932-20180529-DAFCC9F2-5F77-11E8-B1FB-4E9A897FD268/iTunes12.7.5.dmg</string>
+			<string>https://secure-appldnld.apple.com/itunes12/091-81690-20180709-3C97E2AB-D6CC-4B92-B290-2F21E56F6F70/iTunes12.8.dmg</string>
 		</dict>
 	</dict>
 </dict>
