@@ -92,7 +92,7 @@ class IEDController(NSObject):
         if IEDUtil.hostMajorVersion() < 13:
             self.filesystem.selectItem_(self.filesystemHfs)
             self.filesystemApfs.setEnabled_(False)
-        if IEDUtil.hostMajorVersion() == 13:
+        elif IEDUtil.hostMajorVersion() == 13:
             self.filesystem.selectItem_(self.filesystemApfs)
             self.filesystemApfs.setEnabled_(True)
         else:
