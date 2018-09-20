@@ -132,6 +132,9 @@ class IEDWorkflow(NSObject):
     def setSource_(self, path):
         LogDebug("setSource:%@", path)
         
+        if not self.checkAppleBugWarning_(path):
+            return
+
         self._source = None
         self.sourceType = None
         self.newSourcePath = path
@@ -144,6 +147,23 @@ class IEDWorkflow(NSObject):
     def source(self):
         return self._source
     
+    def checkAppleBugWarning_(self, path):
+        LogDebug("checkAppleBugWarning:%@", path)
+        if (IEDUtil.hostMajorVersion() != 14):
+            return True
+        LogDebug("We're running on Mojave")
+        if not path.endswith(".app"):
+            return True
+        LogDebug("The source is a .app")
+        if IEDUtil.volumePathForPath_(path) != "/":
+            return True
+        LogError("The source is an installer app on a Mojave system volume")
+        text = "A bug in the OS installer (radar 43296160) causes installs to fail " \
+            "if the Mojave installer is on the system volume. Copy it to an external " \
+            "volume or wrap it in a dmg before dropping it on AutoDMG."
+        self.delegate.sourceFailed_text_("Install will fail due to Apple bug", text)
+        return False
+
     def continueSetSource_(self, failedUnmounts):
         LogDebug("continueSetSource:%@", failedUnmounts)
         

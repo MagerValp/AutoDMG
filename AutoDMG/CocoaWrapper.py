@@ -59,6 +59,7 @@ from Foundation import (
     NSURLConnection,
     NSURLRequest,
     NSURLResponseUnknownLength,
+    NSURLVolumeURLKey,
     NSUserDefaults,
     NSUserDomainMask,
     NSUserName,

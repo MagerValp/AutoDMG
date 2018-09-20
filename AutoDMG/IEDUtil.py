@@ -340,4 +340,11 @@ class IEDUtil(NSObject):
             for volume in container.get("Volumes", []):
                 volumes[volume["DeviceIdentifier"]] = volume
         return volumes
-    
+
+    @classmethod
+    def volumePathForPath_(cls, path):
+        url = NSURL.fileURLWithPath_(path)
+        result, volumeURL, error = url.getResourceValue_forKey_error_(None, NSURLVolumeURLKey, None)
+        if not result:
+            return None
+        return volumeURL.path()
