@@ -83,7 +83,7 @@
 			<string>17E199</string>
 			<string>17F77</string>
 		</array>
-		<key>10.14-18A365a</key>
+		<key>10.14-18A389</key>
 		<array>
 			<string>18A293u</string>
 			<string>18A314h</string>
@@ -91,6 +91,10 @@
 			<string>18A336e</string>
 			<string>18A347e</string>
 			<string>18A353d</string>
+			<string>18A365a</string>
+			<string>18A371a</string>
+			<string>18A377a</string>
+			<string>18A384a</string>
 		</array>
 	</dict>
 	<key>DeprecatedOSVersions</key>
@@ -132,13 +136,14 @@
 		<key>10.13.6-17G65</key>
 		<array>
 			<string>iTunesHighSierra</string>
+			<string>SafariHighSierra</string>
 		</array>
-		<key>10.14-18A365a</key>
+		<key>10.14-18A389</key>
 		<array>
 		</array>
 	</dict>
 	<key>PublicationDate</key>
-	<date>2018-08-14T15:23:31Z</date>
+	<date>2018-09-24T08:46:44Z</date>
 	<key>Updates</key>
 	<dict>
 		<key>AppStoreElCap</key>
@@ -185,16 +190,27 @@
 			<key>url</key>
 			<string>http://swcdn.apple.com/content/downloads/60/50/091-84014/kxld7h4nhhnektja3lkfwqlv6ml8r4psxx/Safari11.1.2ElCapitan.pkg</string>
 		</dict>
+		<key>SafariHighSierra</key>
+		<dict>
+			<key>name</key>
+			<string>Safari 12 for High Sierra</string>
+			<key>sha1</key>
+			<string>4ab8d4212f889b833f23591319e34b941768d274</string>
+			<key>size</key>
+			<integer>80809321</integer>
+			<key>url</key>
+			<string>http://swcdn.apple.com/content/downloads/51/54/091-77636/pgscon52wejsvoz8nbjanm8qpe0z69v1am/Safari12.0HighSierraAuto.pkg</string>
+		</dict>
 		<key>SafariSierra</key>
 		<dict>
 			<key>name</key>
-			<string>Safari 11.1.2 for Sierra</string>
+			<string>Safari 12 for Sierra</string>
 			<key>sha1</key>
-			<string>331f5d21bd0eecc1b04f58977b88eb08763c4e49</string>
+			<string>7db7f9274cefb8372cf9cbdab4fc572c56f29c4d</string>
 			<key>size</key>
-			<integer>79834518</integer>
+			<integer>80645509</integer>
 			<key>url</key>
-			<string>http://swcdn.apple.com/content/downloads/20/17/091-83945/2bu9iw6dmccjoqnoghfww55hlssmmr2hqq/Safari11.1.2Sierra.pkg</string>
+			<string>http://swcdn.apple.com/content/downloads/27/44/091-79545/obipg799hidr41hspkoc5kds6uiy5eikxx/Safari12.0Sierra.pkg</string>
 		</dict>
 		<key>SafariYo</key>
 		<dict>
