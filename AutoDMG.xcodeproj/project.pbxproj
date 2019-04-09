@@ -71,6 +71,7 @@
 		05429D7A1816BE9900CD61E6 /* IEDUpdateController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUpdateController.py; sourceTree = "<group>"; };
 		05429D7C1816BED500CD61E6 /* IEDAddPkgController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDAddPkgController.py; sourceTree = "<group>"; };
 		055DBD281822AAA10008DA0E /* IEDUtil.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDUtil.py; sourceTree = "<group>"; };
+		05B036EE225CF458007C45B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		05C36AD218F406EF002AF318 /* AutoDMG Template.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = "AutoDMG Template.iconset"; sourceTree = "<group>"; };
 		05F35B6921539F5D00F2E597 /* Installer Placeholder 10.14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Installer Placeholder 10.14.png"; sourceTree = "<group>"; };
 		05FD2080181A5BCE00302827 /* IEDLog.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDLog.py; sourceTree = "<group>"; };
@@ -115,7 +116,6 @@
 		66EA72DE17EB1587009B8350 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		66EA72E017EB1587009B8350 /* main.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = main.py; sourceTree = "<group>"; };
 		66EA72E217EB1587009B8350 /* IEDAppDelegate.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = IEDAppDelegate.py; sourceTree = "<group>"; };
-		66EA72E517EB1587009B8350 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		66EA72EC17EB1E09009B8350 /* Installer Placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Installer Placeholder.png"; sourceTree = "<group>"; };
 		66EA72EE17EB25B3009B8350 /* DMG Placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DMG Placeholder.png"; sourceTree = "<group>"; };
 		66EA72F017EB2ECB009B8350 /* IEDController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDController.py; sourceTree = "<group>"; };
@@ -319,7 +319,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = IED;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "University of Gothenburg";
 				TargetAttributes = {
 					66EA72C817EB1585009B8350 = {
@@ -329,10 +329,11 @@
 			};
 			buildConfigurationList = 66EA72C417EB1585009B8350 /* Build configuration list for PBXProject "AutoDMG" */;
 			compatibilityVersion = "Xcode 8.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 66EA72C017EB1585009B8350;
 			productRefGroup = 66EA72CA17EB1586009B8350 /* Products */;
@@ -464,7 +465,7 @@
 		66EA72E417EB1587009B8350 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				66EA72E517EB1587009B8350 /* en */,
+				05B036EE225CF458007C45B3 /* Base */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -476,6 +477,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -527,6 +529,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
