@@ -18,6 +18,7 @@ from Foundation import (
     kCFAllocatorDefault,
     kCFBookmarkResolutionWithoutUIMask,
     NSApplicationSupportDirectory,
+    NSArray,
     NSAttributedString,
     NSBundle,
     NSData,

@@ -193,7 +193,7 @@ class IEDLog(NSObject):
         
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_(["log", "txt"])
+        panel.setAllowedFileTypes_(NSArray.arrayWithObjects_("log", "txt"))
         formatter = NSDateFormatter.alloc().init()
         formatter.setDateFormat_("yyyy-MM-dd HH.mm")
         dateStr = formatter.stringFromDate_(NSDate.date())

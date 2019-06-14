@@ -239,7 +239,7 @@ class IEDController(NSObject):
             panel = NSOpenPanel.openPanel()
             panel.setDelegate_(self)
             panel.setExtensionHidden_(False)
-            panel.setAllowedFileTypes_(["app", "dmg"])
+            panel.setAllowedFileTypes_(NSArray.arrayWithObjects_("app", "dmg"))
             
             result = panel.runModal()
             if result != NSFileHandlingPanelOKButton:
@@ -282,7 +282,7 @@ class IEDController(NSObject):
         
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_(["dmg"])
+        panel.setAllowedFileTypes_(NSArray.arrayWithObjects_("dmg"))
         imageName = "osx"
         formatter = NSDateFormatter.alloc().init()
         formatter.setDateFormat_("yyMMdd")
@@ -408,7 +408,7 @@ class IEDController(NSObject):
         
         panel = NSSavePanel.savePanel()
         panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_(["adtmpl"])
+        panel.setAllowedFileTypes_(NSArray.arrayWithObjects_("adtmpl"))
         formatter = NSDateFormatter.alloc().init()
         formatter.setDateFormat_("yyMMdd")
         dateStr = formatter.stringFromDate_(NSDate.date())
@@ -460,7 +460,7 @@ class IEDController(NSObject):
         
         panel = NSOpenPanel.openPanel()
         panel.setExtensionHidden_(False)
-        panel.setAllowedFileTypes_(["adtmpl"])
+        panel.setAllowedFileTypes_(NSArray.arrayWithObjects_("adtmpl"))
         
         result = panel.runModal()
         if result != NSFileHandlingPanelOKButton:
