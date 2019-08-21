@@ -44,7 +44,7 @@ class ProgressWatcher(NSObject):
         task.setStandardOutput_(outpipe)
         task.setStandardError_(outpipe)
         
-        task.setLaunchPath_(args[0])
+        task.setExecutableURL_(NSURL.fileURLWithPath_(args[0]))
         task.setArguments_(args[1:])
         
         if mode == "asr":
