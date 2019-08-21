@@ -20,6 +20,9 @@
 declare -r TESTING="no"
 
 
+OS_MAJOR=$(sw_vers -productVersion | cut -d. -f2)
+
+
 # Cleanup.
 
 declare -a tempdirs
@@ -247,7 +250,7 @@ for package; do
             fi
         fi
         # Detect system language on 10.10+. Default to Finnish if detection fails.
-        if [[ $(sw_vers -productVersion | cut -d. -f2) -ge 10 ]]; then
+        if [[ $OS_MAJOR -ge 10 ]]; then
             name="$(basename "$package")"
             if [[ "$name" == "OSInstall.mpkg" ]] || [[ "$name" == "InstallInfo.plist" ]]; then
                 mkdir -p -m 0755 "$sparsemount/private/var/log"
