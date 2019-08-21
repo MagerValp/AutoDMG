@@ -242,11 +242,20 @@ for package; do
             echo "installer:%100.0"
             sleep 0.25
         else
+            target_dev=$(df "$sparsemount" | egrep -o '^/dev/disk\d+')
+            if [[ $OS_MAJOR -ge 15 && "$package" == *InstallInfo.plist ]]; then
+                echo "IED:MSG:Device for $sparsemount is $target_dev"
+            fi
             installer -verboseR -dumplog -pkg "$package" -target "$sparsemount"
             declare -i result=$?
             if [[ $result -ne 0 ]]; then
                 echo "IED:FAILURE:Installation of '$(basename "$package")' failed with return code $result. See the log for details."
                 exit 102
+            fi
+            if [[ $OS_MAJOR -ge 15 && "$package" == *InstallInfo.plist ]]; then
+                echo "IED:MSG:Finding updated mount point for $target_dev"
+                sparsemount=$(hdiutil info | grep "^$target_dev" | grep -v 'Data$' | egrep -o '/Volumes/.+$')
+                echo "IED:MSG:Install target on device $target_dev is now mounted at $sparsemount"
             fi
         fi
         # Detect system language on 10.10+. Default to Finnish if detection fails.
