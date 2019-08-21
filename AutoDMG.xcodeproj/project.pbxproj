@@ -101,6 +101,7 @@
 		66B29336182137310076C397 /* Download.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Download.png; sourceTree = "<group>"; };
 		66B29337182137310076C397 /* Download@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Download@2x.png"; sourceTree = "<group>"; };
 		66CBF80F182316FC0002E18F /* IEDAppVersionController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDAppVersionController.py; sourceTree = "<group>"; };
+		66D1991C230D9B7200A866BF /* AutoDMG.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AutoDMG.entitlements; sourceTree = "<group>"; };
 		66D24F2518171E680042F227 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		66E91A9A18B4206C006ABAB7 /* IEDCLIController.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = IEDCLIController.py; sourceTree = "<group>"; };
 		66EA72C917EB1586009B8350 /* AutoDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -251,6 +252,7 @@
 		66EA72D417EB1586009B8350 /* AutoDMG */ = {
 			isa = PBXGroup;
 			children = (
+				66D1991C230D9B7200A866BF /* AutoDMG.entitlements */,
 				667F6D2A1E530AD5009AC1AC /* CocoaWrapper.py */,
 				66EA72E017EB1587009B8350 /* main.py */,
 				66EA72E217EB1587009B8350 /* IEDAppDelegate.py */,
@@ -319,7 +321,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = IED;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "University of Gothenburg";
 				TargetAttributes = {
 					66EA72C817EB1585009B8350 = {
@@ -574,9 +576,11 @@
 		66EA72EA17EB1587009B8350 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AutoDMG/AutoDMG.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				DEVELOPMENT_TEAM = 5KQ3D3FG5H;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AutoDMG/AutoDMG-Prefix.pch";
 				INFOPLIST_FILE = "AutoDMG/AutoDMG-Info.plist";
@@ -590,9 +594,11 @@
 		66EA72EB17EB1587009B8350 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AutoDMG/AutoDMG.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				DEVELOPMENT_TEAM = 5KQ3D3FG5H;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AutoDMG/AutoDMG-Prefix.pch";
 				INFOPLIST_FILE = "AutoDMG/AutoDMG-Info.plist";
