@@ -258,24 +258,6 @@ for package; do
                 echo "IED:MSG:Install target on device $target_dev is now mounted at $sparsemount"
             fi
         fi
-        # Detect system language on 10.10+. Default to Finnish if detection fails.
-        if [[ $OS_MAJOR -ge 10 ]]; then
-            name="$(basename "$package")"
-            if [[ "$name" == "OSInstall.mpkg" ]] || [[ "$name" == "InstallInfo.plist" ]]; then
-                mkdir -p -m 0755 "$sparsemount/private/var/log"
-                chown root:wheel "$sparsemount/private"
-                chown root:wheel "$sparsemount/private/var"
-                chown root:wheel "$sparsemount/private/var/log"
-                if lang=$(/usr/bin/python -c "from Foundation import NSLocale, NSLocaleLanguageCode; print NSLocale.currentLocale()[NSLocaleLanguageCode]" 2>/dev/null); then
-                    echo "LANGUAGE=$lang" > "$sparsemount/private/var/log/CDIS.custom"
-                    echo "IED:MSG:Setup Assistant language set to '$lang'"
-                else
-                    echo "IED:MSG:Failed to retrieve language preference, setting Setup Assistant to Finnish"
-                    echo "LANGUAGE=fi" > "$sparsemount/private/var/log/CDIS.custom"
-                fi
-                chown root:wheel "$sparsemount/private/var/log/CDIS.custom"
-            fi
-        fi
     fi
     if [[ -z "$start_nvb" ]]; then
         start_nvb=$(read_nvb "$sparsemount")
