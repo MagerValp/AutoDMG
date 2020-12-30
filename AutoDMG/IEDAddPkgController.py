@@ -122,7 +122,7 @@ class IEDAddPkgController(NSObject):
             # Don't allow multiple copies.
             if path in self.packagePaths:
                 return NSDragOperationNone
-            # Ensure the file extension is valid for additonal packages.
+            # Ensure the file extension is valid for additional packages.
             name, ext = os.path.splitext(path)
             if ext.lower() not in IEDUtil.PACKAGE_EXTENSIONS:
                 return NSDragOperationNone
